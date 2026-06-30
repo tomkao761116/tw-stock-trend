@@ -90,7 +90,30 @@ crontab -e
 0 8 * * 1-5 "/Users/aidenkaoiii/Google 雲端硬碟/個人AI/股市趨勢預估/run_daily.sh" >> "/tmp/tw-stock.log" 2>&1
 ```
 
-> macOS 注意：cron 存取 Google Drive 目錄可能需到「系統設定 → 隱私權與安全性 → 完整磁碟取取權」把 `cron`（/usr/sbin/cron）加入授權。
+> macOS 注意：實測 cron 可正常存取 Google Drive 目錄並執行。若日後遇到權限問題，到「系統設定 → 隱私權與安全性 → 完整磁碟取用權限」把 `cron`（/usr/sbin/cron）加入授權。
+
+### cron 推送認證設定（必要，只需一次）
+
+cron 沒有終端機，拿不到 keychain 裡的 git 認證，`git push` 會失敗
+（`could not read Username for 'https://github.com'`）。解法是建立一個認證儲存檔，
+用 GitHub token 讓 cron 免 keychain 即可推送：
+
+```bash
+# 1. 用 gh token 建立認證檔（放家目錄、權限 600、不在 repo 內、不會被提交）
+CREDFILE="$HOME/.tw-stock-git-credentials"
+printf 'https://x-access-token:%s@github.com\n' "$(gh auth token)" > "$CREDFILE"
+chmod 600 "$CREDFILE"
+
+# 2. 設定本 repo 用此檔當認證來源
+cd "/Users/aidenkaoiii/Google 雲端硬碟/個人AI/股市趨勢預估"
+git config credential.helper "store --file=$CREDFILE"
+
+# 3. 驗證（模擬 cron 的最小環境）
+env -i HOME="$HOME" PATH=/usr/bin:/bin /usr/bin/git -C "$(pwd)" push
+```
+
+> 檔案存的是 GitHub token（明文，600 權限）。gh token 通常長期有效；
+> 若某天 push 突然失敗（token 失效），重跑步驟 1 重新產生即可。
 
 ## 回測（驗證準確率）
 
