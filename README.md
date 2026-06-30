@@ -48,12 +48,22 @@ echo "你的token" > .finmind_token
 
 **調參只改 `config.py`**（權重、門檻、標準化幅度），不動邏輯。
 
+## 事件層（財經行事曆）
+
+重大事件日（Fed、CPI、非農、台積電法說、結算日）市場常觀望，美股強弱未必反映到當日。
+事件日**不改因子分數**，而是把分類門檻放大（`config.THRESHOLD_EVENT_SCALE`，預設 1.5×），
+要求更強訊號才敢喊方向，並在報告示警。
+
+- **結算日**（每月第三個週三）：自動偵測，免維護。
+- **Fed / CPI / 非農 / 法說**：在 `events.py` 的 `MANUAL_EVENTS` 自行填日期（date = 影響的台股交易日）。
+
 ## 專案結構
 
 ```
 config.py      權重、門檻、代號設定
 data_fetch.py  資料擷取（Yahoo Finance + FinMind）
 rules.py       規則引擎：因子 → 分數 → 分類
+events.py      財經行事曆事件層（事件日放大門檻）
 report.py      終端機輸出 + Markdown 報告存檔
 main.py        執行入口
 reports/        每日報告（含實際結果欄位，供回測命中率）
@@ -72,6 +82,7 @@ crontab -e
 ## Roadmap
 
 - [x] 規則引擎 v1（隔夜美股 + 籌碼）
+- [x] 事件層（財經行事曆，事件日趨保守）
 - [ ] 回測：累積報告後計算歷史命中率，回頭調權重
-- [ ] 新聞情緒因子（NLP）
+- [ ] 新聞情緒因子（NLP，第二層）
 - [ ] 換 ML 模型（LightGBM）—只需替換 `rules.py`，回傳結構不變

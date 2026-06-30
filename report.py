@@ -23,8 +23,13 @@ def print_report(result):
     for line in _table_lines(result):
         print(line)
     print("-" * 48)
+    bull, bear = result.get("thresholds", (4.0, -4.0))
     print(f'  總分：{result["total_score"]:+.2f}'
-          f'　（多≥+4 / 空≤-4 / 其餘震盪）')
+          f'　（多≥{bull:+.1f} / 空≤{bear:+.1f} / 其餘震盪）')
+    for ev in result.get("events", []):
+        print(f'  ⚠️ 事件日：{ev["type"]} — {ev["note"]}')
+    if result.get("events"):
+        print(f'  （門檻已放大 {result["threshold_scale"]}×，預估趨保守）')
     print(f'  ➜ 今日方向預估：{result["direction"]}')
     print("=" * 48 + "\n")
 
@@ -33,10 +38,15 @@ def save_report(result):
     os.makedirs(REPORTS_DIR, exist_ok=True)
     today = dt.date.today().isoformat()
     path = os.path.join(REPORTS_DIR, f"{today}.md")
+    bull, bear = result.get("thresholds", (4.0, -4.0))
     lines = [f"# 台股盤前趨勢預估　{today}", "",
              f"**今日方向預估：{result['direction']}**　"
-             f"（總分 {result['total_score']:+.2f}）", "",
-             "| 因子 | 數值 | 權重 | 貢獻 |", "|---|---|---|---|"]
+             f"（總分 {result['total_score']:+.2f}，門檻 多≥{bull:+.1f}/空≤{bear:+.1f}）", ""]
+    for ev in result.get("events", []):
+        lines.append(f"> ⚠️ 事件日：**{ev['type']}** — {ev['note']}（門檻已放大）")
+    if result.get("events"):
+        lines.append("")
+    lines += ["| 因子 | 數值 | 權重 | 貢獻 |", "|---|---|---|---|"]
     for f in result["factors"]:
         note = f"（{f['note']}）" if f["note"] else ""
         lines.append(f"| {f['name']} | {f['value']}{note} | "

@@ -74,8 +74,11 @@ _FACTOR_FUNCS = {
 }
 
 
-def evaluate(raw):
-    """主入口：吃 data_fetch.fetch_all() 的結果，回傳預測 dict。"""
+def evaluate(raw, threshold_scale=1.0):
+    """主入口：吃 data_fetch.fetch_all() 的結果，回傳預測 dict。
+
+    threshold_scale：事件日可傳 >1 放大門檻，使分類更保守（見 events.py）。
+    """
     factors = []
     total = 0.0
     for name, (label, fn) in _FACTOR_FUNCS.items():
@@ -92,12 +95,15 @@ def evaluate(raw):
                         "weight": weight, "contribution": round(contribution, 2),
                         "note": ""})
 
-    if total >= config.THRESHOLD_BULLISH:
+    bull = config.THRESHOLD_BULLISH * threshold_scale
+    bear = config.THRESHOLD_BEARISH * threshold_scale
+    if total >= bull:
         direction = "偏多 📈"
-    elif total <= config.THRESHOLD_BEARISH:
+    elif total <= bear:
         direction = "偏空 📉"
     else:
         direction = "震盪 ➡️"
 
     return {"direction": direction, "total_score": round(total, 2),
-            "factors": factors}
+            "factors": factors, "threshold_scale": threshold_scale,
+            "thresholds": (round(bull, 1), round(bear, 1))}

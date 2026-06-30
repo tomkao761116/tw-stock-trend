@@ -4,7 +4,9 @@
 """
 import sys
 
+import config
 import data_fetch
+import events
 import rules
 import report
 
@@ -17,7 +19,10 @@ def main():
         print(f"\n缺少套件：{e}\n請先執行：pip install -r requirements.txt")
         sys.exit(1)
 
-    result = rules.evaluate(raw)
+    today_events = events.events_on()
+    scale = config.THRESHOLD_EVENT_SCALE if today_events else 1.0
+    result = rules.evaluate(raw, threshold_scale=scale)
+    result["events"] = today_events
     report.print_report(result)
     report.save_report(result)
 

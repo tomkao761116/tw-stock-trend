@@ -40,6 +40,9 @@ THRESHOLD_BULLISH = 4.0   # 總分 ≥ 此值 → 偏多
 THRESHOLD_BEARISH = -4.0  # 總分 ≤ 此值 → 偏空
 # 介於兩者之間 → 震盪
 
+# 重大事件日（見 events.py）門檻放大倍數：>1 = 更保守、更傾向「震盪」
+THRESHOLD_EVENT_SCALE = 1.5
+
 # ── FinMind API（台股籌碼資料，免費註冊取得 token）──────────────
 # https://finmindtrade.com/  註冊後把 token 填這裡，或設環境變數 FINMIND_TOKEN
 FINMIND_TOKEN = ""
