@@ -114,16 +114,18 @@ def _history_card(items):
         cls = _dir_class(r["direction"])
         actual = r.get("actual")
         actual_txt = html.escape(str(actual)) if actual else "—"
+        date = html.escape(r["date"])
         rows.append(
-            f'<tr><td>{html.escape(r["date"])}</td>'
+            f'<tr><td><a href="{date}.html">{date}</a></td>'
             f'<td class="{cls}">{html.escape(r["direction"])}</td>'
             f'<td>{r.get("total_score",0):+.2f}</td>'
-            f'<td>{actual_txt}</td></tr>')
+            f'<td>{actual_txt}</td>'
+            f'<td><a class="view" href="{date}.html">查看 →</a></td></tr>')
     return f'''
   <div class="card">
     <h2>歷史紀錄</h2>
     <table class="hist">
-      <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th></tr>
+      <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
       {"".join(rows)}
     </table>
   </div>'''
@@ -155,8 +157,41 @@ th,td{padding:6px;border-bottom:1px solid #eee;text-align:center}th{color:var(--
 .tech{font-size:12px;color:var(--sub);margin-top:8px}
 table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:var(--flat)}
 .hist td:first-child{text-align:left}
+.hist tr:hover td{background:#fafbfc}
+.hist a{color:#185fa5;text-decoration:none} .hist a:hover{text-decoration:underline}
+.view{font-size:12px;white-space:nowrap}
+.backlink{display:inline-block;margin:0 0 12px;color:#185fa5;text-decoration:none;font-size:14px}
+.backlink:hover{text-decoration:underline}
 .disclaimer{text-align:center;color:var(--sub);font-size:12px;padding:8px 0 24px}
 """
+
+
+def _page(title, body):
+    """共用頁面外殼。"""
+    updated = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
+    return f'''<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(title)}</title>
+<style>{CSS}</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
+{body}
+  <div class="disclaimer">更新時間 {updated}　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
+</div>
+</body>
+</html>'''
+
+
+def _write(filename, content):
+    path = os.path.join(DOCS_DIR, filename)
+    with open(path, "w", encoding="utf-8") as fp:
+        fp.write(content)
+    return path
 
 
 def build_site():
@@ -165,32 +200,18 @@ def build_site():
         print("（data/ 無資料，先跑過 main.py 再產生網頁）")
         return None
     os.makedirs(DOCS_DIR, exist_ok=True)
-    today = _today_card(items[0])
-    history = _history_card(items) if len(items) > 1 else ""
-    updated = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    page = f'''<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>台股盤前趨勢預估</title>
-<style>{CSS}</style>
-</head>
-<body>
-<div class="wrap">
-  <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
-{today}
-{history}
-  <div class="disclaimer">更新時間 {updated}　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
-</div>
-</body>
-</html>'''
+    # 每日獨立頁面（可永久連結、單獨分享）
+    for r in items:
+        body = f'  <a class="backlink" href="index.html">← 回首頁</a>\n{_today_card(r)}'
+        _write(f'{r["date"]}.html', _page(f'台股盤前預估 {r["date"]}', body))
 
-    path = os.path.join(DOCS_DIR, "index.html")
-    with open(path, "w", encoding="utf-8") as fp:
-        fp.write(page)
-    print(f"網頁已產生：{path}")
+    # 首頁：今日完整卡片 + 歷史列表
+    body = _today_card(items[0])
+    if len(items) > 1:
+        body += _history_card(items)
+    path = _write("index.html", _page("台股盤前趨勢預估", body))
+    print(f"網頁已產生：{path}（含 {len(items)} 個每日頁面）")
     return path
 
 
