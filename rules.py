@@ -85,15 +85,15 @@ def evaluate(raw, threshold_scale=1.0):
         base, value = fn(raw)
         weight = config.WEIGHTS[name]
         if base is None:
-            factors.append({"name": label, "value": "N/A", "base": None,
-                            "weight": weight, "contribution": 0.0,
-                            "note": "資料缺漏，未計入"})
+            factors.append({"key": name, "name": label, "value": "N/A",
+                            "base": None, "weight": weight,
+                            "contribution": 0.0, "note": "資料缺漏，未計入"})
             continue
         contribution = base * weight
         total += contribution
-        factors.append({"name": label, "value": value, "base": round(base, 2),
-                        "weight": weight, "contribution": round(contribution, 2),
-                        "note": ""})
+        factors.append({"key": name, "name": label, "value": value,
+                        "base": round(base, 2), "weight": weight,
+                        "contribution": round(contribution, 2), "note": ""})
 
     bull = config.THRESHOLD_BULLISH * threshold_scale
     bear = config.THRESHOLD_BEARISH * threshold_scale
@@ -106,11 +106,14 @@ def evaluate(raw, threshold_scale=1.0):
 
     attribution = _attribution(factors)
     reasoning = _reasoning(direction, attribution, total, threshold_scale)
+    confidence = _confidence(total, direction)
+    plain_summary = _plain_summary(direction, attribution)
 
     return {"direction": direction, "total_score": round(total, 2),
             "factors": factors, "threshold_scale": threshold_scale,
             "thresholds": (round(bull, 1), round(bear, 1)),
-            "attribution": attribution, "reasoning": reasoning}
+            "attribution": attribution, "reasoning": reasoning,
+            "confidence": confidence, "plain_summary": plain_summary}
 
 
 # ── 歸因分析：把總分拆回各因子的多空力道 ──────────────────────
@@ -161,4 +164,47 @@ def _reasoning(direction, attr, total, scale):
                  f"「{push[0]['name']}」偏多與「{drag[0]['name']}」偏空相互抵銷，方向不明。")
         else:
             s = f"訊號偏弱（推升 {bf:+.1f}、拖累 {df:+.1f}），方向不明。"
+    return s
+
+
+def _confidence(total, direction):
+    """訊號強度 → 信心程度（給新手的直覺指標）。"""
+    if "震盪" in direction:
+        return {"label": "方向不明", "dots": "○○○○○",
+                "note": "多空力道相當，建議觀望"}
+    a = abs(total)
+    if a >= 8:
+        lvl, dots = "很高", "●●●●●"
+    elif a >= 6:
+        lvl, dots = "高", "●●●●○"
+    elif a >= 5:
+        lvl, dots = "中等", "●●●○○"
+    elif a >= 4:
+        lvl, dots = "偏低", "●●○○○"
+    else:
+        lvl, dots = "低", "●○○○○"
+    return {"label": lvl, "dots": dots, "note": ""}
+
+
+def _nick(factor):
+    return config.FACTOR_INFO.get(factor["key"], {}).get("nick", factor["name"])
+
+
+def _plain_summary(direction, attr):
+    """完全口語的一段話，不熟股市也看得懂。"""
+    push, drag = attr["push"], attr["drag"]
+
+    def nicks(items, n=2):
+        return "、".join(_nick(f) for f in items[:n]) if items else ""
+
+    if "偏多" in direction:
+        s = f"昨晚{nicks(push)}表現強勢，通常會帶動今天台股偏向上漲。"
+        if drag:
+            s += f"雖然{nicks(drag)}帶來一些反向壓力，但力道不足以扭轉方向。"
+    elif "偏空" in direction:
+        s = f"昨晚{nicks(drag)}表現疲弱，可能拖累今天台股偏向下跌。"
+        if push:
+            s += f"雖然{nicks(push)}提供一些支撐，但力道不足以扭轉方向。"
+    else:
+        s = "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。"
     return s
