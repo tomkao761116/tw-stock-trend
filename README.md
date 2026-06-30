@@ -31,8 +31,9 @@ echo "你的token" > .finmind_token
 
 | 因子 | 來源 | 權重 | 說明 |
 |------|------|------|------|
-| 費半 SOX | Yahoo Finance | 3.0 | 與台股半導體連動最強 |
-| 台積電 ADR | Yahoo Finance | 3.0 | 直接影響台積電開盤 |
+| 台指期夜盤 | FinMind | 2.5 | 隔夜訊息對台股最直接的反映，需 token |
+| 費半 SOX | Yahoo Finance | 2.5 | 與台股半導體連動最強 |
+| 台積電 ADR | Yahoo Finance | 2.5 | 直接影響台積電開盤 |
 | 那斯達克 | Yahoo Finance | 2.0 | 科技股氣氛 |
 | 外資買賣超 | FinMind | 2.0 | 前一交易日，需 token |
 | 外資期貨 | FinMind | 2.0 | 未平倉淨額變化，需 token |

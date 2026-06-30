@@ -50,6 +50,14 @@ def _foreign_futures_factor(data):
     return base, f'淨{data["net"]:+d} 口 (Δ{data["change"]:+d})'
 
 
+def _night_factor(data):
+    """台指期夜盤漲跌幅型因子。"""
+    if data is None:
+        return None, None
+    base = _clamp(data["change_pct"] / config.NORMALIZERS["night_full_pct"])
+    return base, f'{data["change_pct"]:+.2f}% (夜盤{data["night_close"]:.0f})'
+
+
 def _margin_factor(data):
     """反向：融資餘額增加(散戶追高/過熱) → 負分；減少 → 正分。"""
     if data is None:
@@ -60,6 +68,7 @@ def _margin_factor(data):
 
 # 因子名稱 → (中文標籤, 計算函式)
 _FACTOR_FUNCS = {
+    "night_futures": ("台指期夜盤", lambda d: _night_factor(d["night_futures"])),
     "sox": ("費半 SOX",
             lambda d: _pct_factor(d["sox"], config.NORMALIZERS["sox_full_pct"])),
     "tsm_adr": ("台積電 ADR",

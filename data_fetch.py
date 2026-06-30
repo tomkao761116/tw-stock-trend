@@ -133,6 +133,45 @@ def fetch_foreign_futures():
         return None
 
 
+def fetch_night_futures():
+    """台指期夜盤收盤相對前一交易日盤收的漲跌幅(%)。需 FinMind token。
+
+    夜盤(after_market)跑到清晨 05:00，盤前即可取得；用同一近月合約比較，
+    避開換月跳價。是隔夜訊息對台股開盤最直接的反映。
+    """
+    if not _finmind_token():
+        print("  ⚠ 台指期夜盤：未設定 FINMIND_TOKEN，略過")
+        return None
+    try:
+        data = _finmind_get("TaiwanFuturesDaily", extra={"data_id": "TX"})
+        if not data:
+            return None
+        # 只留近月單一合約（contract_date 無 '/'）、收盤 > 0
+        outs = [r for r in data
+                if "/" not in str(r.get("contract_date", "")) and r.get("close", 0) > 0]
+        nights = [r for r in outs if r.get("trading_session") == "after_market"]
+        days = [r for r in outs if r.get("trading_session") == "position"]
+        if not nights or not days:
+            return None
+        # 最新夜盤（取最近月）
+        latest_date = max(r["date"] for r in nights)
+        night = min((r for r in nights if r["date"] == latest_date),
+                    key=lambda r: r["contract_date"])
+        contract = night["contract_date"]
+        # 同合約、前一交易日的日盤收盤
+        prev = [r for r in days
+                if r["contract_date"] == contract and r["date"] < latest_date]
+        if not prev:
+            return None
+        ref = max(prev, key=lambda r: r["date"])
+        change_pct = (night["close"] / ref["close"] - 1) * 100
+        return {"date": latest_date, "ref_date": ref["date"],
+                "night_close": night["close"], "change_pct": round(change_pct, 2)}
+    except Exception as e:
+        print(f"  ⚠ 台指期夜盤擷取失敗：{e}")
+        return None
+
+
 def fetch_margin():
     """整體市場融資餘額單日變化（%）。需 FinMind token。
     融資餘額代表散戶槓桿；作為反向情緒指標（增 → 過熱）。"""
@@ -165,6 +204,7 @@ def fetch_all():
     print("擷取台股籌碼（FinMind）...")
     return {
         **us,
+        "night_futures": fetch_night_futures(),
         "foreign_buy": fetch_foreign_buy(),
         "foreign_futures": fetch_foreign_futures(),
         "margin": fetch_margin(),
