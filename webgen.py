@@ -44,6 +44,12 @@ def _stars(c):
     return "★★★" if a >= 2 else "★★☆" if a >= 1 else "★☆☆" if a > 0.05 else "－"
 
 
+def _gen_at(r):
+    """卡片日期行後接「當日更新時間」。"""
+    ts = r.get("generated_at")
+    return f'　·　更新 {html.escape(ts)}' if ts else ""
+
+
 def _factor_rows(items, tag):
     rows = []
     for f in items:
@@ -86,7 +92,7 @@ def _today_card(r):
 
     return f'''
   <div class="card today {cls}">
-    <div class="date">{html.escape(r["date"])} 盤前預估</div>
+    <div class="date">{html.escape(r["date"])} 盤前預估{_gen_at(r)}</div>
     <div class="direction">{html.escape(r["direction"])}</div>
     <div class="conf">信心 <span class="dots">{conf.get("dots","")}</span> {html.escape(conf.get("label",""))}</div>
     {ev_html}

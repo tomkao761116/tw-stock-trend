@@ -156,7 +156,15 @@ def save_data(result, date_str=None):
     path = os.path.join(DATA_DIR, f"{date_str}.json")
     payload = dict(result)
     payload["date"] = date_str
+    payload["generated_at"] = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
     payload.setdefault("actual", None)  # 隔日實際漲跌，供回測填寫
+    # 保留 backtest 已填的實際結果，避免重跑 main.py 覆蓋
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as fp:
+            old = json.load(fp)
+        for k in ("actual", "actual_pct", "hit"):
+            if old.get(k) is not None:
+                payload[k] = old[k]
     with open(path, "w", encoding="utf-8") as fp:
         json.dump(payload, fp, ensure_ascii=False, indent=2)
     return path
