@@ -127,6 +127,18 @@ python backtest.py
 跑完重建網頁，歷史表的「實際」欄就會顯示結果與 ✓/✗。
 累積數據後，依命中率回頭調整 `config.py` 的權重與門檻。
 
+## 權重校準（累積資料後）
+
+```bash
+python calibrate.py
+```
+
+分析各因子標準化分數與當日實際漲跌的**相關性 r**，建議權重調整方向
+（r 高→可提高、r 近 0→訊號弱可降低、r 負→反向需檢視）。
+- 需 **≥ 10 天**回測資料才給建議，否則僅顯示參考相關性。
+- 刻意用透明的相關性分析而非多元迴歸（樣本少時迴歸易過度擬合）。
+- 只給建議，**不自動改 config**；調權重後重跑 `backtest.py` 觀察命中率變化。
+
 ## 線上網址
 
 GitHub Pages：https://tomkao761116.github.io/tw-stock-trend/
@@ -139,7 +151,9 @@ GitHub Pages：https://tomkao761116.github.io/tw-stock-trend/
 - [x] 部署到 GitHub Pages（公開網址）
 - [x] 自動化腳本（run_daily.sh + cron）
 - [x] 回測腳本（抓 ^TWII 實際漲跌、算命中率）
-- [ ] 累積數據後依命中率調權重
+- [x] 台指期夜盤因子
+- [x] 權重校準腳本（calibrate.py，依相關性建議調整）
+- [ ] 累積 ≥ 10 天資料後校準權重
 - [ ] 新聞情緒因子（NLP，第二層）
 
 ## 網頁
