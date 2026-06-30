@@ -82,21 +82,40 @@ reports/        每日報告（含實際結果欄位，供回測命中率）
 
 ## 每日自動執行（macOS）
 
-用 `cron` 設定每天早上 8 點執行（台股 9 點開盤前）：
+`run_daily.sh` 會跑預估 → 更新網頁 → 推送 GitHub Pages。用 `cron` 每個交易日早上 8 點執行：
 
 ```bash
 crontab -e
-# 加入一行（請改成你的實際路徑與 python）：
-0 8 * * 1-5 cd "/path/to/股市趨勢預估" && /opt/anaconda3/bin/python3 main.py
+# 加入一行：
+0 8 * * 1-5 "/Users/aidenkaoiii/Google 雲端硬碟/個人AI/股市趨勢預估/run_daily.sh" >> "/tmp/tw-stock.log" 2>&1
 ```
+
+> macOS 注意：cron 存取 Google Drive 目錄可能需到「系統設定 → 隱私權與安全性 → 完整磁碟取取權」把 `cron`（/usr/sbin/cron）加入授權。
+
+## 回測（驗證準確率）
+
+```bash
+python backtest.py
+```
+
+抓加權指數(^TWII)當日實際漲跌，填回 `data/*.json` 的 `actual` 欄位，計算命中率：
+偏多→當日漲、偏空→當日跌、震盪→當日平（±0.4% 平盤帶，可在 `backtest.py` 調整）。
+跑完重建網頁，歷史表的「實際」欄就會顯示結果與 ✓/✗。
+累積數據後，依命中率回頭調整 `config.py` 的權重與門檻。
+
+## 線上網址
+
+GitHub Pages：https://tomkao761116.github.io/tw-stock-trend/
 
 ## Roadmap
 
 - [x] 規則引擎 v1（隔夜美股 + 籌碼）
 - [x] 事件層（財經行事曆，事件日趨保守）
 - [x] 靜態網頁（今日 + 歷史，手機可看、連結可分享）
-- [ ] 部署到 GitHub Pages（公開網址）
-- [ ] 回測：累積報告後計算歷史命中率，回頭調權重
+- [x] 部署到 GitHub Pages（公開網址）
+- [x] 自動化腳本（run_daily.sh + cron）
+- [x] 回測腳本（抓 ^TWII 實際漲跌、算命中率）
+- [ ] 累積數據後依命中率調權重
 - [ ] 新聞情緒因子（NLP，第二層）
 
 ## 網頁
