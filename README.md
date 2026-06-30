@@ -76,6 +76,10 @@ events.py      財經行事曆事件層（事件日放大門檻）
 report.py      終端機輸出 + Markdown 報告 + JSON 存檔
 webgen.py      靜態網頁產生器（docs/index.html）
 main.py        執行入口
+run_daily.sh   每日自動化：跑預估 → 更新網頁 → 推送
+backtest.py    回測：抓實際漲跌、算命中率
+calibrate.py   權重校準建議
+launchd/       launchd 排程設定（每交易日 08:20，喚醒補跑）
 data/          每日結果 JSON（歷史與回測資料來源）
 docs/          產出的網頁（GitHub Pages 由此出站）
 reports/        每日報告（含實際結果欄位，供回測命中率）
@@ -83,17 +87,25 @@ reports/        每日報告（含實際結果欄位，供回測命中率）
 
 ## 每日自動執行（macOS）
 
-`run_daily.sh` 會跑預估 → 更新網頁 → 推送 GitHub Pages。用 `cron` 每個交易日早上 8:20 執行：
+`run_daily.sh` 會跑預估 → 更新網頁 → 推送 GitHub Pages。用 macOS **`launchd`** 在每個交易日早上 8:20 執行（相較 cron，**電腦喚醒後會補跑錯過的排程**，適合不一定準時開機的桌機/筆電）：
 
 ```bash
-crontab -e
-# 加入一行：
-20 8 * * 1-5 "/Users/aidenkaoiii/Google 雲端硬碟/個人AI/股市趨勢預估/run_daily.sh" >> "/tmp/tw-stock.log" 2>&1
+# 安裝（plist 已含在 repo 的 launchd/）
+cp launchd/com.twstock.daily.plist ~/Library/LaunchAgents/
+launchctl load -w ~/Library/LaunchAgents/com.twstock.daily.plist
+
+# 確認已註冊
+launchctl list | grep twstock
+
+# 手動觸發一次測試
+launchctl start com.twstock.daily
+
+# 解除安裝
+launchctl unload -w ~/Library/LaunchAgents/com.twstock.daily.plist
 ```
 
-> ⚠️ cron 限制：若到了排定時間電腦仍**關機或睡眠**，該次任務會被**跳過、不補跑**。
-> 若常遇到開機較晚，建議改用 macOS `launchd`（`StartCalendarInterval`）——
-> 它在電腦喚醒後會補跑錯過的排程。需要的話可再請我設定。
+排程設定在 `launchd/com.twstock.daily.plist`（週一～五 08:20）；log 輸出到 `/tmp/tw-stock.log`。
+改時間就編輯 plist 的 `StartCalendarInterval` 後重新 `unload` → `load`。
 
 > macOS 注意：實測 cron 可正常存取 Google Drive 目錄並執行。若日後遇到權限問題，到「系統設定 → 隱私權與安全性 → 完整磁碟取用權限」把 `cron`（/usr/sbin/cron）加入授權。
 
