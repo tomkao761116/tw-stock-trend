@@ -83,13 +83,17 @@ reports/        每日報告（含實際結果欄位，供回測命中率）
 
 ## 每日自動執行（macOS）
 
-`run_daily.sh` 會跑預估 → 更新網頁 → 推送 GitHub Pages。用 `cron` 每個交易日早上 8 點執行：
+`run_daily.sh` 會跑預估 → 更新網頁 → 推送 GitHub Pages。用 `cron` 每個交易日早上 8:20 執行：
 
 ```bash
 crontab -e
 # 加入一行：
-0 8 * * 1-5 "/Users/aidenkaoiii/Google 雲端硬碟/個人AI/股市趨勢預估/run_daily.sh" >> "/tmp/tw-stock.log" 2>&1
+20 8 * * 1-5 "/Users/aidenkaoiii/Google 雲端硬碟/個人AI/股市趨勢預估/run_daily.sh" >> "/tmp/tw-stock.log" 2>&1
 ```
+
+> ⚠️ cron 限制：若到了排定時間電腦仍**關機或睡眠**，該次任務會被**跳過、不補跑**。
+> 若常遇到開機較晚，建議改用 macOS `launchd`（`StartCalendarInterval`）——
+> 它在電腦喚醒後會補跑錯過的排程。需要的話可再請我設定。
 
 > macOS 注意：實測 cron 可正常存取 Google Drive 目錄並執行。若日後遇到權限問題，到「系統設定 → 隱私權與安全性 → 完整磁碟取用權限」把 `cron`（/usr/sbin/cron）加入授權。
 
