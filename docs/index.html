@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>台股盤前趨勢預估</title>
+<style>
+:root{--bull:#e23636;--bear:#1ca672;--flat:#c79100;--bg:#f4f5f7;--card:#fff;--ink:#222;--sub:#888}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.6}
+.wrap{max-width:600px;margin:0 auto;padding:16px}
+.card{background:var(--card);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.date{color:var(--sub);font-size:14px}
+.direction{font-size:34px;font-weight:800;margin:4px 0}
+.today.bull .direction{color:var(--bull)} .today.bear .direction{color:var(--bear)} .today.flat .direction{color:var(--flat)}
+.conf{font-size:16px;color:#555;margin-bottom:8px}.dots{letter-spacing:2px}
+.event{background:#fff4e5;border-left:4px solid var(--flat);padding:8px 10px;border-radius:6px;margin:8px 0;font-size:14px}
+.summary{background:#f0f4ff;padding:12px;border-radius:8px;font-size:15px}
+h3{font-size:15px;margin:16px 0 8px} h3.up{color:var(--bull)} h3.down{color:var(--bear)}
+.factor{border-bottom:1px solid #eee;padding:8px 0}
+.frow{display:flex;align-items:center;gap:8px}
+.fname{font-weight:600;flex:1}.fval{color:#555;font-variant-numeric:tabular-nums}.stars{color:#f0a500;font-size:13px}
+.why{color:var(--sub);font-size:13px;margin-top:2px}
+.neutral,.none{color:var(--sub);font-size:13px}
+details{margin-top:14px;border-top:1px dashed #ddd;padding-top:10px}
+summary{cursor:pointer;color:#555;font-size:14px}
+.force{font-size:13px;color:#555}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{padding:6px;border-bottom:1px solid #eee;text-align:center}th{color:var(--sub);font-weight:600}
+.tech{font-size:12px;color:var(--sub);margin-top:8px}
+table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:var(--flat)}
+.hist td:first-child{text-align:left}
+.disclaimer{text-align:center;color:var(--sub);font-size:12px;padding:8px 0 24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
+
+  <div class="card today bull">
+    <div class="date">2026-06-30 盤前預估</div>
+    <div class="direction">偏多 📈</div>
+    <div class="conf">信心 <span class="dots">●●●●○</span> 高</div>
+    
+    <p class="summary">昨晚美國半導體股、台積電美國股價表現強勢，通常會帶動今天台股偏向上漲。雖然外資買賣超、散戶融資帶來一些反向壓力，但力道不足以扭轉方向。</p>
+
+    <h3 class="up">▲ 偏向上漲的因素</h3>
+    <div class="factor"><div class="frow"><span class="fname">美國半導體股</span><span class="fval">+3.83%</span><span class="stars">★★★</span></div><div class="why">和台積電、聯發科連動最深；它漲，台股科技股今天容易跟著漲</div></div>
+<div class="factor"><div class="frow"><span class="fname">台積電美國股價</span><span class="fval">+5.26%</span><span class="stars">★★★</span></div><div class="why">台積電在美國也掛牌，昨晚的漲跌通常先反映到今天台積電開盤</div></div>
+<div class="factor"><div class="frow"><span class="fname">美國那斯達克</span><span class="fval">+2.07%</span><span class="stars">★★★</span></div><div class="why">美國科技股大盤，代表整體科技股的氣氛好壞</div></div>
+    <h3 class="down">▼ 偏向下跌的因素</h3>
+    <div class="factor"><div class="frow"><span class="fname">外資買賣超</span><span class="fval">-43.4 億</span><span class="stars">★☆☆</span></div><div class="why">外國機構前一天買多還是賣多；買超代表資金流進台股</div></div>
+<div class="factor"><div class="frow"><span class="fname">散戶融資</span><span class="fval">餘額5942億 (+0.56%)</span><span class="stars">★☆☆</span></div><div class="why">散戶借錢買股的金額；爆增常是追高過熱的警訊（所以反向看待）</div></div>
+<div class="factor"><div class="frow"><span class="fname">台幣匯率</span><span class="fval">+0.17%</span><span class="stars">★☆☆</span></div><div class="why">台幣升值常代表外資把錢換成台幣、準備進場買股</div></div>
+<div class="factor"><div class="frow"><span class="fname">外資期貨部位</span><span class="fval">淨-76627 口 (Δ-236)</span><span class="stars">★☆☆</span></div><div class="why">外資在台股期貨押多還是押空，反映他們對後市的看法</div></div>
+    <p class="neutral">影響不大：美股恐慌指數</p>
+
+    <details>
+      <summary>數據明細（進階）</summary>
+      <p class="force">偏多力道 +8.00｜偏空力道 -1.35｜
+      總分 +6.65（多≥+4.0 / 空≤-4.0）</p>
+      <table><tr><th>因子</th><th>數值</th><th>權重</th><th>貢獻</th></tr><tr><td>費半 SOX</td><td>+3.83%</td><td>3.0</td><td>+3.00</td></tr><tr><td>台積電 ADR</td><td>+5.26%</td><td>3.0</td><td>+3.00</td></tr><tr><td>那斯達克</td><td>+2.07%</td><td>2.0</td><td>+2.00</td></tr><tr><td>外資買賣超</td><td>-43.4 億</td><td>2.0</td><td>-0.58</td></tr><tr><td>外資期貨</td><td>淨-76627 口 (Δ-236)</td><td>2.0</td><td>-0.06</td></tr><tr><td>台幣匯率</td><td>+0.17%</td><td>1.0</td><td>-0.34</td></tr><tr><td>VIX 恐慌</td><td>17.6</td><td>2.0</td><td>+0.00</td></tr><tr><td>融資餘額(反向)</td><td>餘額5942億 (+0.56%)</td><td>1.0</td><td>-0.37</td></tr></table>
+      <p class="tech">主由「費半 SOX、台積電 ADR、那斯達克」推升（合計 +8.0）；「外資買賣超、融資餘額(反向)」形成拖累（-1.4），但不足以扭轉方向。</p>
+    </details>
+  </div>
+
+  <div class="disclaimer">更新時間 2026-06-30 10:04　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
+</div>
+</body>
+</html>

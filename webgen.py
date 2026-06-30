@@ -1,0 +1,198 @@
+"""靜態網頁產生器：讀 data/*.json → 產出 docs/index.html。
+
+手機友善、單一檔案（CSS 內嵌、無外部相依）。
+台股慣例：紅 = 漲（偏多）、綠 = 跌（偏空）。
+"""
+import os
+import json
+import glob
+import html
+import datetime as dt
+
+import config
+
+BASE = os.path.dirname(__file__)
+DATA_DIR = os.path.join(BASE, "data")
+DOCS_DIR = os.path.join(BASE, "docs")
+
+DIR_CLASS = {"偏多": "bull", "偏空": "bear", "震盪": "flat"}
+
+
+def _load_all():
+    """讀所有每日 JSON，依日期新→舊排序。"""
+    items = []
+    for path in glob.glob(os.path.join(DATA_DIR, "*.json")):
+        with open(path, encoding="utf-8") as fp:
+            items.append(json.load(fp))
+    items.sort(key=lambda r: r.get("date", ""), reverse=True)
+    return items
+
+
+def _dir_class(direction):
+    for key, cls in DIR_CLASS.items():
+        if key in direction:
+            return cls
+    return "flat"
+
+
+def _info(key, field):
+    return config.FACTOR_INFO.get(key, {}).get(field, "")
+
+
+def _stars(c):
+    a = abs(c)
+    return "★★★" if a >= 2 else "★★☆" if a >= 1 else "★☆☆" if a > 0.05 else "－"
+
+
+def _factor_rows(items, tag):
+    rows = []
+    for f in items:
+        nick = html.escape(_info(f["key"], "nick") or f["name"])
+        why = html.escape(_info(f["key"], "why"))
+        val = html.escape(str(f["value"]))
+        rows.append(
+            f'<div class="factor"><div class="frow">'
+            f'<span class="fname">{nick}</span>'
+            f'<span class="fval">{val}</span>'
+            f'<span class="stars">{_stars(f["contribution"])}</span></div>'
+            f'<div class="why">{why}</div></div>')
+    return "\n".join(rows)
+
+
+def _today_card(r):
+    cls = _dir_class(r["direction"])
+    conf = r.get("confidence", {})
+    attr = r.get("attribution", {})
+    events = r.get("events", [])
+    ev_html = "".join(
+        f'<div class="event">⚠️ 今天是{html.escape(e["type"])}：'
+        f'{html.escape(e["note"])}（預估趨保守）</div>' for e in events)
+
+    push = attr.get("push", [])
+    drag = attr.get("drag", [])
+    neutral = attr.get("neutral", [])
+    neutral_html = ""
+    if neutral:
+        names = "、".join(html.escape(_info(f["key"], "nick") or f["name"])
+                         for f in neutral)
+        neutral_html = f'<p class="neutral">影響不大：{names}</p>'
+
+    # 進階數據表
+    table_rows = "".join(
+        f'<tr><td>{html.escape(f["name"])}</td><td>{html.escape(str(f["value"]))}</td>'
+        f'<td>{f["weight"]}</td><td>{f["contribution"]:+.2f}</td></tr>'
+        for f in r["factors"])
+    bull, bear = r.get("thresholds", [4.0, -4.0])
+
+    return f'''
+  <div class="card today {cls}">
+    <div class="date">{html.escape(r["date"])} 盤前預估</div>
+    <div class="direction">{html.escape(r["direction"])}</div>
+    <div class="conf">信心 <span class="dots">{conf.get("dots","")}</span> {html.escape(conf.get("label",""))}</div>
+    {ev_html}
+    <p class="summary">{html.escape(r.get("plain_summary",""))}</p>
+
+    <h3 class="up">▲ 偏向上漲的因素</h3>
+    {_factor_rows(push, "利多") or '<p class="none">（無）</p>'}
+    <h3 class="down">▼ 偏向下跌的因素</h3>
+    {_factor_rows(drag, "利空") or '<p class="none">（無）</p>'}
+    {neutral_html}
+
+    <details>
+      <summary>數據明細（進階）</summary>
+      <p class="force">偏多力道 {attr.get("bull_force",0):+.2f}｜偏空力道 {attr.get("bear_force",0):+.2f}｜
+      總分 {r.get("total_score",0):+.2f}（多≥{bull:+.1f} / 空≤{bear:+.1f}）</p>
+      <table><tr><th>因子</th><th>數值</th><th>權重</th><th>貢獻</th></tr>{table_rows}</table>
+      <p class="tech">{html.escape(r.get("reasoning",""))}</p>
+    </details>
+  </div>'''
+
+
+def _history_card(items):
+    rows = []
+    for r in items:
+        cls = _dir_class(r["direction"])
+        actual = r.get("actual")
+        actual_txt = html.escape(str(actual)) if actual else "—"
+        rows.append(
+            f'<tr><td>{html.escape(r["date"])}</td>'
+            f'<td class="{cls}">{html.escape(r["direction"])}</td>'
+            f'<td>{r.get("total_score",0):+.2f}</td>'
+            f'<td>{actual_txt}</td></tr>')
+    return f'''
+  <div class="card">
+    <h2>歷史紀錄</h2>
+    <table class="hist">
+      <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th></tr>
+      {"".join(rows)}
+    </table>
+  </div>'''
+
+
+CSS = """
+:root{--bull:#e23636;--bear:#1ca672;--flat:#c79100;--bg:#f4f5f7;--card:#fff;--ink:#222;--sub:#888}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.6}
+.wrap{max-width:600px;margin:0 auto;padding:16px}
+.card{background:var(--card);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.date{color:var(--sub);font-size:14px}
+.direction{font-size:34px;font-weight:800;margin:4px 0}
+.today.bull .direction{color:var(--bull)} .today.bear .direction{color:var(--bear)} .today.flat .direction{color:var(--flat)}
+.conf{font-size:16px;color:#555;margin-bottom:8px}.dots{letter-spacing:2px}
+.event{background:#fff4e5;border-left:4px solid var(--flat);padding:8px 10px;border-radius:6px;margin:8px 0;font-size:14px}
+.summary{background:#f0f4ff;padding:12px;border-radius:8px;font-size:15px}
+h3{font-size:15px;margin:16px 0 8px} h3.up{color:var(--bull)} h3.down{color:var(--bear)}
+.factor{border-bottom:1px solid #eee;padding:8px 0}
+.frow{display:flex;align-items:center;gap:8px}
+.fname{font-weight:600;flex:1}.fval{color:#555;font-variant-numeric:tabular-nums}.stars{color:#f0a500;font-size:13px}
+.why{color:var(--sub);font-size:13px;margin-top:2px}
+.neutral,.none{color:var(--sub);font-size:13px}
+details{margin-top:14px;border-top:1px dashed #ddd;padding-top:10px}
+summary{cursor:pointer;color:#555;font-size:14px}
+.force{font-size:13px;color:#555}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{padding:6px;border-bottom:1px solid #eee;text-align:center}th{color:var(--sub);font-weight:600}
+.tech{font-size:12px;color:var(--sub);margin-top:8px}
+table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:var(--flat)}
+.hist td:first-child{text-align:left}
+.disclaimer{text-align:center;color:var(--sub);font-size:12px;padding:8px 0 24px}
+"""
+
+
+def build_site():
+    items = _load_all()
+    if not items:
+        print("（data/ 無資料，先跑過 main.py 再產生網頁）")
+        return None
+    os.makedirs(DOCS_DIR, exist_ok=True)
+    today = _today_card(items[0])
+    history = _history_card(items) if len(items) > 1 else ""
+    updated = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    page = f'''<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>台股盤前趨勢預估</title>
+<style>{CSS}</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
+{today}
+{history}
+  <div class="disclaimer">更新時間 {updated}　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
+</div>
+</body>
+</html>'''
+
+    path = os.path.join(DOCS_DIR, "index.html")
+    with open(path, "w", encoding="utf-8") as fp:
+        fp.write(page)
+    print(f"網頁已產生：{path}")
+    return path
+
+
+if __name__ == "__main__":
+    build_site()

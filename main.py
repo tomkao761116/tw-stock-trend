@@ -9,6 +9,7 @@ import data_fetch
 import events
 import rules
 import report
+import webgen
 
 
 def main():
@@ -25,6 +26,8 @@ def main():
     result["events"] = today_events
     report.print_report(result)
     report.save_report(result)
+    report.save_data(result)
+    webgen.build_site()
 
     skipped = [f["name"] for f in result["factors"] if f["note"]]
     if skipped:

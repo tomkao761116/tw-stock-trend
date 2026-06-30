@@ -1,10 +1,13 @@
 """呈現層：白話結論優先，數據明細降到進階區。不熟股市也能看懂。"""
 import os
+import json
 import datetime as dt
 
 import config
 
-REPORTS_DIR = os.path.join(os.path.dirname(__file__), "reports")
+BASE = os.path.dirname(__file__)
+REPORTS_DIR = os.path.join(BASE, "reports")
+DATA_DIR = os.path.join(BASE, "data")
 W = 50  # 版面寬度
 
 
@@ -143,3 +146,17 @@ def _md_factor(f, tag):
     why = _info(f["key"], "why")
     line = f"- **{nick}**　{f['value']}　→ {tag} {_stars(f['contribution'])}"
     return line + (f"\n  - {why}" if why else "")
+
+
+# ─────────────────────────── 結構化資料（供網頁/回測）───────────────────────────
+def save_data(result, date_str=None):
+    """把當日結果存成 JSON，作為歷史與回測的資料來源。"""
+    os.makedirs(DATA_DIR, exist_ok=True)
+    date_str = date_str or dt.date.today().isoformat()
+    path = os.path.join(DATA_DIR, f"{date_str}.json")
+    payload = dict(result)
+    payload["date"] = date_str
+    payload.setdefault("actual", None)  # 隔日實際漲跌，供回測填寫
+    with open(path, "w", encoding="utf-8") as fp:
+        json.dump(payload, fp, ensure_ascii=False, indent=2)
+    return path

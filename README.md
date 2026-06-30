@@ -72,8 +72,11 @@ config.py      權重、門檻、代號設定
 data_fetch.py  資料擷取（Yahoo Finance + FinMind）
 rules.py       規則引擎：因子 → 分數 → 分類
 events.py      財經行事曆事件層（事件日放大門檻）
-report.py      終端機輸出 + Markdown 報告存檔
+report.py      終端機輸出 + Markdown 報告 + JSON 存檔
+webgen.py      靜態網頁產生器（docs/index.html）
 main.py        執行入口
+data/          每日結果 JSON（歷史與回測資料來源）
+docs/          產出的網頁（GitHub Pages 由此出站）
 reports/        每日報告（含實際結果欄位，供回測命中率）
 ```
 
@@ -91,6 +94,15 @@ crontab -e
 
 - [x] 規則引擎 v1（隔夜美股 + 籌碼）
 - [x] 事件層（財經行事曆，事件日趨保守）
+- [x] 靜態網頁（今日 + 歷史，手機可看、連結可分享）
+- [ ] 部署到 GitHub Pages（公開網址）
 - [ ] 回測：累積報告後計算歷史命中率，回頭調權重
 - [ ] 新聞情緒因子（NLP，第二層）
+
+## 網頁
+
+`python main.py` 會自動產生 `docs/index.html`（也可單獨 `python webgen.py` 重建）。
+本機直接用瀏覽器打開即可預覽；要做成公開連結（手機看、貼進 LINE 群組分享），
+部署到 GitHub Pages：repo 設定 → Pages → Source 選 `main` 分支的 `/docs` 資料夾。
+台股慣例配色：紅=漲（偏多）、綠=跌（偏空）。
 - [ ] 換 ML 模型（LightGBM）—只需替換 `rules.py`，回傳結構不變

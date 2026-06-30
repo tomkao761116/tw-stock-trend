@@ -1,0 +1,175 @@
+{
+  "direction": "偏多 📈",
+  "total_score": 6.65,
+  "factors": [
+    {
+      "key": "sox",
+      "name": "費半 SOX",
+      "value": "+3.83%",
+      "base": 1.0,
+      "weight": 3.0,
+      "contribution": 3.0,
+      "note": ""
+    },
+    {
+      "key": "tsm_adr",
+      "name": "台積電 ADR",
+      "value": "+5.26%",
+      "base": 1.0,
+      "weight": 3.0,
+      "contribution": 3.0,
+      "note": ""
+    },
+    {
+      "key": "nasdaq",
+      "name": "那斯達克",
+      "value": "+2.07%",
+      "base": 1.0,
+      "weight": 2.0,
+      "contribution": 2.0,
+      "note": ""
+    },
+    {
+      "key": "foreign_buy",
+      "name": "外資買賣超",
+      "value": "-43.4 億",
+      "base": -0.29,
+      "weight": 2.0,
+      "contribution": -0.58,
+      "note": ""
+    },
+    {
+      "key": "foreign_futures",
+      "name": "外資期貨",
+      "value": "淨-76627 口 (Δ-236)",
+      "base": -0.03,
+      "weight": 2.0,
+      "contribution": -0.06,
+      "note": ""
+    },
+    {
+      "key": "usdtwd",
+      "name": "台幣匯率",
+      "value": "+0.17%",
+      "base": -0.34,
+      "weight": 1.0,
+      "contribution": -0.34,
+      "note": ""
+    },
+    {
+      "key": "vix",
+      "name": "VIX 恐慌",
+      "value": "17.6",
+      "base": 0,
+      "weight": 2.0,
+      "contribution": 0.0,
+      "note": ""
+    },
+    {
+      "key": "margin",
+      "name": "融資餘額(反向)",
+      "value": "餘額5942億 (+0.56%)",
+      "base": -0.37,
+      "weight": 1.0,
+      "contribution": -0.37,
+      "note": ""
+    }
+  ],
+  "threshold_scale": 1.0,
+  "thresholds": [
+    4.0,
+    -4.0
+  ],
+  "attribution": {
+    "bull_force": 8.0,
+    "bear_force": -1.35,
+    "push": [
+      {
+        "key": "sox",
+        "name": "費半 SOX",
+        "value": "+3.83%",
+        "base": 1.0,
+        "weight": 3.0,
+        "contribution": 3.0,
+        "note": ""
+      },
+      {
+        "key": "tsm_adr",
+        "name": "台積電 ADR",
+        "value": "+5.26%",
+        "base": 1.0,
+        "weight": 3.0,
+        "contribution": 3.0,
+        "note": ""
+      },
+      {
+        "key": "nasdaq",
+        "name": "那斯達克",
+        "value": "+2.07%",
+        "base": 1.0,
+        "weight": 2.0,
+        "contribution": 2.0,
+        "note": ""
+      }
+    ],
+    "drag": [
+      {
+        "key": "foreign_buy",
+        "name": "外資買賣超",
+        "value": "-43.4 億",
+        "base": -0.29,
+        "weight": 2.0,
+        "contribution": -0.58,
+        "note": ""
+      },
+      {
+        "key": "margin",
+        "name": "融資餘額(反向)",
+        "value": "餘額5942億 (+0.56%)",
+        "base": -0.37,
+        "weight": 1.0,
+        "contribution": -0.37,
+        "note": ""
+      },
+      {
+        "key": "usdtwd",
+        "name": "台幣匯率",
+        "value": "+0.17%",
+        "base": -0.34,
+        "weight": 1.0,
+        "contribution": -0.34,
+        "note": ""
+      },
+      {
+        "key": "foreign_futures",
+        "name": "外資期貨",
+        "value": "淨-76627 口 (Δ-236)",
+        "base": -0.03,
+        "weight": 2.0,
+        "contribution": -0.06,
+        "note": ""
+      }
+    ],
+    "neutral": [
+      {
+        "key": "vix",
+        "name": "VIX 恐慌",
+        "value": "17.6",
+        "base": 0,
+        "weight": 2.0,
+        "contribution": 0.0,
+        "note": ""
+      }
+    ]
+  },
+  "reasoning": "主由「費半 SOX、台積電 ADR、那斯達克」推升（合計 +8.0）；「外資買賣超、融資餘額(反向)」形成拖累（-1.4），但不足以扭轉方向。",
+  "confidence": {
+    "label": "高",
+    "dots": "●●●●○",
+    "note": ""
+  },
+  "plain_summary": "昨晚美國半導體股、台積電美國股價表現強勢，通常會帶動今天台股偏向上漲。雖然外資買賣超、散戶融資帶來一些反向壓力，但力道不足以扭轉方向。",
+  "events": [],
+  "date": "2026-06-30",
+  "actual": null
+}
