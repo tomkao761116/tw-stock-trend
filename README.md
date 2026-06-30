@@ -38,6 +38,7 @@ echo "你的token" > .finmind_token
 | 外資期貨 | FinMind | 2.0 | 未平倉淨額變化，需 token |
 | 台幣匯率 | Yahoo Finance | 1.0 | 升值 = 外資進場訊號 |
 | VIX 恐慌 | Yahoo Finance | 2.0 | 只貢獻負分 |
+| 融資餘額 | FinMind | 1.0 | 反向：散戶槓桿過熱訊號，需 token |
 
 每因子先標準化為 [-1, +1]，乘權重後加總：
 

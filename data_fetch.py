@@ -133,6 +133,31 @@ def fetch_foreign_futures():
         return None
 
 
+def fetch_margin():
+    """整體市場融資餘額單日變化（%）。需 FinMind token。
+    融資餘額代表散戶槓桿；作為反向情緒指標（增 → 過熱）。"""
+    if not _finmind_token():
+        print("  ⚠ 融資融券：未設定 FINMIND_TOKEN，略過")
+        return None
+    try:
+        data = _finmind_get("TaiwanStockTotalMarginPurchaseShortSale")
+        if not data:
+            return None
+        last_date = max(r["date"] for r in data)
+        # MarginPurchaseMoney = 融資餘額（元）
+        row = next((r for r in data if r["date"] == last_date
+                    and r.get("name") == "MarginPurchaseMoney"), None)
+        if not row or not row.get("YesBalance"):
+            return None
+        today, yes = row["TodayBalance"], row["YesBalance"]
+        change_pct = (today / yes - 1) * 100
+        return {"date": last_date, "balance_yi": round(today / 1e8, 0),
+                "change_pct": round(change_pct, 2)}
+    except Exception as e:
+        print(f"  ⚠ 融資融券擷取失敗：{e}")
+        return None
+
+
 def fetch_all():
     """一次取齊所有因子原始資料。"""
     print("擷取隔夜美股 / 匯率 / VIX ...")
@@ -142,4 +167,5 @@ def fetch_all():
         **us,
         "foreign_buy": fetch_foreign_buy(),
         "foreign_futures": fetch_foreign_futures(),
+        "margin": fetch_margin(),
     }

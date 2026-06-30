@@ -50,6 +50,14 @@ def _foreign_futures_factor(data):
     return base, f'淨{data["net"]:+d} 口 (Δ{data["change"]:+d})'
 
 
+def _margin_factor(data):
+    """反向：融資餘額增加(散戶追高/過熱) → 負分；減少 → 正分。"""
+    if data is None:
+        return None, None
+    base = _clamp(-data["change_pct"] / config.NORMALIZERS["margin_full_pct"])
+    return base, f'餘額{data["balance_yi"]:.0f}億 ({data["change_pct"]:+.2f}%)'
+
+
 # 因子名稱 → (中文標籤, 計算函式)
 _FACTOR_FUNCS = {
     "sox": ("費半 SOX",
@@ -62,6 +70,7 @@ _FACTOR_FUNCS = {
     "foreign_futures": ("外資期貨", lambda d: _foreign_futures_factor(d["foreign_futures"])),
     "usdtwd": ("台幣匯率", lambda d: _usdtwd_factor(d["usdtwd"])),
     "vix": ("VIX 恐慌", lambda d: _vix_factor(d["vix"])),
+    "margin": ("融資餘額(反向)", lambda d: _margin_factor(d["margin"])),
 }
 
 
