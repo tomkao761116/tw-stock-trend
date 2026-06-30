@@ -44,7 +44,18 @@ def fetch_us_overnight():
 
 # ── FinMind 台股籌碼 ─────────────────────────────────────────
 def _finmind_token():
-    return os.environ.get("FINMIND_TOKEN") or config.FINMIND_TOKEN
+    """讀取順序：環境變數 > 本地 .finmind_token 檔 > config.py。
+    本地檔與環境變數皆不進 git，適合 cron 自動執行。"""
+    env = os.environ.get("FINMIND_TOKEN")
+    if env:
+        return env.strip()
+    token_file = os.path.join(os.path.dirname(__file__), ".finmind_token")
+    if os.path.exists(token_file):
+        with open(token_file, encoding="utf-8") as fp:
+            t = fp.read().strip()
+            if t:
+                return t
+    return config.FINMIND_TOKEN
 
 
 def _finmind_get(dataset, extra=None):
@@ -75,12 +86,13 @@ def fetch_foreign_buy():
         print("  ⚠ 外資買賣超：未設定 FINMIND_TOKEN，略過")
         return None
     try:
-        data = _finmind_get("TaiwanStockInstitutionalInvestorsBuySell")
+        # 全市場三大法人買賣超（register 等級可用）
+        data = _finmind_get("TaiwanStockTotalInstitutionalInvestors")
         if not data:
             return None
         last_date = max(row["date"] for row in data)
         rows = [r for r in data if r["date"] == last_date]
-        # 外資 = Foreign_Investor（不含自營、投信）
+        # 外資 = Foreign_Investor + Foreign_Dealer_Self（外資自營），單位：元
         net = 0.0
         for r in rows:
             if r.get("name") in ("Foreign_Investor", "Foreign_Dealer_Self"):
@@ -98,20 +110,22 @@ def fetch_foreign_futures():
         print("  ⚠ 外資期貨：未設定 FINMIND_TOKEN，略過")
         return None
     try:
-        data = _finmind_get("TaiwanFuturesInstitutionalInvestors",
+        # 期權三大法人（register 等級可用；TaiwanFuturesInstitutionalInvestors 需付費）
+        data = _finmind_get("TaiwanFutOptInstitutionalInvestors",
                             extra={"data_id": "TX"})
         if not data:
             return None
-        foreign = [r for r in data if r.get("institutional_investors")
-                   == "Foreign_Investor"]
+        # 此 dataset 投資人名稱為中文
+        foreign = [r for r in data if r.get("institutional_investors") == "外資"]
         if len(foreign) < 2:
             return None
         foreign.sort(key=lambda r: r["date"])
-        key = "long_open_interest_balance_volume"
-        latest = foreign[-1].get(key, 0) - foreign[-1].get(
-            "short_open_interest_balance_volume", 0)
-        prev = foreign[-2].get(key, 0) - foreign[-2].get(
-            "short_open_interest_balance_volume", 0)
+
+        def net_oi(r):  # 淨未平倉口數 = 多方餘額 - 空方餘額
+            return (r.get("long_open_interest_balance_volume", 0)
+                    - r.get("short_open_interest_balance_volume", 0))
+
+        latest, prev = net_oi(foreign[-1]), net_oi(foreign[-2])
         return {"date": foreign[-1]["date"],
                 "net": latest, "change": latest - prev}
     except Exception as e:

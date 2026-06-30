@@ -12,11 +12,20 @@ python main.py
 ```
 
 不需任何設定即可跑（使用免費的 Yahoo Finance 美股資料）。
-要納入台股籌碼因子（外資買賣超、外資期貨），到 [FinMind](https://finmindtrade.com/) 免費註冊取得 token，設定環境變數：
+要納入台股籌碼因子（外資買賣超、外資期貨），到 [FinMind](https://finmindtrade.com/) 免費註冊取得 token，擇一設定（皆不進 git）：
 
 ```bash
+# 方法 A：環境變數
 export FINMIND_TOKEN="你的token"
+
+# 方法 B：放在專案目錄的 .finmind_token 檔（cron 自動執行較方便）
+echo "你的token" > .finmind_token
 ```
+
+> FinMind 免費（register）等級可用的籌碼 dataset：
+> `TaiwanStockTotalInstitutionalInvestors`（三大法人買賣超）、
+> `TaiwanFutOptInstitutionalInvestors`（期權法人未平倉）。
+> 純期貨 `TaiwanFuturesInstitutionalInvestors` 需付費等級，本工具未使用。
 
 ## 因子與權重
 
