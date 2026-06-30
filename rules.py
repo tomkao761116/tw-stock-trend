@@ -104,6 +104,61 @@ def evaluate(raw, threshold_scale=1.0):
     else:
         direction = "震盪 ➡️"
 
+    attribution = _attribution(factors)
+    reasoning = _reasoning(direction, attribution, total, threshold_scale)
+
     return {"direction": direction, "total_score": round(total, 2),
             "factors": factors, "threshold_scale": threshold_scale,
-            "thresholds": (round(bull, 1), round(bear, 1))}
+            "thresholds": (round(bull, 1), round(bear, 1)),
+            "attribution": attribution, "reasoning": reasoning}
+
+
+# ── 歸因分析：把總分拆回各因子的多空力道 ──────────────────────
+_NOISE = 0.05  # 貢獻絕對值低於此視為中性，不列入主導因子
+
+
+def _attribution(factors):
+    """回傳 {bull_force, bear_force, push(偏多排序), drag(偏空排序), neutral}。"""
+    scored = [f for f in factors if f["base"] is not None]
+    push = sorted([f for f in scored if f["contribution"] > _NOISE],
+                  key=lambda f: -f["contribution"])
+    drag = sorted([f for f in scored if f["contribution"] < -_NOISE],
+                  key=lambda f: f["contribution"])
+    neutral = [f for f in scored if abs(f["contribution"]) <= _NOISE]
+    return {
+        "bull_force": round(sum(f["contribution"] for f in push), 2),
+        "bear_force": round(sum(f["contribution"] for f in drag), 2),
+        "push": push, "drag": drag, "neutral": neutral,
+    }
+
+
+def _names(items, n=3):
+    return "、".join(f["name"] for f in items[:n])
+
+
+def _reasoning(direction, attr, total, scale):
+    """自動生成「為何是這個結論」的理由句。"""
+    push, drag = attr["push"], attr["drag"]
+    bf, df = attr["bull_force"], attr["bear_force"]
+
+    if "偏多" in direction:
+        s = f"主由「{_names(push)}」推升（合計 {bf:+.1f}）"
+        s += (f"；「{_names(drag, 2)}」形成拖累（{df:+.1f}），但不足以扭轉方向。"
+              if drag else "，且無明顯拖累因子。")
+    elif "偏空" in direction:
+        s = f"主由「{_names(drag)}」壓低（合計 {df:+.1f}）"
+        s += (f"；「{_names(push, 2)}」提供支撐（{bf:+.1f}），但不足以扭轉方向。"
+              if push else "，且無明顯支撐因子。")
+    else:  # 震盪
+        # 若分數本可定方向、僅因事件日門檻提高而轉觀望，特別點明
+        base_bull = config.THRESHOLD_BULLISH
+        if scale > 1.0 and abs(total) >= base_bull:
+            side = "偏多" if total > 0 else "偏空"
+            s = (f"總分 {total:+.1f} 原達{side}標準，但今日為事件日、門檻提高，"
+                 f"轉為觀望。主要力道來自「{_names(push if total>0 else drag)}」。")
+        elif push and drag:
+            s = (f"多空力道接近（推升 {bf:+.1f}、拖累 {df:+.1f}）；"
+                 f"「{push[0]['name']}」偏多與「{drag[0]['name']}」偏空相互抵銷，方向不明。")
+        else:
+            s = f"訊號偏弱（推升 {bf:+.1f}、拖累 {df:+.1f}），方向不明。"
+    return s

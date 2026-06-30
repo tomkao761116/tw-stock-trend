@@ -16,6 +16,36 @@ def _table_lines(result):
     return lines
 
 
+def _bar(contribution, unit=0.5, char="█"):
+    """以長條長度表示貢獻強度，每 unit 分一格。"""
+    return char * max(1, round(abs(contribution) / unit))
+
+
+def _attribution_lines(result):
+    """歸因分析：多空力道對比 + 排序長條。"""
+    attr = result.get("attribution")
+    if not attr:
+        return []
+    lines = ["", "── 歸因分析 ──────────────────────────────────",
+             f'  偏多力道 {attr["bull_force"]:+.2f}　｜　'
+             f'偏空力道 {attr["bear_force"]:+.2f}　｜　'
+             f'淨 {result["total_score"]:+.2f}']
+    if attr["push"]:
+        lines.append("  ▲ 推升（偏多）：")
+        for f in attr["push"]:
+            lines.append(f'      {f["name"]:<14}{f["contribution"]:>6.2f}  '
+                         f'{_bar(f["contribution"])}')
+    if attr["drag"]:
+        lines.append("  ▼ 拖累（偏空）：")
+        for f in attr["drag"]:
+            lines.append(f'      {f["name"]:<14}{f["contribution"]:>6.2f}  '
+                         f'{_bar(f["contribution"])}')
+    if attr["neutral"]:
+        names = "、".join(f["name"] for f in attr["neutral"])
+        lines.append(f'  ・ 中性（影響微小）：{names}')
+    return lines
+
+
 def print_report(result):
     print("\n" + "=" * 48)
     print(f'  台股盤前趨勢預估　{dt.date.today().isoformat()}')
@@ -30,7 +60,12 @@ def print_report(result):
         print(f'  ⚠️ 事件日：{ev["type"]} — {ev["note"]}')
     if result.get("events"):
         print(f'  （門檻已放大 {result["threshold_scale"]}×，預估趨保守）')
+    for line in _attribution_lines(result):
+        print(line)
+    print("-" * 48)
     print(f'  ➜ 今日方向預估：{result["direction"]}')
+    if result.get("reasoning"):
+        print(f'  理由：{result["reasoning"]}')
     print("=" * 48 + "\n")
 
 
@@ -51,6 +86,25 @@ def save_report(result):
         note = f"（{f['note']}）" if f["note"] else ""
         lines.append(f"| {f['name']} | {f['value']}{note} | "
                      f"{f['weight']} | {f['contribution']:+.2f} |")
+    attr = result.get("attribution")
+    if attr:
+        lines += ["", "## 歸因分析", "",
+                  f"偏多力道 **{attr['bull_force']:+.2f}**｜"
+                  f"偏空力道 **{attr['bear_force']:+.2f}**｜"
+                  f"淨 **{result['total_score']:+.2f}**", ""]
+        if attr["push"]:
+            lines.append("**▲ 推升（偏多）**："
+                         + "、".join(f"{f['name']} {f['contribution']:+.2f}"
+                                    for f in attr["push"]))
+        if attr["drag"]:
+            lines.append("**▼ 拖累（偏空）**："
+                         + "、".join(f"{f['name']} {f['contribution']:+.2f}"
+                                    for f in attr["drag"]))
+        if attr["neutral"]:
+            lines.append("**・中性**："
+                         + "、".join(f["name"] for f in attr["neutral"]))
+    if result.get("reasoning"):
+        lines += ["", f"**結論理由**：{result['reasoning']}"]
     lines += ["", "---",
               "_實際結果（隔日填寫）：加權指數收盤 ____ 點，漲跌 ____%　"
               "命中：☐ 是 ☐ 否_", ""]
