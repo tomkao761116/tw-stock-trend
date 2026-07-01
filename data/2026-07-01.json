@@ -1,87 +1,87 @@
 {
-  "direction": "偏多 📈",
-  "total_score": 7.03,
+  "direction": "震盪 ➡️",
+  "total_score": 0.0,
   "factors": [
     {
       "key": "night_futures",
       "name": "台指期夜盤",
-      "value": "+1.49% (夜盤47428)",
-      "base": 0.99,
+      "value": "N/A",
+      "base": null,
       "weight": 2.5,
-      "contribution": 2.48,
-      "note": ""
+      "contribution": 0.0,
+      "note": "資料缺漏，未計入"
     },
     {
       "key": "sox",
       "name": "費半 SOX",
-      "value": "+3.92%",
-      "base": 1.0,
+      "value": "N/A",
+      "base": null,
       "weight": 2.5,
-      "contribution": 2.5,
-      "note": ""
+      "contribution": 0.0,
+      "note": "資料缺漏，未計入"
     },
     {
       "key": "tsm_adr",
       "name": "台積電 ADR",
-      "value": "+4.94%",
-      "base": 1.0,
+      "value": "N/A",
+      "base": null,
       "weight": 2.5,
-      "contribution": 2.5,
-      "note": ""
+      "contribution": 0.0,
+      "note": "資料缺漏，未計入"
     },
     {
       "key": "nasdaq",
       "name": "那斯達克",
-      "value": "+1.52%",
-      "base": 1.0,
+      "value": "N/A",
+      "base": null,
       "weight": 2.0,
-      "contribution": 2.0,
-      "note": ""
+      "contribution": 0.0,
+      "note": "資料缺漏，未計入"
     },
     {
       "key": "foreign_buy",
       "name": "外資買賣超",
-      "value": "-5.1 億",
-      "base": -0.03,
+      "value": "N/A",
+      "base": null,
       "weight": 2.0,
-      "contribution": -0.07,
-      "note": ""
+      "contribution": 0.0,
+      "note": "資料缺漏，未計入"
     },
     {
       "key": "foreign_futures",
       "name": "外資期貨",
-      "value": "淨-83063 口 (Δ-6436)",
-      "base": -0.8,
+      "value": "N/A",
+      "base": null,
       "weight": 2.0,
-      "contribution": -1.61,
-      "note": ""
+      "contribution": 0.0,
+      "note": "資料缺漏，未計入"
     },
     {
       "key": "usdtwd",
       "name": "台幣匯率",
-      "value": "-0.11%",
-      "base": 0.22,
+      "value": "N/A",
+      "base": null,
       "weight": 1.0,
-      "contribution": 0.22,
-      "note": ""
+      "contribution": 0.0,
+      "note": "資料缺漏，未計入"
     },
     {
       "key": "vix",
       "name": "VIX 恐慌",
-      "value": "16.4",
-      "base": 0,
+      "value": "N/A",
+      "base": null,
       "weight": 2.0,
       "contribution": 0.0,
-      "note": ""
+      "note": "資料缺漏，未計入"
     },
     {
       "key": "margin",
       "name": "融資餘額(反向)",
-      "value": "餘額6117億 (+2.93%)",
-      "base": -1.0,
+      "value": "N/A",
+      "base": null,
       "weight": 1.0,
-      "contribution": -1.0,
-      "note": ""
+      "contribution": 0.0,
+      "note": "資料缺漏，未計入"
     }
   ],
   "threshold_scale": 1.0,
@@ -90,105 +90,21 @@
     -4.0
   ],
   "attribution": {
-    "bull_force": 9.7,
-    "bear_force": -2.68,
-    "push": [
-      {
-        "key": "sox",
-        "name": "費半 SOX",
-        "value": "+3.92%",
-        "base": 1.0,
-        "weight": 2.5,
-        "contribution": 2.5,
-        "note": ""
-      },
-      {
-        "key": "tsm_adr",
-        "name": "台積電 ADR",
-        "value": "+4.94%",
-        "base": 1.0,
-        "weight": 2.5,
-        "contribution": 2.5,
-        "note": ""
-      },
-      {
-        "key": "night_futures",
-        "name": "台指期夜盤",
-        "value": "+1.49% (夜盤47428)",
-        "base": 0.99,
-        "weight": 2.5,
-        "contribution": 2.48,
-        "note": ""
-      },
-      {
-        "key": "nasdaq",
-        "name": "那斯達克",
-        "value": "+1.52%",
-        "base": 1.0,
-        "weight": 2.0,
-        "contribution": 2.0,
-        "note": ""
-      },
-      {
-        "key": "usdtwd",
-        "name": "台幣匯率",
-        "value": "-0.11%",
-        "base": 0.22,
-        "weight": 1.0,
-        "contribution": 0.22,
-        "note": ""
-      }
-    ],
-    "drag": [
-      {
-        "key": "foreign_futures",
-        "name": "外資期貨",
-        "value": "淨-83063 口 (Δ-6436)",
-        "base": -0.8,
-        "weight": 2.0,
-        "contribution": -1.61,
-        "note": ""
-      },
-      {
-        "key": "margin",
-        "name": "融資餘額(反向)",
-        "value": "餘額6117億 (+2.93%)",
-        "base": -1.0,
-        "weight": 1.0,
-        "contribution": -1.0,
-        "note": ""
-      },
-      {
-        "key": "foreign_buy",
-        "name": "外資買賣超",
-        "value": "-5.1 億",
-        "base": -0.03,
-        "weight": 2.0,
-        "contribution": -0.07,
-        "note": ""
-      }
-    ],
-    "neutral": [
-      {
-        "key": "vix",
-        "name": "VIX 恐慌",
-        "value": "16.4",
-        "base": 0,
-        "weight": 2.0,
-        "contribution": 0.0,
-        "note": ""
-      }
-    ]
+    "bull_force": 0,
+    "bear_force": 0,
+    "push": [],
+    "drag": [],
+    "neutral": []
   },
-  "reasoning": "主由「費半 SOX、台積電 ADR、台指期夜盤」推升（合計 +9.7）；「外資期貨、融資餘額(反向)」形成拖累（-2.7），但不足以扭轉方向。",
+  "reasoning": "訊號偏弱（推升 +0.0、拖累 +0.0），方向不明。",
   "confidence": {
-    "label": "高",
-    "dots": "●●●●○",
-    "note": ""
+    "label": "方向不明",
+    "dots": "○○○○○",
+    "note": "多空力道相當，建議觀望"
   },
-  "plain_summary": "昨晚美國半導體股、台積電美國股價表現強勢，通常會帶動今天台股偏向上漲。雖然外資期貨部位、散戶融資帶來一些反向壓力，但力道不足以扭轉方向。",
+  "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
   "events": [],
   "date": "2026-07-01",
-  "generated_at": "2026-07-01 08:09",
+  "generated_at": "2026-07-01 08:33",
   "actual": null
 }
