@@ -190,5 +190,7 @@
   "events": [],
   "date": "2026-07-02",
   "generated_at": "2026-07-02 09:33",
-  "actual": null
+  "actual": "跌 -1.54% ✓",
+  "actual_pct": -1.54,
+  "hit": true
 }
