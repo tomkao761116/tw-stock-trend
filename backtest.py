@@ -12,7 +12,20 @@ import datetime as dt
 
 TWII = "^TWII"          # 台灣加權指數
 FLAT_BAND = 0.4         # 漲跌幅在 ±0.4% 內視為「平盤」
+MARKET_CLOSE = dt.time(13, 30)  # 台股收盤時間；今天收盤前不採計「實際」結果
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+
+
+def _eligible(date_str):
+    """是否已收盤、可計入實際結果。今天盤中的即時價不算數（yfinance 會回傳未收盤的
+    當日暫定價，誤判會導致當天收盤前就出現錯誤的命中/不中結果）。"""
+    d = dt.date.fromisoformat(date_str)
+    now = dt.datetime.now()
+    if d < now.date():
+        return True
+    if d == now.date():
+        return now.time() >= MARKET_CLOSE
+    return False  # 未來日期，不應發生
 
 
 def _twii_change(date_str):
@@ -67,6 +80,17 @@ def run(force=False):
         with open(path, encoding="utf-8") as fp:
             r = json.load(fp)
         date = r["date"]
+
+        if not _eligible(date):
+            if r.get("actual_pct") is not None:
+                # 曾被誤填入盤中即時價（舊版 bug），清除避免顯示錯誤的命中結果
+                r["actual"], r["actual_pct"], r["hit"] = None, None, None
+                with open(path, "w", encoding="utf-8") as fp:
+                    json.dump(r, fp, ensure_ascii=False, indent=2)
+                print(f"{date:<12}{r['direction'][:2]:<8}{'(今天尚未收盤，已清除誤填資料)'}")
+            else:
+                print(f"{date:<12}{r['direction'][:2]:<8}{'(今天尚未收盤，暫不計入)'}")
+            continue
 
         # 已有結果就沿用，不重複打 API（每日自動執行時大多數日期都屬此情況）
         if not force and r.get("actual_pct") is not None:
