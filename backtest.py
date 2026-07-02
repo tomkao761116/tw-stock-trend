@@ -1,6 +1,7 @@
 """回測：抓加權指數(^TWII)當日實際漲跌，填回 data JSON，計算命中率。
 
-用法：python backtest.py
+用法：python backtest.py         # 只查詢尚缺 actual 的日期（預設，適合每日自動執行）
+      python backtest.py --force # 強制重新查詢所有日期（手動核對用）
 判定：偏多→當日漲、偏空→當日跌、震盪→當日平（漲跌幅在平盤帶內）。
 命中率累積後，可回頭調整 config.py 的權重與門檻。
 """
@@ -51,7 +52,7 @@ def _predicted_dir(direction):
     return "平"
 
 
-def run():
+def run(force=False):
     files = sorted(glob.glob(os.path.join(DATA_DIR, "*.json")))
     if not files:
         print("data/ 無資料")
@@ -66,38 +67,47 @@ def run():
         with open(path, encoding="utf-8") as fp:
             r = json.load(fp)
         date = r["date"]
-        pct = _twii_change(date)
-        if pct is None:
-            print(f"{date:<12}{r['direction'][:2]:<8}{'(尚無收盤資料)'}")
-            continue
 
-        actual = _actual_dir(pct)
-        pred = _predicted_dir(r["direction"])
-        hit = (pred == actual)
-        mark = "✓" if hit else "✗"
-
-        r["actual"] = f"{actual} {pct:+.2f}% {mark}"
-        r["actual_pct"] = round(pct, 2)
-        r["hit"] = hit
-        with open(path, "w", encoding="utf-8") as fp:
-            json.dump(r, fp, ensure_ascii=False, indent=2)
+        # 已有結果就沿用，不重複打 API（每日自動執行時大多數日期都屬此情況）
+        if not force and r.get("actual_pct") is not None:
+            pct, hit = r["actual_pct"], bool(r.get("hit"))
+            mark = "✓" if hit else "✗"
+            print(f"{date:<12}{r['direction'][:2]:<8}"
+                  f"{_actual_dir(pct)} {pct:+.2f}%　 {mark}（沿用既有）")
+        else:
+            pct = _twii_change(date)
+            if pct is None:
+                print(f"{date:<12}{r['direction'][:2]:<8}{'(尚無收盤資料)'}")
+                continue
+            hit = (_predicted_dir(r["direction"]) == _actual_dir(pct))
+            mark = "✓" if hit else "✗"
+            r["actual"] = f"{_actual_dir(pct)} {pct:+.2f}% {mark}"
+            r["actual_pct"] = round(pct, 2)
+            r["hit"] = hit
+            with open(path, "w", encoding="utf-8") as fp:
+                json.dump(r, fp, ensure_ascii=False, indent=2)
+            filled += 1
+            print(f"{date:<12}{r['direction'][:2]:<8}{_actual_dir(pct)} {pct:+.2f}%　 {mark}")
 
         total += 1
-        filled += 1
         hits += hit
         b = by_pred.setdefault(r["direction"][:2], [0, 0])
         b[0] += hit
         b[1] += 1
-        print(f"{date:<12}{r['direction'][:2]:<8}{actual} {pct:+.2f}%　 {mark}")
 
     print("-" * 44)
     if total:
         print(f"整體命中率：{hits}/{total} = {hits/total*100:.1f}%")
         for pred, (h, n) in by_pred.items():
             print(f"  預測{pred}：{h}/{n} = {h/n*100:.0f}%")
-    print(f"\n已更新 {filled} 筆 data JSON（actual 欄位）。"
+    print(f"\n本次新填入 {filled} 筆（其餘沿用既有結果）。"
           "重跑 webgen.py 可讓網頁歷史顯示實際結果。")
 
 
 if __name__ == "__main__":
-    run()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force", action="store_true",
+                        help="強制重新查詢所有日期，不沿用既有結果")
+    run(force=parser.parse_args().force)
