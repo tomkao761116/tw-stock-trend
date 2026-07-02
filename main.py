@@ -31,6 +31,8 @@ def main():
     scale = config.THRESHOLD_EVENT_SCALE if today_events else 1.0
     result = rules.evaluate(raw, threshold_scale=scale)
     result["events"] = today_events
+    result["categories"] = {key: rules.evaluate_category(raw, key, threshold_scale=scale)
+                            for key in config.CATEGORIES}
     report.print_report(result)
     report.save_report(result)
     report.save_data(result)

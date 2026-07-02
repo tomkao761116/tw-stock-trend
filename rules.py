@@ -66,6 +66,14 @@ def _margin_factor(data):
     return base, f'餘額{data["balance_yi"]:.0f}億 ({data["change_pct"]:+.2f}%)'
 
 
+def _dxy_factor(quote):
+    """美元指數：走強對原物料價格通常是逆風，故取負號。"""
+    if quote is None:
+        return None, None
+    base = _clamp(-quote["pct"] / config.NORMALIZERS["dxy_full_pct"])
+    return base, f'{quote["pct"]:+.2f}%'
+
+
 # 因子名稱 → (中文標籤, 計算函式)
 _FACTOR_FUNCS = {
     "night_futures": ("台指期夜盤", lambda d: _night_factor(d["night_futures"])),
@@ -80,6 +88,17 @@ _FACTOR_FUNCS = {
     "usdtwd": ("台幣匯率", lambda d: _usdtwd_factor(d["usdtwd"])),
     "vix": ("VIX 恐慌", lambda d: _vix_factor(d["vix"])),
     "margin": ("融資餘額(反向)", lambda d: _margin_factor(d["margin"])),
+    "xlf": ("美股金融類股",
+            lambda d: _pct_factor(d["xlf"], config.NORMALIZERS["xlf_full_pct"])),
+    "tnx": ("美債10年殖利率",
+            lambda d: _pct_factor(d["tnx"], config.NORMALIZERS["tnx_full_pct"])),
+    "oil": ("WTI原油",
+            lambda d: _pct_factor(d["oil"], config.NORMALIZERS["oil_full_pct"])),
+    "copper": ("銅期貨",
+               lambda d: _pct_factor(d["copper"], config.NORMALIZERS["copper_full_pct"])),
+    "dxy": ("美元指數", lambda d: _dxy_factor(d["dxy"])),
+    "bdry": ("航運指數(BDI代理)",
+             lambda d: _pct_factor(d["bdry"], config.NORMALIZERS["bdry_full_pct"])),
 }
 
 
@@ -107,16 +126,17 @@ def _factor_analysis(key, base):
     return f"{tier}，{note}"
 
 
-def evaluate(raw, threshold_scale=1.0):
-    """主入口：吃 data_fetch.fetch_all() 的結果，回傳預測 dict。
-
-    threshold_scale：事件日可傳 >1 放大門檻，使分類更保守（見 events.py）。
+def _evaluate_core(raw, factor_keys, weights, threshold_bullish, threshold_bearish,
+                   threshold_scale=1.0):
+    """評分核心：因子清單 + 各自權重 + 門檻 → 完整預測 dict。
+    大盤(evaluate)與各類別(evaluate_category)共用此核心，只是餵不同的因子組合。
     """
     factors = []
     total = 0.0
-    for name, (label, fn) in _FACTOR_FUNCS.items():
+    for name in factor_keys:
+        label, fn = _FACTOR_FUNCS[name]
         base, value = fn(raw)
-        weight = config.WEIGHTS[name]
+        weight = weights[name]
         if base is None:
             factors.append({"key": name, "name": label, "value": "N/A",
                             "base": None, "weight": weight,
@@ -129,8 +149,8 @@ def evaluate(raw, threshold_scale=1.0):
                         "contribution": round(contribution, 2), "note": "",
                         "analysis": _factor_analysis(name, base)})
 
-    bull = config.THRESHOLD_BULLISH * threshold_scale
-    bear = config.THRESHOLD_BEARISH * threshold_scale
+    bull = threshold_bullish * threshold_scale
+    bear = threshold_bearish * threshold_scale
     if total >= bull:
         direction = "偏多 📈"
     elif total <= bear:
@@ -139,8 +159,8 @@ def evaluate(raw, threshold_scale=1.0):
         direction = "震盪 ➡️"
 
     attribution = _attribution(factors)
-    reasoning = _reasoning(direction, attribution, total, threshold_scale)
-    confidence = _confidence(total, direction)
+    reasoning = _reasoning(direction, attribution, total, threshold_scale, threshold_bullish)
+    confidence = _confidence(total, direction, bull)
     plain_summary = _plain_summary(direction, attribution)
 
     return {"direction": direction, "total_score": round(total, 2),
@@ -148,6 +168,26 @@ def evaluate(raw, threshold_scale=1.0):
             "thresholds": (round(bull, 1), round(bear, 1)),
             "attribution": attribution, "reasoning": reasoning,
             "confidence": confidence, "plain_summary": plain_summary}
+
+
+def evaluate(raw, threshold_scale=1.0):
+    """大盤預測：吃 data_fetch.fetch_all() 的結果，回傳預測 dict。
+
+    threshold_scale：事件日可傳 >1 放大門檻，使分類更保守（見 events.py）。
+    """
+    return _evaluate_core(raw, list(config.WEIGHTS.keys()), config.WEIGHTS,
+                          config.THRESHOLD_BULLISH, config.THRESHOLD_BEARISH,
+                          threshold_scale)
+
+
+def evaluate_category(raw, category_key, threshold_scale=1.0):
+    """科技股/金融股/傳產等細分類別預測，見 config.CATEGORIES。"""
+    cat = config.CATEGORIES[category_key]
+    result = _evaluate_core(raw, cat["factors"], cat["weights"],
+                            cat["threshold_bullish"], cat["threshold_bearish"],
+                            threshold_scale)
+    result["label"] = cat["label"]
+    return result
 
 
 # ── 歸因分析：把總分拆回各因子的多空力道 ──────────────────────
@@ -173,8 +213,8 @@ def _names(items, n=3):
     return "、".join(f["name"] for f in items[:n])
 
 
-def _reasoning(direction, attr, total, scale):
-    """自動生成「為何是這個結論」的理由句。"""
+def _reasoning(direction, attr, total, scale, base_bull):
+    """自動生成「為何是這個結論」的理由句。base_bull：未經事件日放大的原始偏多門檻。"""
     push, drag = attr["push"], attr["drag"]
     bf, df = attr["bull_force"], attr["bear_force"]
 
@@ -188,7 +228,6 @@ def _reasoning(direction, attr, total, scale):
               if push else "，且無明顯支撐因子。")
     else:  # 震盪
         # 若分數本可定方向、僅因事件日門檻提高而轉觀望，特別點明
-        base_bull = config.THRESHOLD_BULLISH
         if scale > 1.0 and abs(total) >= base_bull:
             side = "偏多" if total > 0 else "偏空"
             s = (f"總分 {total:+.1f} 原達{side}標準，但今日為事件日、門檻提高，"
@@ -201,22 +240,23 @@ def _reasoning(direction, attr, total, scale):
     return s
 
 
-def _confidence(total, direction):
-    """訊號強度 → 信心程度（給新手的直覺指標）。"""
+def _confidence(total, direction, ref_threshold):
+    """訊號強度 → 信心程度（給新手的直覺指標）。
+    用「總分 ÷ 該類別自己的門檻」的比例判斷，而非絕對分數——
+    這樣大盤(門檻4.0)和金融股(門檻2.2)這種量級不同的類別才能公平比較信心程度。
+    """
     if "震盪" in direction:
         return {"label": "方向不明", "dots": "○○○○○",
                 "note": "多空力道相當，建議觀望"}
-    a = abs(total)
-    if a >= 8:
+    ratio = abs(total) / abs(ref_threshold) if ref_threshold else 1.0
+    if ratio >= 2.0:
         lvl, dots = "很高", "●●●●●"
-    elif a >= 6:
+    elif ratio >= 1.5:
         lvl, dots = "高", "●●●●○"
-    elif a >= 5:
+    elif ratio >= 1.25:
         lvl, dots = "中等", "●●●○○"
-    elif a >= 4:
-        lvl, dots = "偏低", "●●○○○"
     else:
-        lvl, dots = "低", "●○○○○"
+        lvl, dots = "偏低", "●●○○○"
     return {"label": lvl, "dots": dots, "note": ""}
 
 

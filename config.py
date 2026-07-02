@@ -7,6 +7,12 @@ TICKERS = {
     "tsm_adr": "TSM",     # 台積電 ADR
     "vix": "^VIX",        # 恐慌指數
     "usdtwd": "USDTWD=X", # 美元兌台幣
+    "xlf": "XLF",          # 美股金融類股 ETF（金融股類別用）
+    "tnx": "^TNX",         # 美債10年期殖利率（金融股類別用）
+    "oil": "CL=F",         # WTI 原油期貨（傳產類別用）
+    "copper": "HG=F",      # 銅期貨（傳產類別用）
+    "dxy": "DX-Y.NYB",     # 美元指數（傳產類別用）
+    "bdry": "BDRY",        # 波羅的海乾散貨運價代理 ETF（傳產類別用）
 }
 
 # ── 因子權重（數字越大影響越大；可自由調整）────────────────────
@@ -35,6 +41,12 @@ NORMALIZERS = {
     "vix_base": 20.0,           # VIX 高於此值開始扣分
     "vix_range": 15.0,          # VIX 超出 base 多少 = 滿分扣分
     "margin_full_pct": 1.5,     # 融資餘額單日變化 1.5% = 滿分（反向）
+    "xlf_full_pct": 1.5,        # 美股金融類股 1.5% = 滿分
+    "tnx_full_pct": 3.0,        # 美債殖利率變化 3% = 滿分
+    "oil_full_pct": 3.0,        # WTI 原油 3% = 滿分
+    "copper_full_pct": 2.5,     # 銅期貨 2.5% = 滿分
+    "dxy_full_pct": 0.6,        # 美元指數 0.6% = 滿分
+    "bdry_full_pct": 3.0,       # 航運 ETF 3% = 滿分
 }
 
 # ── 分類門檻 ──────────────────────────────────────────────────
@@ -47,6 +59,35 @@ THRESHOLD_EVENT_SCALE = 1.5
 
 # 有效因子數低於此值 → 視為資料擷取大規模失敗（如網路未連上），中止並拒絕覆蓋既有資料
 MIN_VALID_FACTORS = 3
+
+# ── 類別預估（大盤以外的細分趨勢）───────────────────────────────
+# 科技股沿用大盤已有的因子（零額外資料成本）；金融股/傳產是全新因子組，
+# 因為 FinMind 產業別籌碼資料需付費等級，只能靠美股對應類股與大宗商品做隔夜訊號，
+# 準確度天生比有夜盤直接反映的大盤/科技股弱，門檻也設得比較保守。
+# backtest_ticker：用於 backtest.py 自動核對「實際結果」；None 表示暫無乾淨的單一回測標的。
+CATEGORIES = {
+    "tech": {
+        "label": "科技股/半導體",
+        "factors": ["night_futures", "sox", "tsm_adr", "nasdaq"],
+        "weights": {"night_futures": 2.5, "sox": 3.0, "tsm_adr": 2.5, "nasdaq": 1.5},
+        "threshold_bullish": 3.5, "threshold_bearish": -3.5,
+        "backtest_ticker": "0052.TW",  # 富邦科技
+    },
+    "financial": {
+        "label": "金融股",
+        "factors": ["xlf", "tnx", "usdtwd", "foreign_buy"],
+        "weights": {"xlf": 2.5, "tnx": 1.5, "usdtwd": 1.0, "foreign_buy": 1.5},
+        "threshold_bullish": 2.2, "threshold_bearish": -2.2,
+        "backtest_ticker": "0055.TW",  # 元大MSCI金融
+    },
+    "traditional": {
+        "label": "傳產/原物料/航運",
+        "factors": ["oil", "copper", "dxy", "bdry"],
+        "weights": {"oil": 2.0, "copper": 1.5, "dxy": 1.5, "bdry": 2.0},
+        "threshold_bullish": 2.3, "threshold_bearish": -2.3,
+        "backtest_ticker": None,  # 涵蓋多個異質產業，無乾淨的單一回測標的
+    },
+}
 
 # ── 因子白話資訊（給不熟股市的人看）────────────────────────────
 # nick：口語名稱；why：一句話說明這是什麼、為何影響台股。
@@ -95,6 +136,36 @@ FACTOR_INFO = {
                "pos_note": "融資餘額縮減，顯示散戶追高動能降溫，籌碼相對健康",
                "neg_note": "融資餘額增加，散戶槓桿轉高，需留意過熱風險",
                "source_url": "https://finmindtrade.com/analysis/#/data/api"},
+    "xlf": {"nick": "美股金融類股",
+            "why": "美國銀行/金融類股整體表現，反映全球金融股資金氣氛",
+            "pos_note": "美股金融股走強，資金氣氛偏多，有助台股金融股表現",
+            "neg_note": "美股金融股走弱，資金氣氛保守，對台股金融股形成壓力",
+            "source_url": "https://finance.yahoo.com/quote/XLF"},
+    "tnx": {"nick": "美債10年殖利率",
+            "why": "殖利率走升通常代表銀行放款利差擴大，對金融股偏多；走跌則相反",
+            "pos_note": "殖利率走升，銀行放款利差看漲，對金融股偏多",
+            "neg_note": "殖利率走跌，銀行放款利差收斂，對金融股偏空",
+            "source_url": "https://finance.yahoo.com/quote/%5ETNX"},
+    "oil": {"nick": "WTI原油",
+            "why": "原油價格是原物料與塑化類股的成本/營收指標，油價漲通常激勵原物料類股",
+            "pos_note": "油價走升，原物料與塑化類股營收展望轉佳",
+            "neg_note": "油價走跌，原物料與塑化類股營收展望轉弱",
+            "source_url": "https://finance.yahoo.com/quote/CL=F"},
+    "copper": {"nick": "銅期貨",
+               "why": "銅價常被視為全球工業景氣的溫度計，漲跌反映景氣循環強弱",
+               "pos_note": "銅價走升，顯示全球工業需求偏強，激勵傳產類股",
+               "neg_note": "銅價走跌，顯示全球工業需求轉弱，壓抑傳產類股",
+               "source_url": "https://finance.yahoo.com/quote/HG=F"},
+    "dxy": {"nick": "美元指數",
+            "why": "美元走強通常對應原物料價格走弱（反向關係），對傳產類股偏空",
+            "pos_note": "美元走強，原物料價格面臨壓力，對傳產類股偏空",
+            "neg_note": "美元走弱，原物料價格獲得支撐，對傳產類股偏多",
+            "source_url": "https://finance.yahoo.com/quote/DX-Y.NYB"},
+    "bdry": {"nick": "航運指數(BDI代理)",
+             "why": "追蹤波羅的海乾散貨運價的 ETF，反映航運業運價與景氣",
+             "pos_note": "運價走升，航運類股獲利展望轉佳",
+             "neg_note": "運價走跌，航運類股獲利展望轉弱",
+             "source_url": "https://finance.yahoo.com/quote/BDRY"},
 }
 
 # ── FinMind API（台股籌碼資料，免費註冊取得 token）──────────────

@@ -121,6 +121,65 @@ def _today_card(r):
   </div>'''
 
 
+def _category_card(r):
+    """科技股/金融股/傳產等細分類別卡片，結構與大盤卡片相同但字級較小。"""
+    cls = _dir_class(r["direction"])
+    conf = r.get("confidence", {})
+    attr = r.get("attribution", {})
+    push = attr.get("push", [])
+    drag = attr.get("drag", [])
+    neutral = attr.get("neutral", [])
+    neutral_html = ""
+    if neutral:
+        names = "、".join(html.escape(_info(f["key"], "nick") or f["name"])
+                         for f in neutral)
+        neutral_html = f'<p class="neutral">影響不大：{names}</p>'
+
+    table_rows = "".join(
+        f'<tr><td>{html.escape(f["name"])}</td><td>{html.escape(str(f["value"]))}</td>'
+        f'<td>{f["weight"]}</td><td>{f["contribution"]:+.2f}</td></tr>'
+        for f in r["factors"])
+    bull, bear = r.get("thresholds", [0, 0])
+    actual = r.get("actual")
+    actual_html = (f'<p class="cat-actual">實際結果：{html.escape(str(actual))}</p>'
+                  if actual else "")
+
+    return f'''
+  <div class="card cat {cls}">
+    <div class="cat-label">{html.escape(r.get("label", ""))}</div>
+    <div class="direction">{html.escape(r["direction"])}</div>
+    <div class="conf">信心 <span class="dots">{conf.get("dots","")}</span> {html.escape(conf.get("label",""))}</div>
+    <p class="summary">{html.escape(r.get("plain_summary",""))}</p>
+
+    <h3 class="up">▲ 偏向上漲的因素</h3>
+    {_factor_rows(push, "利多") or '<p class="none">（無）</p>'}
+    <h3 class="down">▼ 偏向下跌的因素</h3>
+    {_factor_rows(drag, "利空") or '<p class="none">（無）</p>'}
+    {neutral_html}
+    {actual_html}
+
+    <details>
+      <summary>數據明細（進階）</summary>
+      <p class="force">偏多力道 {attr.get("bull_force",0):+.2f}｜偏空力道 {attr.get("bear_force",0):+.2f}｜
+      總分 {r.get("total_score",0):+.2f}（多≥{bull:+.1f} / 空≤{bear:+.1f}）</p>
+      <table><tr><th>因子</th><th>數值</th><th>權重</th><th>貢獻</th></tr>{table_rows}</table>
+      <p class="tech">{html.escape(r.get("reasoning",""))}</p>
+    </details>
+  </div>'''
+
+
+# 類別顯示順序：與 config.CATEGORIES 定義順序一致（tech/financial/traditional）
+_CATEGORY_ORDER = ["tech", "financial", "traditional"]
+
+
+def _category_cards(r):
+    cats = r.get("categories", {})
+    cards = "".join(_category_card(cats[k]) for k in _CATEGORY_ORDER if k in cats)
+    if not cards:
+        return ""  # 舊資料（此功能上線前）沒有類別欄位，不顯示空標題
+    return f'<div class="section-title">細分類別</div>{cards}'
+
+
 def _history_card(items):
     rows = []
     for r in items:
@@ -178,6 +237,11 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .view{font-size:12px;white-space:nowrap}
 .backlink{display:inline-block;margin:0 0 12px;color:#185fa5;text-decoration:none;font-size:14px}
 .backlink:hover{text-decoration:underline}
+.cat-label{font-size:13px;color:var(--sub);font-weight:600;letter-spacing:.5px}
+.cat .direction{font-size:24px;margin:2px 0 4px}
+.cat.bull .direction{color:var(--bull)} .cat.bear .direction{color:var(--bear)} .cat.flat .direction{color:var(--flat)}
+.cat-actual{font-size:13px;color:var(--sub);margin-top:8px}
+.section-title{font-size:16px;font-weight:700;margin:20px 0 8px}
 .disclaimer{text-align:center;color:var(--sub);font-size:12px;padding:8px 0 24px}
 """
 
@@ -219,11 +283,13 @@ def build_site():
 
     # 每日獨立頁面（可永久連結、單獨分享）
     for r in items:
-        body = f'  <a class="backlink" href="index.html">← 回首頁</a>\n{_today_card(r)}'
+        body = (f'  <a class="backlink" href="index.html">← 回首頁</a>\n'
+                f'{_today_card(r)}'
+                f'{_category_cards(r)}')
         _write(f'{r["date"]}.html', _page(f'台股盤前預估 {r["date"]}', body))
 
-    # 首頁：今日完整卡片 + 歷史列表
-    body = _today_card(items[0])
+    # 首頁：今日完整卡片 + 細分類別 + 歷史列表
+    body = f'{_today_card(items[0])}{_category_cards(items[0])}'
     if len(items) > 1:
         body += _history_card(items)
     path = _write("index.html", _page("台股盤前趨勢預估", body))

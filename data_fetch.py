@@ -42,6 +42,12 @@ def fetch_us_overnight():
             ("sox", "nasdaq", "tsm_adr", "vix", "usdtwd")}
 
 
+def fetch_sector_signals():
+    """金融股/傳產類別用的額外訊號：美股金融類股、美債殖利率、原物料、航運。"""
+    return {k: fetch_market_quote(k) for k in
+            ("xlf", "tnx", "oil", "copper", "dxy", "bdry")}
+
+
 # ── FinMind 台股籌碼 ─────────────────────────────────────────
 def _finmind_token():
     """讀取順序：環境變數 > 本地 .finmind_token 檔 > config.py。
@@ -198,12 +204,15 @@ def fetch_margin():
 
 
 def fetch_all():
-    """一次取齊所有因子原始資料。"""
+    """一次取齊所有因子原始資料（大盤 + 科技股/金融股/傳產類別）。"""
     print("擷取隔夜美股 / 匯率 / VIX ...")
     us = fetch_us_overnight()
+    print("擷取類別訊號（金融股/傳產）...")
+    sector = fetch_sector_signals()
     print("擷取台股籌碼（FinMind）...")
     return {
         **us,
+        **sector,
         "night_futures": fetch_night_futures(),
         "foreign_buy": fetch_foreign_buy(),
         "foreign_futures": fetch_foreign_futures(),
