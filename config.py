@@ -14,6 +14,9 @@ TICKERS = {
     "dxy": "DX-Y.NYB",     # 美元指數（傳產類別用）
     "bdry": "BDRY",        # 波羅的海乾散貨運價代理 ETF（傳產類別用）
     "tlt": "TLT",           # 美國20年期公債ETF（債券型類別用，隔夜直接代理）
+    "nvda": "NVDA",         # 輝達（科技股類別用，AI需求端訊號）
+    "move": "^MOVE",        # 美債波動率指數（債券型類別用，債市專屬的「VIX」）
+    "xlu": "XLU",           # 美股公用事業ETF（股息型類別用，典型債券替代股對照）
 }
 
 # ── 因子權重（數字越大影響越大；可自由調整）────────────────────
@@ -49,6 +52,9 @@ NORMALIZERS = {
     "dxy_full_pct": 0.6,        # 美元指數 0.6% = 滿分
     "bdry_full_pct": 3.0,       # 航運 ETF 3% = 滿分
     "tlt_full_pct": 1.5,        # 美國20年期公債ETF 1.5% = 滿分
+    "nvda_full_pct": 4.0,        # NVDA 波動大，漲跌 4% = 滿分
+    "move_full_pct": 5.0,        # MOVE 指數 5% = 滿分
+    "xlu_full_pct": 1.3,         # 公用事業低波動，漲跌 1.3% = 滿分
 }
 
 # ── 分類門檻 ──────────────────────────────────────────────────
@@ -70,9 +76,9 @@ MIN_VALID_FACTORS = 3
 CATEGORIES = {
     "tech": {
         "label": "科技股/半導體",
-        "factors": ["night_futures", "sox", "tsm_adr", "nasdaq"],
-        "weights": {"night_futures": 2.5, "sox": 3.0, "tsm_adr": 2.5, "nasdaq": 1.5},
-        "threshold_bullish": 3.5, "threshold_bearish": -3.5,
+        "factors": ["night_futures", "sox", "tsm_adr", "nasdaq", "nvda"],
+        "weights": {"night_futures": 2.5, "sox": 3.0, "tsm_adr": 2.5, "nasdaq": 1.5, "nvda": 2.0},
+        "threshold_bullish": 4.0, "threshold_bearish": -4.0,
         "backtest_ticker": "0052.TW",  # 富邦科技
     },
     "financial": {
@@ -93,16 +99,16 @@ CATEGORIES = {
     # 「成長型」子分頁不在這裡：它是既有 tech 類別的別名，直接借用結果、不重新運算。
     "dividend": {
         "label": "股息型",
-        "factors": ["tnx_inv", "xlf", "foreign_buy", "usdtwd"],
-        "weights": {"tnx_inv": 2.0, "xlf": 2.0, "foreign_buy": 1.5, "usdtwd": 1.0},
-        "threshold_bullish": 2.0, "threshold_bearish": -2.0,
+        "factors": ["tnx_inv", "xlf", "xlu", "foreign_buy", "usdtwd"],
+        "weights": {"tnx_inv": 2.0, "xlf": 2.0, "xlu": 2.0, "foreign_buy": 1.5, "usdtwd": 1.0},
+        "threshold_bullish": 2.6, "threshold_bearish": -2.6,
         "backtest_ticker": "0056.TW",  # 元大高股息
     },
     "bond": {
         "label": "債券型",
-        "factors": ["tlt", "tnx_inv", "vix_bond"],
-        "weights": {"tlt": 3.0, "tnx_inv": 2.0, "vix_bond": 1.5},
-        "threshold_bullish": 2.3, "threshold_bearish": -2.3,
+        "factors": ["tlt", "tnx_inv", "vix_bond", "move"],
+        "weights": {"tlt": 3.0, "tnx_inv": 2.0, "vix_bond": 1.5, "move": 1.5},
+        "threshold_bullish": 2.8, "threshold_bearish": -2.8,
         "backtest_ticker": "00679B.TWO",  # 元大美債20年（上櫃）
     },
 }
@@ -199,6 +205,20 @@ FACTOR_INFO = {
                 "why": "市場恐慌時資金常轉向公債避險，故對債券型ETF是正向訊號（與股票類別方向相反）",
                 "pos_note": "市場恐慌情緒升溫，避險資金可能流向公債，對債券型ETF偏多",
                 "source_url": "https://finance.yahoo.com/quote/%5EVIX"},
+    "nvda": {"nick": "輝達(NVDA)",
+             "why": "AI需求端的核心指標，帶動記憶體、先進封裝、測試等台灣供應鏈訂單動能",
+             "pos_note": "輝達股價走強，反映AI需求熱度，激勵台灣科技供應鏈訂單展望",
+             "neg_note": "輝達股價走弱，AI需求疑慮升溫，對台灣科技供應鏈訂單展望形成壓力",
+             "source_url": "https://finance.yahoo.com/quote/NVDA"},
+    "move": {"nick": "美債波動率指數(MOVE)",
+             "why": "債券市場專屬的「恐慌指數」，數字越高代表利率走向的不確定性越大，通常對債券價格不利",
+             "neg_note": "債市波動率升溫，利率前景不確定性升高，對債券型ETF形成壓力",
+             "source_url": "https://finance.yahoo.com/quote/%5EMOVE"},
+    "xlu": {"nick": "美股公用事業ETF",
+            "why": "公用事業是典型的「債券替代股」，股息穩定、對利率敏感，是股息型ETF最直接的美股對照",
+            "pos_note": "美股公用事業走強，債券替代股氣氛偏多，對台股高股息族群有利",
+            "neg_note": "美股公用事業走弱，債券替代股氣氛保守，對台股高股息族群形成壓力",
+            "source_url": "https://finance.yahoo.com/quote/XLU"},
 }
 
 # ── FinMind API（台股籌碼資料，免費註冊取得 token）──────────────

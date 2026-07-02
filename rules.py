@@ -93,6 +93,15 @@ def _vix_bond_factor(quote):
     return base, f'{quote["last"]:.1f}'
 
 
+def _move_factor(quote):
+    """MOVE 指數（債市波動率）：升高代表利率前景不確定性升高，對債券價格通常不利，故取負號。
+    與 vix_bond（權益市場恐慌→避險買債）是互補訊號，服務不同的市場動態。"""
+    if quote is None:
+        return None, None
+    base = _clamp(-quote["pct"] / config.NORMALIZERS["move_full_pct"])
+    return base, f'{quote["pct"]:+.2f}% ({quote["last"]:.1f})'
+
+
 # 因子名稱 → (中文標籤, 計算函式)
 _FACTOR_FUNCS = {
     "night_futures": ("台指期夜盤", lambda d: _night_factor(d["night_futures"])),
@@ -122,6 +131,11 @@ _FACTOR_FUNCS = {
     "tlt": ("美國20年期公債ETF",
             lambda d: _pct_factor(d["tlt"], config.NORMALIZERS["tlt_full_pct"])),
     "vix_bond": ("VIX 恐慌(避險效應)", lambda d: _vix_bond_factor(d["vix"])),
+    "nvda": ("輝達(NVDA)",
+             lambda d: _pct_factor(d["nvda"], config.NORMALIZERS["nvda_full_pct"])),
+    "move": ("美債波動率指數(MOVE)", lambda d: _move_factor(d["move"])),
+    "xlu": ("美股公用事業ETF",
+            lambda d: _pct_factor(d["xlu"], config.NORMALIZERS["xlu_full_pct"])),
 }
 
 
