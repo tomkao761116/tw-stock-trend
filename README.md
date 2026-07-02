@@ -134,13 +134,17 @@ env -i HOME="$HOME" PATH=/usr/bin:/bin /usr/bin/git -C "$(pwd)" push
 
 ## 回測（驗證準確率）
 
+**已自動化**：`run_daily.sh` 每次執行都會跑一次回測，自動回填先前幾天欠缺的
+「實際」結果——當天資料通常要等收盤後才會到位，所以是隔一兩天自動補上，不用手動想起來跑。
+
 ```bash
-python backtest.py
+python backtest.py          # 只查詢尚缺 actual 的日期（預設，已有結果沿用、不重打 API）
+python backtest.py --force  # 強制重新查詢所有日期（手動核對用）
 ```
 
 抓加權指數(^TWII)當日實際漲跌，填回 `data/*.json` 的 `actual` 欄位，計算命中率：
 偏多→當日漲、偏空→當日跌、震盪→當日平（±0.4% 平盤帶，可在 `backtest.py` 調整）。
-跑完重建網頁，歷史表的「實際」欄就會顯示結果與 ✓/✗。
+手動執行完重建網頁，歷史表的「實際」欄就會顯示結果與 ✓/✗（自動流程已內含此步驟）。
 累積數據後，依命中率回頭調整 `config.py` 的權重與門檻。
 
 ## 權重校準（累積資料後）
@@ -165,8 +169,8 @@ GitHub Pages：https://tomkao761116.github.io/tw-stock-trend/
 - [x] 事件層（財經行事曆，事件日趨保守）
 - [x] 靜態網頁（今日 + 歷史，手機可看、連結可分享）
 - [x] 部署到 GitHub Pages（公開網址）
-- [x] 自動化腳本（run_daily.sh + cron）
-- [x] 回測腳本（抓 ^TWII 實際漲跌、算命中率）
+- [x] 自動化腳本（run_daily.sh + launchd，喚醒補跑 + 等網路 + 冪等性）
+- [x] 回測腳本（抓 ^TWII 實際漲跌、算命中率，已整合進每日自動流程）
 - [x] 台指期夜盤因子
 - [x] 權重校準腳本（calibrate.py，依相關性建議調整）
 - [ ] 累積 ≥ 10 天資料後校準權重
