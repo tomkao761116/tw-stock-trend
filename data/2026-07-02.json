@@ -1,6 +1,6 @@
 {
   "direction": "偏空 📉",
-  "total_score": -6.76,
+  "total_score": -6.68,
   "factors": [
     {
       "key": "night_futures",
@@ -59,10 +59,10 @@
     {
       "key": "usdtwd",
       "name": "台幣匯率",
-      "value": "+0.17%",
-      "base": -0.34,
+      "value": "+0.13%",
+      "base": -0.26,
       "weight": 1.0,
-      "contribution": -0.34,
+      "contribution": -0.26,
       "note": ""
     },
     {
@@ -91,7 +91,7 @@
   ],
   "attribution": {
     "bull_force": 2.23,
-    "bear_force": -9.0,
+    "bear_force": -8.92,
     "push": [
       {
         "key": "foreign_buy",
@@ -150,21 +150,21 @@
         "note": ""
       },
       {
-        "key": "usdtwd",
-        "name": "台幣匯率",
-        "value": "+0.17%",
-        "base": -0.34,
-        "weight": 1.0,
-        "contribution": -0.34,
-        "note": ""
-      },
-      {
         "key": "foreign_futures",
         "name": "外資期貨",
         "value": "淨-84168 口 (Δ-1105)",
         "base": -0.14,
         "weight": 2.0,
         "contribution": -0.28,
+        "note": ""
+      },
+      {
+        "key": "usdtwd",
+        "name": "台幣匯率",
+        "value": "+0.13%",
+        "base": -0.26,
+        "weight": 1.0,
+        "contribution": -0.26,
         "note": ""
       }
     ],
@@ -180,7 +180,7 @@
       }
     ]
   },
-  "reasoning": "主由「台指期夜盤、費半 SOX、台積電 ADR」壓低（合計 -9.0）；「外資買賣超、融資餘額(反向)」提供支撐（+2.2），但不足以扭轉方向。",
+  "reasoning": "主由「台指期夜盤、費半 SOX、台積電 ADR」壓低（合計 -8.9）；「外資買賣超、融資餘額(反向)」提供支撐（+2.2），但不足以扭轉方向。",
   "confidence": {
     "label": "高",
     "dots": "●●●●○",
@@ -189,8 +189,6 @@
   "plain_summary": "昨晚台指期夜盤、美國半導體股表現疲弱，可能拖累今天台股偏向下跌。雖然外資買賣超、散戶融資提供一些支撐，但力道不足以扭轉方向。",
   "events": [],
   "date": "2026-07-02",
-  "generated_at": "2026-07-02 08:20",
-  "actual": "平 -0.12% ✗",
-  "actual_pct": -0.12,
-  "hit": false
+  "generated_at": "2026-07-02 09:33",
+  "actual": null
 }
