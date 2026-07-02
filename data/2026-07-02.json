@@ -1,6 +1,6 @@
 {
   "direction": "偏空 📉",
-  "total_score": -6.66,
+  "total_score": -6.62,
   "factors": [
     {
       "key": "night_futures",
@@ -65,10 +65,10 @@
     {
       "key": "usdtwd",
       "name": "台幣匯率",
-      "value": "+0.12%",
-      "base": -0.24,
+      "value": "+0.10%",
+      "base": -0.2,
       "weight": 1.0,
-      "contribution": -0.24,
+      "contribution": -0.2,
       "note": "",
       "analysis": "力道輕微，台幣貶值，外資匯兌動能較不利進場買股"
     },
@@ -100,7 +100,7 @@
   ],
   "attribution": {
     "bull_force": 2.23,
-    "bear_force": -8.9,
+    "bear_force": -8.86,
     "push": [
       {
         "key": "foreign_buy",
@@ -177,10 +177,10 @@
       {
         "key": "usdtwd",
         "name": "台幣匯率",
-        "value": "+0.12%",
-        "base": -0.24,
+        "value": "+0.10%",
+        "base": -0.2,
         "weight": 1.0,
-        "contribution": -0.24,
+        "contribution": -0.2,
         "note": "",
         "analysis": "力道輕微，台幣貶值，外資匯兌動能較不利進場買股"
       }
@@ -333,13 +333,13 @@
       },
       "plain_summary": "昨晚美國半導體股、台指期夜盤表現疲弱，可能拖累今天台股偏向下跌。",
       "label": "科技股/半導體",
-      "actual": "跌 -0.87% ✓",
-      "actual_pct": -0.87,
+      "actual": "跌 -0.79% ✓",
+      "actual_pct": -0.79,
       "hit": true
     },
     "financial": {
       "direction": "偏多 📈",
-      "total_score": 3.53,
+      "total_score": 3.57,
       "factors": [
         {
           "key": "xlf",
@@ -364,10 +364,10 @@
         {
           "key": "usdtwd",
           "name": "台幣匯率",
-          "value": "+0.12%",
-          "base": -0.24,
+          "value": "+0.10%",
+          "base": -0.2,
           "weight": 1.0,
-          "contribution": -0.24,
+          "contribution": -0.2,
           "note": "",
           "analysis": "力道輕微，台幣貶值，外資匯兌動能較不利進場買股"
         },
@@ -389,7 +389,7 @@
       ],
       "attribution": {
         "bull_force": 4.0,
-        "bear_force": -0.47,
+        "bear_force": -0.43,
         "push": [
           {
             "key": "xlf",
@@ -414,16 +414,6 @@
         ],
         "drag": [
           {
-            "key": "usdtwd",
-            "name": "台幣匯率",
-            "value": "+0.12%",
-            "base": -0.24,
-            "weight": 1.0,
-            "contribution": -0.24,
-            "note": "",
-            "analysis": "力道輕微，台幣貶值，外資匯兌動能較不利進場買股"
-          },
-          {
             "key": "tnx",
             "name": "美債10年殖利率",
             "value": "-0.46%",
@@ -432,53 +422,63 @@
             "contribution": -0.23,
             "note": "",
             "analysis": "力道輕微，殖利率走跌，銀行放款利差收斂，對金融股偏空"
+          },
+          {
+            "key": "usdtwd",
+            "name": "台幣匯率",
+            "value": "+0.10%",
+            "base": -0.2,
+            "weight": 1.0,
+            "contribution": -0.2,
+            "note": "",
+            "analysis": "力道輕微，台幣貶值，外資匯兌動能較不利進場買股"
           }
         ],
         "neutral": []
       },
-      "reasoning": "主由「美股金融類股、外資買賣超」推升（合計 +4.0）；「台幣匯率、美債10年殖利率」形成拖累（-0.5），但不足以扭轉方向。",
+      "reasoning": "主由「美股金融類股、外資買賣超」推升（合計 +4.0）；「美債10年殖利率、台幣匯率」形成拖累（-0.4），但不足以扭轉方向。",
       "confidence": {
         "label": "高",
         "dots": "●●●●○",
         "note": ""
       },
-      "plain_summary": "昨晚美股金融類股、外資買賣超表現強勢，通常會帶動今天台股偏向上漲。雖然台幣匯率、美債10年殖利率帶來一些反向壓力，但力道不足以扭轉方向。",
+      "plain_summary": "昨晚美股金融類股、外資買賣超表現強勢，通常會帶動今天台股偏向上漲。雖然美債10年殖利率、台幣匯率帶來一些反向壓力，但力道不足以扭轉方向。",
       "label": "金融股",
-      "actual": "跌 -1.23% ✗",
-      "actual_pct": -1.23,
+      "actual": "跌 -1.08% ✗",
+      "actual_pct": -1.08,
       "hit": false
     },
     "traditional": {
       "direction": "震盪 ➡️",
-      "total_score": 0.63,
+      "total_score": 0.74,
       "factors": [
         {
           "key": "oil",
           "name": "WTI原油",
-          "value": "-1.11%",
-          "base": -0.37,
+          "value": "-1.02%",
+          "base": -0.34,
           "weight": 2.0,
-          "contribution": -0.74,
+          "contribution": -0.68,
           "note": "",
           "analysis": "力道溫和，油價走跌，原物料與塑化類股營收展望轉弱"
         },
         {
           "key": "copper",
           "name": "銅期貨",
-          "value": "+0.38%",
-          "base": 0.15,
+          "value": "+0.42%",
+          "base": 0.17,
           "weight": 1.5,
-          "contribution": 0.23,
+          "contribution": 0.25,
           "note": "",
           "analysis": "力道輕微，銅價走升，顯示全球工業需求偏強，激勵傳產類股"
         },
         {
           "key": "dxy",
           "name": "美元指數",
-          "value": "-0.05%",
-          "base": 0.08,
+          "value": "-0.06%",
+          "base": 0.1,
           "weight": 1.5,
-          "contribution": 0.12,
+          "contribution": 0.15,
           "note": "",
           "analysis": "力道輕微，美元走強，原物料價格面臨壓力，對傳產類股偏空"
         },
@@ -499,8 +499,8 @@
         -2.3
       ],
       "attribution": {
-        "bull_force": 1.37,
-        "bear_force": -0.74,
+        "bull_force": 1.42,
+        "bear_force": -0.68,
         "push": [
           {
             "key": "bdry",
@@ -515,20 +515,20 @@
           {
             "key": "copper",
             "name": "銅期貨",
-            "value": "+0.38%",
-            "base": 0.15,
+            "value": "+0.42%",
+            "base": 0.17,
             "weight": 1.5,
-            "contribution": 0.23,
+            "contribution": 0.25,
             "note": "",
             "analysis": "力道輕微，銅價走升，顯示全球工業需求偏強，激勵傳產類股"
           },
           {
             "key": "dxy",
             "name": "美元指數",
-            "value": "-0.05%",
-            "base": 0.08,
+            "value": "-0.06%",
+            "base": 0.1,
             "weight": 1.5,
-            "contribution": 0.12,
+            "contribution": 0.15,
             "note": "",
             "analysis": "力道輕微，美元走強，原物料價格面臨壓力，對傳產類股偏空"
           }
@@ -537,10 +537,10 @@
           {
             "key": "oil",
             "name": "WTI原油",
-            "value": "-1.11%",
-            "base": -0.37,
+            "value": "-1.02%",
+            "base": -0.34,
             "weight": 2.0,
-            "contribution": -0.74,
+            "contribution": -0.68,
             "note": "",
             "analysis": "力道溫和，油價走跌，原物料與塑化類股營收展望轉弱"
           }
@@ -558,7 +558,7 @@
     },
     "dividend": {
       "direction": "震盪 ➡️",
-      "total_score": 1.63,
+      "total_score": 1.67,
       "factors": [
         {
           "key": "tnx_inv",
@@ -603,10 +603,10 @@
         {
           "key": "usdtwd",
           "name": "台幣匯率",
-          "value": "+0.12%",
-          "base": -0.24,
+          "value": "+0.10%",
+          "base": -0.2,
           "weight": 1.0,
-          "contribution": -0.24,
+          "contribution": -0.2,
           "note": "",
           "analysis": "力道輕微，台幣貶值，外資匯兌動能較不利進場買股"
         }
@@ -618,7 +618,7 @@
       ],
       "attribution": {
         "bull_force": 3.81,
-        "bear_force": -2.18,
+        "bear_force": -2.14,
         "push": [
           {
             "key": "xlf",
@@ -665,17 +665,17 @@
           {
             "key": "usdtwd",
             "name": "台幣匯率",
-            "value": "+0.12%",
-            "base": -0.24,
+            "value": "+0.10%",
+            "base": -0.2,
             "weight": 1.0,
-            "contribution": -0.24,
+            "contribution": -0.2,
             "note": "",
             "analysis": "力道輕微，台幣貶值，外資匯兌動能較不利進場買股"
           }
         ],
         "neutral": []
       },
-      "reasoning": "多空力道接近（推升 +3.8、拖累 -2.2）；「美股金融類股」偏多與「美股公用事業ETF」偏空相互抵銷，方向不明。",
+      "reasoning": "多空力道接近（推升 +3.8、拖累 -2.1）；「美股金融類股」偏多與「美股公用事業ETF」偏空相互抵銷，方向不明。",
       "confidence": {
         "label": "方向不明",
         "dots": "○○○○○",
@@ -683,9 +683,9 @@
       },
       "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
       "label": "股息型",
-      "actual": "平 -0.04% ✗",
-      "actual_pct": -0.04,
-      "hit": false
+      "actual": "平 +0.06% ✓",
+      "actual_pct": 0.06,
+      "hit": true
     },
     "bond": {
       "direction": "震盪 ➡️",
@@ -795,14 +795,14 @@
       },
       "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
       "label": "債券型",
-      "actual": "平 -0.30% ✓",
-      "actual_pct": -0.3,
+      "actual": "平 -0.33% ✓",
+      "actual_pct": -0.33,
       "hit": true
     }
   },
   "date": "2026-07-02",
-  "generated_at": "2026-07-02 13:59",
-  "actual": "跌 -0.57% ✓",
-  "actual_pct": -0.57,
+  "generated_at": "2026-07-02 14:09",
+  "actual": "跌 -0.58% ✓",
+  "actual_pct": -0.58,
   "hit": true
 }

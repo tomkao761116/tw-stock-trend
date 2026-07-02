@@ -202,17 +202,23 @@ def save_data(result, date_str=None):
     payload["date"] = date_str
     payload["generated_at"] = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
     payload.setdefault("actual", None)  # 隔日實際漲跌，供回測填寫
-    # 保留 backtest 已填的實際結果，避免重跑 main.py 覆蓋
+    # 保留 backtest 已填的實際結果，避免重跑 main.py 覆蓋——但只在「這次算出來的
+    # 方向」跟「上次回測時的方向」一致才沿用。若不一致（代表 config.py 改了因子/
+    # 權重/門檻，重算後方向變了），舊的命中判定已經是對著舊方向算的、失真了，
+    # 清掉讓 backtest.py 下次執行時用新方向重新判定，而不是留著顯示矛盾的結果。
     if os.path.exists(path):
         with open(path, encoding="utf-8") as fp:
             old = json.load(fp)
-        for k in ("actual", "actual_pct", "hit"):
-            if old.get(k) is not None:
-                payload[k] = old[k]
-        # 各類別（科技股/金融股/傳產）也要同步保留已回測的實際結果
+        if old.get("direction") == payload.get("direction"):
+            for k in ("actual", "actual_pct", "hit"):
+                if old.get(k) is not None:
+                    payload[k] = old[k]
+        # 各類別（科技股/金融股/傳產/股息型/債券型）也要同步保留已回測的實際結果
         old_cats = old.get("categories", {})
         for ck, cr in payload.get("categories", {}).items():
             old_cr = old_cats.get(ck, {})
+            if old_cr.get("direction") != cr.get("direction"):
+                continue  # 方向變了，舊結果失真，不沿用（保持 None，等 backtest 重算）
             for k in ("actual", "actual_pct", "hit"):
                 if old_cr.get(k) is not None:
                     cr[k] = old_cr[k]
