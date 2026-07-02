@@ -83,6 +83,30 @@ _FACTOR_FUNCS = {
 }
 
 
+def _strength_tier(base):
+    """依標準化分數(|base|∈[0,1])判斷這次數值離滿格強度多遠。"""
+    a = abs(base)
+    if a >= 0.8:
+        return "力道非常強"
+    if a >= 0.5:
+        return "力道明顯"
+    if a >= 0.25:
+        return "力道溫和"
+    if a > 0.05:
+        return "力道輕微"
+    return "幾乎中性"
+
+
+def _factor_analysis(key, base):
+    """依這次實際數值動態生成一句解讀，而非固定說明文字。"""
+    info = config.FACTOR_INFO.get(key, {})
+    note = info.get("pos_note") if base >= 0 else info.get("neg_note")
+    tier = _strength_tier(base)
+    if abs(base) <= 0.05 or not note:
+        return tier
+    return f"{tier}，{note}"
+
+
 def evaluate(raw, threshold_scale=1.0):
     """主入口：吃 data_fetch.fetch_all() 的結果，回傳預測 dict。
 
@@ -102,7 +126,8 @@ def evaluate(raw, threshold_scale=1.0):
         total += contribution
         factors.append({"key": name, "name": label, "value": value,
                         "base": round(base, 2), "weight": weight,
-                        "contribution": round(contribution, 2), "note": ""})
+                        "contribution": round(contribution, 2), "note": "",
+                        "analysis": _factor_analysis(name, base)})
 
     bull = config.THRESHOLD_BULLISH * threshold_scale
     bear = config.THRESHOLD_BEARISH * threshold_scale

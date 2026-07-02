@@ -81,6 +81,8 @@ def _print_factor(f, tag):
     why = _info(f["key"], "why")
     if why:
         print(f'       └ {why}')
+    if f.get("analysis"):
+        print(f'       └ 解讀：{f["analysis"]}')
 
 
 def _wrap(text, width):
@@ -144,8 +146,15 @@ def save_report(result):
 def _md_factor(f, tag):
     nick = _info(f["key"], "nick") or f["name"]
     why = _info(f["key"], "why")
+    url = _info(f["key"], "source_url")
     line = f"- **{nick}**　{f['value']}　→ {tag} {_stars(f['contribution'])}"
-    return line + (f"\n  - {why}" if why else "")
+    if url:
+        line += f"　[查看原始資料 ↗]({url})"
+    if why:
+        line += f"\n  - {why}"
+    if f.get("analysis"):
+        line += f"\n  - 解讀：{f['analysis']}"
+    return line
 
 
 # ─────────────────────────── 結構化資料（供網頁/回測）───────────────────────────

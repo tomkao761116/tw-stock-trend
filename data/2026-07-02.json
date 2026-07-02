@@ -1,6 +1,6 @@
 {
   "direction": "偏空 📉",
-  "total_score": -6.68,
+  "total_score": -6.72,
   "factors": [
     {
       "key": "night_futures",
@@ -9,7 +9,8 @@
       "base": -1.0,
       "weight": 2.5,
       "contribution": -2.5,
-      "note": ""
+      "note": "",
+      "analysis": "力道非常強，夜盤賣壓明顯，市場資金已提前反映保守氣氛，開盤承壓機率較高"
     },
     {
       "key": "sox",
@@ -18,7 +19,8 @@
       "base": -1.0,
       "weight": 2.5,
       "contribution": -2.5,
-      "note": ""
+      "note": "",
+      "analysis": "力道非常強，半導體類股走弱，對台股科技權值股形成壓力"
     },
     {
       "key": "tsm_adr",
@@ -27,7 +29,8 @@
       "base": -1.0,
       "weight": 2.5,
       "contribution": -2.5,
-      "note": ""
+      "note": "",
+      "analysis": "力道非常強，台積電美股走弱，開盤承壓機率高"
     },
     {
       "key": "nasdaq",
@@ -36,7 +39,8 @@
       "base": -0.44,
       "weight": 2.0,
       "contribution": -0.88,
-      "note": ""
+      "note": "",
+      "analysis": "力道溫和，美國科技股氣氛轉弱，台股類股連動承壓"
     },
     {
       "key": "foreign_buy",
@@ -45,7 +49,8 @@
       "base": 1.0,
       "weight": 2.0,
       "contribution": 2.0,
-      "note": ""
+      "note": "",
+      "analysis": "力道非常強，外資資金持續流入現貨市場，籌碼面偏多"
     },
     {
       "key": "foreign_futures",
@@ -54,16 +59,18 @@
       "base": -0.14,
       "weight": 2.0,
       "contribution": -0.28,
-      "note": ""
+      "note": "",
+      "analysis": "力道輕微，外資期貨轉為加碼放空，對後市偏保守"
     },
     {
       "key": "usdtwd",
       "name": "台幣匯率",
-      "value": "+0.13%",
-      "base": -0.26,
+      "value": "+0.15%",
+      "base": -0.3,
       "weight": 1.0,
-      "contribution": -0.26,
-      "note": ""
+      "contribution": -0.3,
+      "note": "",
+      "analysis": "力道溫和，台幣貶值，外資匯兌動能較不利進場買股"
     },
     {
       "key": "vix",
@@ -72,7 +79,8 @@
       "base": 0,
       "weight": 2.0,
       "contribution": 0.0,
-      "note": ""
+      "note": "",
+      "analysis": "幾乎中性"
     },
     {
       "key": "margin",
@@ -81,7 +89,8 @@
       "base": 0.23,
       "weight": 1.0,
       "contribution": 0.23,
-      "note": ""
+      "note": "",
+      "analysis": "力道輕微，融資餘額縮減，顯示散戶追高動能降溫，籌碼相對健康"
     }
   ],
   "threshold_scale": 1.0,
@@ -91,7 +100,7 @@
   ],
   "attribution": {
     "bull_force": 2.23,
-    "bear_force": -8.92,
+    "bear_force": -8.96,
     "push": [
       {
         "key": "foreign_buy",
@@ -100,7 +109,8 @@
         "base": 1.0,
         "weight": 2.0,
         "contribution": 2.0,
-        "note": ""
+        "note": "",
+        "analysis": "力道非常強，外資資金持續流入現貨市場，籌碼面偏多"
       },
       {
         "key": "margin",
@@ -109,7 +119,8 @@
         "base": 0.23,
         "weight": 1.0,
         "contribution": 0.23,
-        "note": ""
+        "note": "",
+        "analysis": "力道輕微，融資餘額縮減，顯示散戶追高動能降溫，籌碼相對健康"
       }
     ],
     "drag": [
@@ -120,7 +131,8 @@
         "base": -1.0,
         "weight": 2.5,
         "contribution": -2.5,
-        "note": ""
+        "note": "",
+        "analysis": "力道非常強，夜盤賣壓明顯，市場資金已提前反映保守氣氛，開盤承壓機率較高"
       },
       {
         "key": "sox",
@@ -129,7 +141,8 @@
         "base": -1.0,
         "weight": 2.5,
         "contribution": -2.5,
-        "note": ""
+        "note": "",
+        "analysis": "力道非常強，半導體類股走弱，對台股科技權值股形成壓力"
       },
       {
         "key": "tsm_adr",
@@ -138,7 +151,8 @@
         "base": -1.0,
         "weight": 2.5,
         "contribution": -2.5,
-        "note": ""
+        "note": "",
+        "analysis": "力道非常強，台積電美股走弱，開盤承壓機率高"
       },
       {
         "key": "nasdaq",
@@ -147,7 +161,18 @@
         "base": -0.44,
         "weight": 2.0,
         "contribution": -0.88,
-        "note": ""
+        "note": "",
+        "analysis": "力道溫和，美國科技股氣氛轉弱，台股類股連動承壓"
+      },
+      {
+        "key": "usdtwd",
+        "name": "台幣匯率",
+        "value": "+0.15%",
+        "base": -0.3,
+        "weight": 1.0,
+        "contribution": -0.3,
+        "note": "",
+        "analysis": "力道溫和，台幣貶值，外資匯兌動能較不利進場買股"
       },
       {
         "key": "foreign_futures",
@@ -156,16 +181,8 @@
         "base": -0.14,
         "weight": 2.0,
         "contribution": -0.28,
-        "note": ""
-      },
-      {
-        "key": "usdtwd",
-        "name": "台幣匯率",
-        "value": "+0.13%",
-        "base": -0.26,
-        "weight": 1.0,
-        "contribution": -0.26,
-        "note": ""
+        "note": "",
+        "analysis": "力道輕微，外資期貨轉為加碼放空，對後市偏保守"
       }
     ],
     "neutral": [
@@ -176,11 +193,12 @@
         "base": 0,
         "weight": 2.0,
         "contribution": 0.0,
-        "note": ""
+        "note": "",
+        "analysis": "幾乎中性"
       }
     ]
   },
-  "reasoning": "主由「台指期夜盤、費半 SOX、台積電 ADR」壓低（合計 -8.9）；「外資買賣超、融資餘額(反向)」提供支撐（+2.2），但不足以扭轉方向。",
+  "reasoning": "主由「台指期夜盤、費半 SOX、台積電 ADR」壓低（合計 -9.0）；「外資買賣超、融資餘額(反向)」提供支撐（+2.2），但不足以扭轉方向。",
   "confidence": {
     "label": "高",
     "dots": "●●●●○",
@@ -189,8 +207,6 @@
   "plain_summary": "昨晚台指期夜盤、美國半導體股表現疲弱，可能拖累今天台股偏向下跌。雖然外資買賣超、散戶融資提供一些支撐，但力道不足以扭轉方向。",
   "events": [],
   "date": "2026-07-02",
-  "generated_at": "2026-07-02 09:33",
-  "actual": null,
-  "actual_pct": null,
-  "hit": null
+  "generated_at": "2026-07-02 11:13",
+  "actual": null
 }

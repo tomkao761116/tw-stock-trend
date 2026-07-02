@@ -56,12 +56,19 @@ def _factor_rows(items, tag):
         nick = html.escape(_info(f["key"], "nick") or f["name"])
         why = html.escape(_info(f["key"], "why"))
         val = html.escape(str(f["value"]))
+        url = _info(f["key"], "source_url")
+        link_html = (f'<a class="srclink" href="{html.escape(url)}" '
+                    f'target="_blank" rel="noopener">查看原始資料 ↗</a>') if url else ""
+        analysis_html = (f'<div class="analysis">解讀：{html.escape(f["analysis"])}</div>'
+                         if f.get("analysis") else "")
         rows.append(
             f'<div class="factor"><div class="frow">'
             f'<span class="fname">{nick}</span>'
             f'<span class="fval">{val}</span>'
             f'<span class="stars">{_stars(f["contribution"])}</span></div>'
-            f'<div class="why">{why}</div></div>')
+            f'<div class="why">{why}</div>'
+            f'{analysis_html}'
+            f'{link_html}</div>')
     return "\n".join(rows)
 
 
@@ -154,6 +161,9 @@ h3{font-size:15px;margin:16px 0 8px} h3.up{color:var(--bull)} h3.down{color:var(
 .frow{display:flex;align-items:center;gap:8px}
 .fname{font-weight:600;flex:1}.fval{color:#555;font-variant-numeric:tabular-nums}.stars{color:#f0a500;font-size:13px}
 .why{color:var(--sub);font-size:13px;margin-top:2px}
+.analysis{color:#444;font-size:13px;margin-top:4px;padding:6px 8px;background:#f7f7f5;border-radius:6px}
+.srclink{display:inline-block;margin-top:6px;font-size:12px;color:#185fa5;text-decoration:none}
+.srclink:hover{text-decoration:underline}
 .neutral,.none{color:var(--sub);font-size:13px}
 details{margin-top:14px;border-top:1px dashed #ddd;padding-top:10px}
 summary{cursor:pointer;color:#555;font-size:14px}
