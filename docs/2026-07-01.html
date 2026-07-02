@@ -45,13 +45,20 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .tab-btn.active{background:#222;color:#fff}
 .tab-panel{display:none}
 .tab-panel.active{display:block}
+.subtabs{display:flex;gap:6px;margin:0 0 14px;overflow-x:auto;padding-bottom:2px}
+.subtab-btn{flex:0 0 auto;padding:6px 12px;border:none;background:#eff0f2;border-radius:7px;
+  font-size:13px;color:#666;cursor:pointer;white-space:nowrap;font-family:inherit}
+.subtab-btn.active{background:#555;color:#fff}
+.subtab-panel{display:none}
+.subtab-panel.active{display:block}
+.alias-note{font-size:12px;color:var(--sub);font-style:italic;margin:0 0 8px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
   <a class="backlink" href="index.html">← 回首頁</a>
-<div class="tabs"><button class="tab-btn active" data-tab="market">大盤</button><button class="tab-btn" data-tab="tech">科技股/半導體</button><button class="tab-btn" data-tab="financial">金融股</button><button class="tab-btn" data-tab="traditional">傳產/原物料/航運</button></div><div class="tab-panel active" id="tab-market">
+<div class="tabs"><button class="tab-btn active" data-tab="market">大盤</button><button class="tab-btn" data-tab="tech">科技股/半導體</button><button class="tab-btn" data-tab="financial">金融股</button><button class="tab-btn" data-tab="traditional">傳產/原物料/航運</button><button class="tab-btn" data-tab="etf">ETF</button></div><div class="tab-panel active" id="tab-market">
   <div class="card today bull">
     <div class="date">2026-07-01 盤前預估　·　更新 2026-07-01 08:09</div>
     <div class="direction">偏多 📈</div>
@@ -78,8 +85,8 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
       <table><tr><th>因子</th><th>數值</th><th>權重</th><th>貢獻</th></tr><tr><td>台指期夜盤</td><td>+1.49% (夜盤47428)</td><td>2.5</td><td>+2.48</td></tr><tr><td>費半 SOX</td><td>+3.92%</td><td>2.5</td><td>+2.50</td></tr><tr><td>台積電 ADR</td><td>+4.94%</td><td>2.5</td><td>+2.50</td></tr><tr><td>那斯達克</td><td>+1.52%</td><td>2.0</td><td>+2.00</td></tr><tr><td>外資買賣超</td><td>-5.1 億</td><td>2.0</td><td>-0.07</td></tr><tr><td>外資期貨</td><td>淨-83063 口 (Δ-6436)</td><td>2.0</td><td>-1.61</td></tr><tr><td>台幣匯率</td><td>-0.11%</td><td>1.0</td><td>+0.22</td></tr><tr><td>VIX 恐慌</td><td>16.4</td><td>2.0</td><td>+0.00</td></tr><tr><td>融資餘額(反向)</td><td>餘額6117億 (+2.93%)</td><td>1.0</td><td>-1.00</td></tr></table>
       <p class="tech">主由「費半 SOX、台積電 ADR、台指期夜盤」推升（合計 +9.7）；「外資期貨、融資餘額(反向)」形成拖累（-2.7），但不足以扭轉方向。</p>
     </details>
-  </div></div><div class="tab-panel" id="tab-tech"><div class="card"><p class="none">當天尚無科技股/半導體資料（此功能較新，舊資料未涵蓋）</p></div></div><div class="tab-panel" id="tab-financial"><div class="card"><p class="none">當天尚無金融股資料（此功能較新，舊資料未涵蓋）</p></div></div><div class="tab-panel" id="tab-traditional"><div class="card"><p class="none">當天尚無傳產/原物料/航運資料（此功能較新，舊資料未涵蓋）</p></div></div>
-  <div class="disclaimer">更新時間 2026-07-02 12:57　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
+  </div></div><div class="tab-panel" id="tab-tech"><div class="card"><p class="none">尚無科技股/半導體資料（此功能較新，舊資料未涵蓋）</p></div></div><div class="tab-panel" id="tab-financial"><div class="card"><p class="none">尚無金融股資料（此功能較新，舊資料未涵蓋）</p></div></div><div class="tab-panel" id="tab-traditional"><div class="card"><p class="none">尚無傳產/原物料/航運資料（此功能較新，舊資料未涵蓋）</p></div></div><div class="tab-panel" id="tab-etf"><div class="subtabs"><button class="subtab-btn active" data-subtab="dividend">股息型</button><button class="subtab-btn" data-subtab="growth">成長型</button><button class="subtab-btn" data-subtab="bond">債券型</button></div><div class="subtab-panel active" id="subtab-dividend"><div class="card"><p class="none">尚無股息型資料（此功能較新，舊資料未涵蓋）</p></div></div><div class="subtab-panel" id="subtab-growth"><div class="card"><p class="none">尚無成長型資料（此功能較新，舊資料未涵蓋）</p></div></div><div class="subtab-panel" id="subtab-bond"><div class="card"><p class="none">尚無債券型資料（此功能較新，舊資料未涵蓋）</p></div></div></div>
+  <div class="disclaimer">更新時間 2026-07-02 13:43　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
 </div>
 <script>
 document.querySelectorAll('.tab-btn').forEach(function(btn) {
@@ -90,10 +97,26 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
 });
+document.querySelectorAll('.subtab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.subtab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.subtab-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('subtab-' + btn.dataset.subtab).classList.add('active');
+  });
+});
 (function() {
   var hash = location.hash.replace('#', '');
-  var btn = hash && document.querySelector('.tab-btn[data-tab="' + hash + '"]');
-  if (btn) btn.click();
+  if (!hash) return;
+  if (hash.indexOf('etf-') === 0) {
+    var etfBtn = document.querySelector('.tab-btn[data-tab="etf"]');
+    if (etfBtn) etfBtn.click();
+    var subBtn = document.querySelector('.subtab-btn[data-subtab="' + hash.slice(4) + '"]');
+    if (subBtn) subBtn.click();
+  } else {
+    var btn = document.querySelector('.tab-btn[data-tab="' + hash + '"]');
+    if (btn) btn.click();
+  }
 })();
 </script>
 </body>

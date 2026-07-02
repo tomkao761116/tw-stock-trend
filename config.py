@@ -13,6 +13,7 @@ TICKERS = {
     "copper": "HG=F",      # 銅期貨（傳產類別用）
     "dxy": "DX-Y.NYB",     # 美元指數（傳產類別用）
     "bdry": "BDRY",        # 波羅的海乾散貨運價代理 ETF（傳產類別用）
+    "tlt": "TLT",           # 美國20年期公債ETF（債券型類別用，隔夜直接代理）
 }
 
 # ── 因子權重（數字越大影響越大；可自由調整）────────────────────
@@ -47,6 +48,7 @@ NORMALIZERS = {
     "copper_full_pct": 2.5,     # 銅期貨 2.5% = 滿分
     "dxy_full_pct": 0.6,        # 美元指數 0.6% = 滿分
     "bdry_full_pct": 3.0,       # 航運 ETF 3% = 滿分
+    "tlt_full_pct": 1.5,        # 美國20年期公債ETF 1.5% = 滿分
 }
 
 # ── 分類門檻 ──────────────────────────────────────────────────
@@ -86,6 +88,22 @@ CATEGORIES = {
         "weights": {"oil": 2.0, "copper": 1.5, "dxy": 1.5, "bdry": 2.0},
         "threshold_bullish": 2.3, "threshold_bearish": -2.3,
         "backtest_ticker": None,  # 涵蓋多個異質產業，無乾淨的單一回測標的
+    },
+    # 以下兩個是 ETF 分頁底下的子類別（見 webgen.py 的 _ETF_SUBTABS）。
+    # 「成長型」子分頁不在這裡：它是既有 tech 類別的別名，直接借用結果、不重新運算。
+    "dividend": {
+        "label": "股息型",
+        "factors": ["tnx_inv", "xlf", "foreign_buy", "usdtwd"],
+        "weights": {"tnx_inv": 2.0, "xlf": 2.0, "foreign_buy": 1.5, "usdtwd": 1.0},
+        "threshold_bullish": 2.0, "threshold_bearish": -2.0,
+        "backtest_ticker": "0056.TW",  # 元大高股息
+    },
+    "bond": {
+        "label": "債券型",
+        "factors": ["tlt", "tnx_inv", "vix_bond"],
+        "weights": {"tlt": 3.0, "tnx_inv": 2.0, "vix_bond": 1.5},
+        "threshold_bullish": 2.3, "threshold_bearish": -2.3,
+        "backtest_ticker": "00679B.TWO",  # 元大美債20年（上櫃）
     },
 }
 
@@ -166,6 +184,21 @@ FACTOR_INFO = {
              "pos_note": "運價走升，航運類股獲利展望轉佳",
              "neg_note": "運價走跌，航運類股獲利展望轉弱",
              "source_url": "https://finance.yahoo.com/quote/BDRY"},
+    "tnx_inv": {"nick": "美債10年殖利率(債券效應)",
+               "why": "殖利率走升時，固定收益型資產的相對吸引力下降，對高股息股與債券型ETF通常是壓力"
+                      "（與金融股分頁的殖利率因子方向相反）",
+               "pos_note": "殖利率走跌，固定收益資產相對更有吸引力，對股息股與債券偏多",
+               "neg_note": "殖利率走升，資金可能轉向新發債券，對高股息股與債券型ETF形成壓力",
+               "source_url": "https://finance.yahoo.com/quote/%5ETNX"},
+    "tlt": {"nick": "美國20年期公債ETF",
+            "why": "追蹤美國長天期公債價格，是台灣債券型ETF最直接的隔夜參考",
+            "pos_note": "美債價格走升，台灣債券型ETF開盤同向機率高",
+            "neg_note": "美債價格走跌，台灣債券型ETF開盤同向承壓",
+            "source_url": "https://finance.yahoo.com/quote/TLT"},
+    "vix_bond": {"nick": "美股恐慌指數(避險效應)",
+                "why": "市場恐慌時資金常轉向公債避險，故對債券型ETF是正向訊號（與股票類別方向相反）",
+                "pos_note": "市場恐慌情緒升溫，避險資金可能流向公債，對債券型ETF偏多",
+                "source_url": "https://finance.yahoo.com/quote/%5EVIX"},
 }
 
 # ── FinMind API（台股籌碼資料，免費註冊取得 token）──────────────

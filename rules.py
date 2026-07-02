@@ -74,6 +74,25 @@ def _dxy_factor(quote):
     return base, f'{quote["pct"]:+.2f}%'
 
 
+def _tnx_inv_factor(quote):
+    """殖利率反向版：走升對高股息股/債券是壓力（債券替代效應），故取負號。
+    與 _pct_factor 算出的「tnx」正向版是同一份原始資料，服務不同類別的相反語意。"""
+    if quote is None:
+        return None, None
+    base = _clamp(-quote["pct"] / config.NORMALIZERS["tnx_full_pct"])
+    return base, f'{quote["pct"]:+.2f}%'
+
+
+def _vix_bond_factor(quote):
+    """VIX 避險版：恐慌升溫資金轉向公債避險，故取正號（與股票類別的 VIX 因子方向相反）。"""
+    if quote is None:
+        return None, None
+    n = config.NORMALIZERS
+    over = quote["last"] - n["vix_base"]
+    base = _clamp(max(over, 0) / n["vix_range"], 0, 1)
+    return base, f'{quote["last"]:.1f}'
+
+
 # 因子名稱 → (中文標籤, 計算函式)
 _FACTOR_FUNCS = {
     "night_futures": ("台指期夜盤", lambda d: _night_factor(d["night_futures"])),
@@ -99,6 +118,10 @@ _FACTOR_FUNCS = {
     "dxy": ("美元指數", lambda d: _dxy_factor(d["dxy"])),
     "bdry": ("航運指數(BDI代理)",
              lambda d: _pct_factor(d["bdry"], config.NORMALIZERS["bdry_full_pct"])),
+    "tnx_inv": ("美債10年殖利率(債券效應)", lambda d: _tnx_inv_factor(d["tnx"])),
+    "tlt": ("美國20年期公債ETF",
+            lambda d: _pct_factor(d["tlt"], config.NORMALIZERS["tlt_full_pct"])),
+    "vix_bond": ("VIX 恐慌(避險效應)", lambda d: _vix_bond_factor(d["vix"])),
 }
 
 

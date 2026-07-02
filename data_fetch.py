@@ -43,9 +43,10 @@ def fetch_us_overnight():
 
 
 def fetch_sector_signals():
-    """金融股/傳產類別用的額外訊號：美股金融類股、美債殖利率、原物料、航運。"""
+    """金融股/傳產/股息型/債券型類別用的額外訊號：美股金融類股、美債殖利率、
+    原物料、航運、美國公債ETF。"""
     return {k: fetch_market_quote(k) for k in
-            ("xlf", "tnx", "oil", "copper", "dxy", "bdry")}
+            ("xlf", "tnx", "oil", "copper", "dxy", "bdry", "tlt")}
 
 
 # ── FinMind 台股籌碼 ─────────────────────────────────────────

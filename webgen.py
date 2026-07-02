@@ -153,10 +153,21 @@ def _history_table_html(items, extractor, tab_id):
     </table>'''
 
 
-# 分頁定義：(分頁id, 標籤, 類別key或None=大盤)，順序即畫面上的分頁順序
+# 頂層分頁定義：(分頁id, 標籤, 類別key)。cat_key="__etf__" 是特殊標記，
+# 代表這個分頁底下不是單一類別卡片，而是巢狀子分頁（見 _ETF_SUBTABS）。
 _TAB_DEFS = [("market", "大盤", None)] + [
     (key, config.CATEGORIES[key]["label"], key) for key in _CATEGORY_ORDER
+] + [("etf", "ETF", "__etf__")]
+
+# ETF 分頁底下的子分頁：(子分頁id, 標籤, 類別key)。
+# "growth"（成長型）不是獨立算出來的類別——它是既有 tech(科技股/半導體) 的別名，
+# 直接借用同一份預測結果展示，避免跟科技股分頁算出兩份可能不一致的重複因子。
+_ETF_SUBTABS = [
+    ("dividend", config.CATEGORIES["dividend"]["label"], "dividend"),
+    ("growth", "成長型", "tech"),
+    ("bond", config.CATEGORIES["bond"]["label"], "bond"),
 ]
+_ETF_ALIAS_NOTE = '<p class="alias-note">＊本分頁與「科技股/半導體」分頁共用同一份預測結果</p>'
 
 
 def _tab_button(tab_id, label, active):
@@ -164,61 +175,106 @@ def _tab_button(tab_id, label, active):
     return f'<button class="{cls}" data-tab="{tab_id}">{html.escape(label)}</button>'
 
 
-def _tab_panel(tab_id, active, card_html, history_html):
+def _tab_panel(tab_id, active, inner_html):
     cls = "tab-panel active" if active else "tab-panel"
-    hist_block = (f'<div class="card"><h2>歷史紀錄</h2>{history_html}</div>'
-                 if history_html else "")
-    return f'<div class="{cls}" id="tab-{tab_id}">{card_html}{hist_block}</div>'
+    return f'<div class="{cls}" id="tab-{tab_id}">{inner_html}</div>'
+
+
+def _subtab_button(sub_id, label, active):
+    cls = "subtab-btn active" if active else "subtab-btn"
+    return f'<button class="{cls}" data-subtab="{sub_id}">{html.escape(label)}</button>'
+
+
+def _subtab_panel(sub_id, active, inner_html):
+    cls = "subtab-panel active" if active else "subtab-panel"
+    return f'<div class="{cls}" id="subtab-{sub_id}">{inner_html}</div>'
+
+
+def _category_panel(tab_id, label, cat_key, latest, items=None, note=""):
+    """類別分頁內容（卡片 + 選填的歷史表），供頂層類別分頁與 ETF 子分頁共用——
+    兩者結構相同，都是讀 latest["categories"][cat_key]。
+    items=None（單日封存頁）→ 只顯示卡片；有給 items（首頁）→ 卡片後附這個類別的歷史表。
+    """
+    cr = latest.get("categories", {}).get(cat_key)
+    if cr is None:
+        return (f'<div class="card"><p class="none">'
+               f'尚無{html.escape(label)}資料（此功能較新，舊資料未涵蓋）</p></div>')
+    card_html = note + _full_card(label, cr, events=latest.get("events", []))
+    if not items or len(items) <= 1:
+        return card_html
+    extractor = lambda r, k=cat_key: r.get("categories", {}).get(k)
+    history_html = _history_table_html(items, extractor, tab_id)
+    hist_block = f'<div class="card"><h2>歷史紀錄</h2>{history_html}</div>' if history_html else ""
+    return card_html + hist_block
+
+
+def _build_etf_subtabs(items):
+    """ETF 分頁底下的子分頁：股息型/成長型(別名)/債券型，各自完整卡片 + 各自歷史表。"""
+    latest = items[0]
+    buttons, panels = [], []
+    for i, (sub_id, label, cat_key) in enumerate(_ETF_SUBTABS):
+        active = (i == 0)
+        buttons.append(_subtab_button(sub_id, label, active))
+        note = _ETF_ALIAS_NOTE if sub_id == "growth" else ""
+        inner = _category_panel(f"etf-{sub_id}", label, cat_key, latest, items, note=note)
+        panels.append(_subtab_panel(sub_id, active, inner))
+    return f'<div class="subtabs">{"".join(buttons)}</div>{"".join(panels)}'
+
+
+def _build_etf_day_subtabs(r):
+    """ETF 分頁底下的子分頁（單日封存頁版，不含歷史表）。"""
+    buttons, panels = [], []
+    for i, (sub_id, label, cat_key) in enumerate(_ETF_SUBTABS):
+        active = (i == 0)
+        buttons.append(_subtab_button(sub_id, label, active))
+        note = _ETF_ALIAS_NOTE if sub_id == "growth" else ""
+        inner = _category_panel(f"etf-{sub_id}", label, cat_key, r, note=note)
+        panels.append(_subtab_panel(sub_id, active, inner))
+    return f'<div class="subtabs">{"".join(buttons)}</div>{"".join(panels)}'
 
 
 def _build_tabs(items):
-    """首頁分頁：大盤 + 各類別，各自完整卡片 + 各自歷史表。"""
+    """首頁分頁：大盤 + 各類別 + ETF(內有子分頁)，各自完整卡片 + 各自歷史表。"""
     latest = items[0]
     buttons, panels = [], []
     for i, (tab_id, label, cat_key) in enumerate(_TAB_DEFS):
         active = (i == 0)
         buttons.append(_tab_button(tab_id, label, active))
 
-        if cat_key is None:
+        if cat_key == "__etf__":
+            inner = _build_etf_subtabs(items)
+        elif cat_key is None:
             card_html = _full_card(f'{latest["date"]} 盤前預估{_gen_at(latest)}',
                                    latest, events=latest.get("events", []))
             extractor = lambda r: r
+            history_html = (_history_table_html(items, extractor, tab_id)
+                            if len(items) > 1 else "")
+            inner = card_html + (f'<div class="card"><h2>歷史紀錄</h2>{history_html}</div>'
+                                 if history_html else "")
         else:
-            cr = latest.get("categories", {}).get(cat_key)
-            if cr is None:
-                card_html = (f'<div class="card"><p class="none">'
-                            f'今日尚無{html.escape(label)}資料（此功能較新，舊資料未涵蓋）</p></div>')
-            else:
-                card_html = _full_card(label, cr, events=latest.get("events", []))
-            extractor = lambda r, k=cat_key: r.get("categories", {}).get(k)
+            inner = _category_panel(tab_id, label, cat_key, latest, items)
 
-        history_html = (_history_table_html(items, extractor, tab_id)
-                        if len(items) > 1 else "")
-        panels.append(_tab_panel(tab_id, active, card_html, history_html))
+        panels.append(_tab_panel(tab_id, active, inner))
 
     return f'<div class="tabs">{"".join(buttons)}</div>{"".join(panels)}'
 
 
 def _build_day_tabs(r):
-    """單日封存頁的分頁：大盤 + 各類別，各自完整卡片（不含歷史表，歷史只在首頁）。
+    """單日封存頁的分頁：大盤 + 各類別 + ETF(內有子分頁)，各自完整卡片（不含歷史表）。
     與首頁用同一套分頁元件，讓「點大盤看大盤、點分類看分類」的體驗前後一致。"""
     buttons, panels = [], []
     for i, (tab_id, label, cat_key) in enumerate(_TAB_DEFS):
         active = (i == 0)
         buttons.append(_tab_button(tab_id, label, active))
 
-        if cat_key is None:
-            card_html = _full_card(f'{r["date"]} 盤前預估{_gen_at(r)}',
-                                   r, events=r.get("events", []))
+        if cat_key == "__etf__":
+            inner = _build_etf_day_subtabs(r)
+        elif cat_key is None:
+            inner = _full_card(f'{r["date"]} 盤前預估{_gen_at(r)}', r, events=r.get("events", []))
         else:
-            cr = r.get("categories", {}).get(cat_key)
-            if cr is None:
-                card_html = (f'<div class="card"><p class="none">'
-                            f'當天尚無{html.escape(label)}資料（此功能較新，舊資料未涵蓋）</p></div>')
-            else:
-                card_html = _full_card(label, cr, events=r.get("events", []))
+            inner = _category_panel(tab_id, label, cat_key, r)
 
-        panels.append(_tab_panel(tab_id, active, card_html, ""))
+        panels.append(_tab_panel(tab_id, active, inner))
 
     return f'<div class="tabs">{"".join(buttons)}</div>{"".join(panels)}'
 
@@ -232,10 +288,26 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
 });
+document.querySelectorAll('.subtab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.subtab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.subtab-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('subtab-' + btn.dataset.subtab).classList.add('active');
+  });
+});
 (function() {
   var hash = location.hash.replace('#', '');
-  var btn = hash && document.querySelector('.tab-btn[data-tab="' + hash + '"]');
-  if (btn) btn.click();
+  if (!hash) return;
+  if (hash.indexOf('etf-') === 0) {
+    var etfBtn = document.querySelector('.tab-btn[data-tab="etf"]');
+    if (etfBtn) etfBtn.click();
+    var subBtn = document.querySelector('.subtab-btn[data-subtab="' + hash.slice(4) + '"]');
+    if (subBtn) subBtn.click();
+  } else {
+    var btn = document.querySelector('.tab-btn[data-tab="' + hash + '"]');
+    if (btn) btn.click();
+  }
 })();
 """
 
@@ -281,6 +353,13 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .tab-btn.active{background:#222;color:#fff}
 .tab-panel{display:none}
 .tab-panel.active{display:block}
+.subtabs{display:flex;gap:6px;margin:0 0 14px;overflow-x:auto;padding-bottom:2px}
+.subtab-btn{flex:0 0 auto;padding:6px 12px;border:none;background:#eff0f2;border-radius:7px;
+  font-size:13px;color:#666;cursor:pointer;white-space:nowrap;font-family:inherit}
+.subtab-btn.active{background:#555;color:#fff}
+.subtab-panel{display:none}
+.subtab-panel.active{display:block}
+.alias-note{font-size:12px;color:var(--sub);font-style:italic;margin:0 0 8px}
 """
 
 
