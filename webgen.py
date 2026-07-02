@@ -121,72 +121,14 @@ def _full_card(title, r, events=None):
   </div>'''
 
 
-def _today_card(r):
-    """大盤卡片（每日歷史檢視頁用，維持既有合併版面：大盤 + 類別卡片堆疊）。"""
-    return _full_card(f'{r["date"]} 盤前預估{_gen_at(r)}', r, events=r.get("events", []))
-
-
-def _category_card(r):
-    """科技股/金融股/傳產等細分類別卡片，結構與大盤卡片相同但字級較小。"""
-    cls = _dir_class(r["direction"])
-    conf = r.get("confidence", {})
-    attr = r.get("attribution", {})
-    push = attr.get("push", [])
-    drag = attr.get("drag", [])
-    neutral = attr.get("neutral", [])
-    neutral_html = ""
-    if neutral:
-        names = "、".join(html.escape(_info(f["key"], "nick") or f["name"])
-                         for f in neutral)
-        neutral_html = f'<p class="neutral">影響不大：{names}</p>'
-
-    table_rows = "".join(
-        f'<tr><td>{html.escape(f["name"])}</td><td>{html.escape(str(f["value"]))}</td>'
-        f'<td>{f["weight"]}</td><td>{f["contribution"]:+.2f}</td></tr>'
-        for f in r["factors"])
-    bull, bear = r.get("thresholds", [0, 0])
-    actual = r.get("actual")
-    actual_html = (f'<p class="cat-actual">實際結果：{html.escape(str(actual))}</p>'
-                  if actual else "")
-
-    return f'''
-  <div class="card cat {cls}">
-    <div class="cat-label">{html.escape(r.get("label", ""))}</div>
-    <div class="direction">{html.escape(r["direction"])}</div>
-    <div class="conf">信心 <span class="dots">{conf.get("dots","")}</span> {html.escape(conf.get("label",""))}</div>
-    <p class="summary">{html.escape(r.get("plain_summary",""))}</p>
-
-    <h3 class="up">▲ 偏向上漲的因素</h3>
-    {_factor_rows(push, "利多") or '<p class="none">（無）</p>'}
-    <h3 class="down">▼ 偏向下跌的因素</h3>
-    {_factor_rows(drag, "利空") or '<p class="none">（無）</p>'}
-    {neutral_html}
-    {actual_html}
-
-    <details>
-      <summary>數據明細（進階）</summary>
-      <p class="force">偏多力道 {attr.get("bull_force",0):+.2f}｜偏空力道 {attr.get("bear_force",0):+.2f}｜
-      總分 {r.get("total_score",0):+.2f}（多≥{bull:+.1f} / 空≤{bear:+.1f}）</p>
-      <table><tr><th>因子</th><th>數值</th><th>權重</th><th>貢獻</th></tr>{table_rows}</table>
-      <p class="tech">{html.escape(r.get("reasoning",""))}</p>
-    </details>
-  </div>'''
-
-
 # 類別顯示順序：與 config.CATEGORIES 定義順序一致（tech/financial/traditional）
 _CATEGORY_ORDER = ["tech", "financial", "traditional"]
 
 
-def _category_cards(r):
-    cats = r.get("categories", {})
-    cards = "".join(_category_card(cats[k]) for k in _CATEGORY_ORDER if k in cats)
-    if not cards:
-        return ""  # 舊資料（此功能上線前）沒有類別欄位，不顯示空標題
-    return f'<div class="section-title">細分類別</div>{cards}'
-
-
-def _history_table_html(items, extractor):
-    """通用歷史表：extractor(r) 回傳該日「這個分頁」的結果 dict（無資料回 None，跳過該列）。"""
+def _history_table_html(items, extractor, tab_id):
+    """通用歷史表：extractor(r) 回傳該日「這個分頁」的結果 dict（無資料回 None，跳過該列）。
+    tab_id：連結要帶去的分頁錨點，讓點「查看」直接開到同一個分頁（大盤不需要錨點）。"""
+    anchor = "" if tab_id == "market" else f"#{tab_id}"
     rows = []
     for r in items:
         cr = extractor(r)
@@ -196,12 +138,13 @@ def _history_table_html(items, extractor):
         actual = cr.get("actual")
         actual_txt = html.escape(str(actual)) if actual else "—"
         date = html.escape(r["date"])
+        href = f"{date}.html{anchor}"
         rows.append(
-            f'<tr><td><a href="{date}.html">{date}</a></td>'
+            f'<tr><td><a href="{href}">{date}</a></td>'
             f'<td class="{cls}">{html.escape(cr["direction"])}</td>'
             f'<td>{cr.get("total_score",0):+.2f}</td>'
             f'<td>{actual_txt}</td>'
-            f'<td><a class="view" href="{date}.html">查看 →</a></td></tr>')
+            f'<td><a class="view" href="{href}">查看 →</a></td></tr>')
     if not rows:
         return ""
     return f'''<table class="hist">
@@ -249,8 +192,33 @@ def _build_tabs(items):
                 card_html = _full_card(label, cr, events=latest.get("events", []))
             extractor = lambda r, k=cat_key: r.get("categories", {}).get(k)
 
-        history_html = _history_table_html(items, extractor) if len(items) > 1 else ""
+        history_html = (_history_table_html(items, extractor, tab_id)
+                        if len(items) > 1 else "")
         panels.append(_tab_panel(tab_id, active, card_html, history_html))
+
+    return f'<div class="tabs">{"".join(buttons)}</div>{"".join(panels)}'
+
+
+def _build_day_tabs(r):
+    """單日封存頁的分頁：大盤 + 各類別，各自完整卡片（不含歷史表，歷史只在首頁）。
+    與首頁用同一套分頁元件，讓「點大盤看大盤、點分類看分類」的體驗前後一致。"""
+    buttons, panels = [], []
+    for i, (tab_id, label, cat_key) in enumerate(_TAB_DEFS):
+        active = (i == 0)
+        buttons.append(_tab_button(tab_id, label, active))
+
+        if cat_key is None:
+            card_html = _full_card(f'{r["date"]} 盤前預估{_gen_at(r)}',
+                                   r, events=r.get("events", []))
+        else:
+            cr = r.get("categories", {}).get(cat_key)
+            if cr is None:
+                card_html = (f'<div class="card"><p class="none">'
+                            f'當天尚無{html.escape(label)}資料（此功能較新，舊資料未涵蓋）</p></div>')
+            else:
+                card_html = _full_card(label, cr, events=r.get("events", []))
+
+        panels.append(_tab_panel(tab_id, active, card_html, ""))
 
     return f'<div class="tabs">{"".join(buttons)}</div>{"".join(panels)}'
 
@@ -264,6 +232,11 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
 });
+(function() {
+  var hash = location.hash.replace('#', '');
+  var btn = hash && document.querySelector('.tab-btn[data-tab="' + hash + '"]');
+  if (btn) btn.click();
+})();
 """
 
 
@@ -301,11 +274,6 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .view{font-size:12px;white-space:nowrap}
 .backlink{display:inline-block;margin:0 0 12px;color:#185fa5;text-decoration:none;font-size:14px}
 .backlink:hover{text-decoration:underline}
-.cat-label{font-size:13px;color:var(--sub);font-weight:600;letter-spacing:.5px}
-.cat .direction{font-size:24px;margin:2px 0 4px}
-.cat.bull .direction{color:var(--bull)} .cat.bear .direction{color:var(--bear)} .cat.flat .direction{color:var(--flat)}
-.cat-actual{font-size:13px;color:var(--sub);margin-top:8px}
-.section-title{font-size:16px;font-weight:700;margin:20px 0 8px}
 .disclaimer{text-align:center;color:var(--sub);font-size:12px;padding:8px 0 24px}
 .tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
 .tab-btn{flex:0 0 auto;padding:8px 14px;border:none;background:#e7e8ec;border-radius:8px;
@@ -353,12 +321,10 @@ def build_site():
         return None
     os.makedirs(DOCS_DIR, exist_ok=True)
 
-    # 每日獨立頁面（可永久連結、單獨分享）
+    # 每日獨立頁面（可永久連結、單獨分享）：與首頁同一套分頁元件
     for r in items:
-        body = (f'  <a class="backlink" href="index.html">← 回首頁</a>\n'
-                f'{_today_card(r)}'
-                f'{_category_cards(r)}')
-        _write(f'{r["date"]}.html', _page(f'台股盤前預估 {r["date"]}', body))
+        body = f'  <a class="backlink" href="index.html">← 回首頁</a>\n{_build_day_tabs(r)}'
+        _write(f'{r["date"]}.html', _page(f'台股盤前預估 {r["date"]}', body, script=_TAB_SCRIPT))
 
     # 首頁：分頁呈現，大盤 + 各類別各自完整卡片與歷史（預設顯示大盤）
     body = _build_tabs(items)

@@ -38,11 +38,6 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .view{font-size:12px;white-space:nowrap}
 .backlink{display:inline-block;margin:0 0 12px;color:#185fa5;text-decoration:none;font-size:14px}
 .backlink:hover{text-decoration:underline}
-.cat-label{font-size:13px;color:var(--sub);font-weight:600;letter-spacing:.5px}
-.cat .direction{font-size:24px;margin:2px 0 4px}
-.cat.bull .direction{color:var(--bull)} .cat.bear .direction{color:var(--bear)} .cat.flat .direction{color:var(--flat)}
-.cat-actual{font-size:13px;color:var(--sub);margin-top:8px}
-.section-title{font-size:16px;font-weight:700;margin:20px 0 8px}
 .disclaimer{text-align:center;color:var(--sub);font-size:12px;padding:8px 0 24px}
 .tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
 .tab-btn{flex:0 0 auto;padding:8px 14px;border:none;background:#e7e8ec;border-radius:8px;
@@ -57,7 +52,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
   <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
 <div class="tabs"><button class="tab-btn active" data-tab="market">大盤</button><button class="tab-btn" data-tab="tech">科技股/半導體</button><button class="tab-btn" data-tab="financial">金融股</button><button class="tab-btn" data-tab="traditional">傳產/原物料/航運</button></div><div class="tab-panel active" id="tab-market">
   <div class="card today bear">
-    <div class="date">2026-07-02 盤前預估　·　更新 2026-07-02 12:48</div>
+    <div class="date">2026-07-02 盤前預估　·　更新 2026-07-02 12:57</div>
     <div class="direction">偏空 📉</div>
     <div class="conf">信心 <span class="dots">●●●●○</span> 高</div>
     
@@ -111,7 +106,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-02.html">2026-07-02</a></td><td class="bear">偏空 📉</td><td>-8.66</td><td>—</td><td><a class="view" href="2026-07-02.html">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-02.html#tech">2026-07-02</a></td><td class="bear">偏空 📉</td><td>-8.66</td><td>—</td><td><a class="view" href="2026-07-02.html#tech">查看 →</a></td></tr>
     </table></div></div><div class="tab-panel" id="tab-financial">
   <div class="card today bull">
     <div class="date">金融股</div>
@@ -137,7 +132,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-02.html">2026-07-02</a></td><td class="bull">偏多 📈</td><td>+4.98</td><td>—</td><td><a class="view" href="2026-07-02.html">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-02.html#financial">2026-07-02</a></td><td class="bull">偏多 📈</td><td>+4.98</td><td>—</td><td><a class="view" href="2026-07-02.html#financial">查看 →</a></td></tr>
     </table></div></div><div class="tab-panel" id="tab-traditional">
   <div class="card today flat">
     <div class="date">傳產/原物料/航運</div>
@@ -148,7 +143,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 
     <h3 class="up">▲ 偏向上漲的因素</h3>
     <div class="factor"><div class="frow"><span class="fname">航運指數(BDI代理)</span><span class="fval">+1.53%</span><span class="stars">★★☆</span></div><div class="why">追蹤波羅的海乾散貨運價的 ETF，反映航運業運價與景氣</div><div class="analysis">解讀：力道明顯，運價走升，航運類股獲利展望轉佳</div><a class="srclink" href="https://finance.yahoo.com/quote/BDRY" target="_blank" rel="noopener">查看原始資料 ↗</a></div>
-<div class="factor"><div class="frow"><span class="fname">銅期貨</span><span class="fval">+0.51%</span><span class="stars">★☆☆</span></div><div class="why">銅價常被視為全球工業景氣的溫度計，漲跌反映景氣循環強弱</div><div class="analysis">解讀：力道輕微，銅價走升，顯示全球工業需求偏強，激勵傳產類股</div><a class="srclink" href="https://finance.yahoo.com/quote/HG=F" target="_blank" rel="noopener">查看原始資料 ↗</a></div>
+<div class="factor"><div class="frow"><span class="fname">銅期貨</span><span class="fval">+0.44%</span><span class="stars">★☆☆</span></div><div class="why">銅價常被視為全球工業景氣的溫度計，漲跌反映景氣循環強弱</div><div class="analysis">解讀：力道輕微，銅價走升，顯示全球工業需求偏強，激勵傳產類股</div><a class="srclink" href="https://finance.yahoo.com/quote/HG=F" target="_blank" rel="noopener">查看原始資料 ↗</a></div>
 <div class="factor"><div class="frow"><span class="fname">美元指數</span><span class="fval">-0.05%</span><span class="stars">★☆☆</span></div><div class="why">美元走強通常對應原物料價格走弱（反向關係），對傳產類股偏空</div><div class="analysis">解讀：力道輕微，美元走強，原物料價格面臨壓力，對傳產類股偏空</div><a class="srclink" href="https://finance.yahoo.com/quote/DX-Y.NYB" target="_blank" rel="noopener">查看原始資料 ↗</a></div>
     <h3 class="down">▼ 偏向下跌的因素</h3>
     <div class="factor"><div class="frow"><span class="fname">WTI原油</span><span class="fval">-1.02%</span><span class="stars">★☆☆</span></div><div class="why">原油價格是原物料與塑化類股的成本/營收指標，油價漲通常激勵原物料類股</div><div class="analysis">解讀：力道溫和，油價走跌，原物料與塑化類股營收展望轉弱</div><a class="srclink" href="https://finance.yahoo.com/quote/CL=F" target="_blank" rel="noopener">查看原始資料 ↗</a></div>
@@ -156,16 +151,16 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 
     <details>
       <summary>數據明細（進階）</summary>
-      <p class="force">偏多力道 +1.45｜偏空力道 -0.68｜
-      總分 +0.77（多≥+2.3 / 空≤-2.3）</p>
-      <table><tr><th>因子</th><th>數值</th><th>權重</th><th>貢獻</th></tr><tr><td>WTI原油</td><td>-1.02%</td><td>2.0</td><td>-0.68</td></tr><tr><td>銅期貨</td><td>+0.51%</td><td>1.5</td><td>+0.31</td></tr><tr><td>美元指數</td><td>-0.05%</td><td>1.5</td><td>+0.12</td></tr><tr><td>航運指數(BDI代理)</td><td>+1.53%</td><td>2.0</td><td>+1.02</td></tr></table>
+      <p class="force">偏多力道 +1.40｜偏空力道 -0.68｜
+      總分 +0.73（多≥+2.3 / 空≤-2.3）</p>
+      <table><tr><th>因子</th><th>數值</th><th>權重</th><th>貢獻</th></tr><tr><td>WTI原油</td><td>-1.02%</td><td>2.0</td><td>-0.68</td></tr><tr><td>銅期貨</td><td>+0.44%</td><td>1.5</td><td>+0.26</td></tr><tr><td>美元指數</td><td>-0.05%</td><td>1.5</td><td>+0.12</td></tr><tr><td>航運指數(BDI代理)</td><td>+1.53%</td><td>2.0</td><td>+1.02</td></tr></table>
       <p class="tech">多空力道接近（推升 +1.4、拖累 -0.7）；「航運指數(BDI代理)」偏多與「WTI原油」偏空相互抵銷，方向不明。</p>
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-02.html">2026-07-02</a></td><td class="flat">震盪 ➡️</td><td>+0.77</td><td>—</td><td><a class="view" href="2026-07-02.html">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-02.html#traditional">2026-07-02</a></td><td class="flat">震盪 ➡️</td><td>+0.73</td><td>—</td><td><a class="view" href="2026-07-02.html#traditional">查看 →</a></td></tr>
     </table></div></div>
-  <div class="disclaimer">更新時間 2026-07-02 12:48　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
+  <div class="disclaimer">更新時間 2026-07-02 12:57　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
 </div>
 <script>
 document.querySelectorAll('.tab-btn').forEach(function(btn) {
@@ -176,6 +171,11 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
 });
+(function() {
+  var hash = location.hash.replace('#', '');
+  var btn = hash && document.querySelector('.tab-btn[data-tab="' + hash + '"]');
+  if (btn) btn.click();
+})();
 </script>
 </body>
 </html>
