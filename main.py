@@ -20,6 +20,13 @@ def main():
         print(f"\n缺少套件：{e}\n請先執行：pip install -r requirements.txt")
         sys.exit(1)
 
+    valid = sum(1 for v in raw.values() if v is not None)
+    if valid < config.MIN_VALID_FACTORS:
+        print(f"\n❌ 只有 {valid} 個因子取得資料（門檻 {config.MIN_VALID_FACTORS}），"
+              "研判是網路未連上或大規模擷取失敗。")
+        print("為避免用殘缺資料覆蓋今天既有的正確預估，本次執行中止、不存檔、不更新網頁。")
+        sys.exit(1)
+
     today_events = events.events_on()
     scale = config.THRESHOLD_EVENT_SCALE if today_events else 1.0
     result = rules.evaluate(raw, threshold_scale=scale)
