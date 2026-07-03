@@ -84,3 +84,5 @@ data_fetch.py → rules.py → report.py → data/*.json → webgen.py → docs/
 - 本 repo 的註解與 docstring 一律**繁體中文**（既有慣例，優先於個人偏好的英文註解規則）。
   註解重點寫「為什麼」與資料語意（尤其時序/as-of 相關），不寫「做了什麼」。
 - 本 repo 有每日自動 commit+push 流程，手動改完程式碼也應 commit+push（會順帶觸發部署）。
+- **commit 訊息只描述 repo 內容的變更**，不寫本機環境細節（目錄搬移、launchd 重載、
+  個人資料夾結構等）——這是公開 repo，那些資訊屬於個人操作紀錄，不屬於版本歷史。
