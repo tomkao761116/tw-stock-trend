@@ -8,6 +8,7 @@
 import os
 import glob
 import json
+import math
 import datetime as dt
 
 import config
@@ -59,7 +60,15 @@ def _single_ticker_change(ticker, date_str):
     if pos == 0:
         return None  # 沒有前一日可比
     prev, cur = float(closes.iloc[pos - 1]), float(closes.iloc[pos])
+    if math.isnan(prev) or math.isnan(cur):
+        return None  # 資料源當天收盤價尚未同步完整（偶見於成交量較低的ETF），視為尚無資料
     return (cur / prev - 1) * 100
+
+
+def _is_filled(pct):
+    """判斷 actual_pct 是否為「已有效填入」。NaN 視為未填入（自我修復：
+    萬一資料源曾回傳 NaN 被存下來，下次執行會當作缺資料重新查詢，而不是永遠卡住）。"""
+    return pct is not None and not (isinstance(pct, float) and math.isnan(pct))
 
 
 def _actual_dir(pct):
@@ -96,7 +105,7 @@ def run(force=False):
         changed = False
 
         if not _eligible(date):
-            if r.get("actual_pct") is not None:
+            if _is_filled(r.get("actual_pct")):
                 # 曾被誤填入盤中即時價（舊版 bug），清除避免顯示錯誤的命中結果
                 r["actual"], r["actual_pct"], r["hit"] = None, None, None
                 changed = True
@@ -110,7 +119,7 @@ def run(force=False):
             continue
 
         # 已有結果就沿用，不重複打 API（每日自動執行時大多數日期都屬此情況）
-        if not force and r.get("actual_pct") is not None:
+        if not force and _is_filled(r.get("actual_pct")):
             pct, hit = r["actual_pct"], bool(r.get("hit"))
             mark = "✓" if hit else "✗"
             print(f"{date:<12}{r['direction'][:2]:<8}"
@@ -119,6 +128,9 @@ def run(force=False):
             pct = _ticker_change(TWII, date)
             if pct is None:
                 print(f"{date:<12}{r['direction'][:2]:<8}{'(尚無收盤資料)'}")
+                if r.get("actual_pct") is not None:  # 清掉可能殘留的 NaN 垃圾資料
+                    r["actual"], r["actual_pct"], r["hit"] = None, None, None
+                    changed = True
                 changed = _backtest_categories(r, date, force) or changed
                 if changed:
                     with open(path, "w", encoding="utf-8") as fp:
@@ -165,16 +177,19 @@ def _backtest_categories(r, date, force):
             continue  # 無此類別資料，或該類別無乾淨的回測標的（如傳產）
 
         if not _eligible(date):
-            if cr.get("actual_pct") is not None:
+            if _is_filled(cr.get("actual_pct")):
                 cr["actual"], cr["actual_pct"], cr["hit"] = None, None, None
                 changed = True
             continue
 
-        if not force and cr.get("actual_pct") is not None:
+        if not force and _is_filled(cr.get("actual_pct")):
             continue  # 沿用既有，不重打 API
 
         pct = _ticker_change(ticker, date)
         if pct is None:
+            if cr.get("actual_pct") is not None:  # 清掉可能殘留的 NaN 垃圾資料
+                cr["actual"], cr["actual_pct"], cr["hit"] = None, None, None
+                changed = True
             continue
         hit = (_predicted_dir(cr["direction"]) == _actual_dir(pct))
         cr["actual"] = f"{_actual_dir(pct)} {pct:+.2f}% {'✓' if hit else '✗'}"
