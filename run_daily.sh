@@ -3,7 +3,7 @@
 # 搭配 launchd 使用（見 README）。token 由 .finmind_token 自動讀取，無需設環境變數。
 
 set -e
-PROJECT_DIR="/Users/aidenkaoiii/Google 雲端硬碟/個人AI/股市趨勢預估"
+PROJECT_DIR="/Users/aidenkaoiii/Projects/tw-stock-trend"
 PYTHON="/opt/anaconda3/bin/python3"
 NETWORK_WAIT_MAX=180   # 等待網路的上限秒數（電腦剛喚醒、Wi-Fi 重連用）
 NETWORK_CHECK_INTERVAL=10

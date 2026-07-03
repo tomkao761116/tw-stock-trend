@@ -7,7 +7,7 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/aidenkaoiii/Google 雲端硬碟/個人AI/股市趨勢預估/run_daily.sh</string>
+        <string>/Users/aidenkaoiii/Projects/tw-stock-trend/run_daily.sh</string>
     </array>
 
     <key>EnvironmentVariables</key>
