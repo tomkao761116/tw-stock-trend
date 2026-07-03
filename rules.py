@@ -207,14 +207,43 @@ def _evaluate_core(raw, factor_keys, weights, threshold_bullish, threshold_beari
             "confidence": confidence, "plain_summary": plain_summary}
 
 
+def _two_part_call(total, threshold_scale):
+    """大盤限定的兩段式預測：開盤方向（強訊號）＋盤中展望（弱訊號，門檻較高）。
+
+    依 603 天回測：因子對開盤跳空的同向率 94%，對盤中走勢僅 71%——
+    分開表態比混在一起喊「今天漲跌」誠實。門檻見 config.THRESHOLD_INTRADAY。
+    """
+    open_th = config.THRESHOLD_BULLISH * threshold_scale
+    intra_th = config.THRESHOLD_INTRADAY * threshold_scale
+    if total >= open_th:
+        open_call = {"direction": "開高 📈", "cls": "bull"}
+    elif total <= -open_th:
+        open_call = {"direction": "開低 📉", "cls": "bear"}
+    else:
+        open_call = {"direction": "平開/觀望 ➡️", "cls": "flat"}
+
+    if total >= intra_th:
+        intraday_call = {"direction": "偏多延續 📈", "cls": "bull"}
+    elif total <= -intra_th:
+        intraday_call = {"direction": "偏空延續 📉", "cls": "bear"}
+    else:
+        intraday_call = {"direction": "方向不明 ➡️", "cls": "flat"}
+    return open_call, intraday_call
+
+
 def evaluate(raw, threshold_scale=1.0):
     """大盤預測：吃 data_fetch.fetch_all() 的結果，回傳預測 dict。
 
     threshold_scale：事件日可傳 >1 放大門檻，使分類更保守（見 events.py）。
     """
-    return _evaluate_core(raw, list(config.WEIGHTS.keys()), config.WEIGHTS,
-                          config.THRESHOLD_BULLISH, config.THRESHOLD_BEARISH,
-                          threshold_scale)
+    result = _evaluate_core(raw, list(config.WEIGHTS.keys()), config.WEIGHTS,
+                            config.THRESHOLD_BULLISH, config.THRESHOLD_BEARISH,
+                            threshold_scale)
+    open_call, intraday_call = _two_part_call(result["total_score"],
+                                              threshold_scale)
+    result["open_call"] = open_call
+    result["intraday_call"] = intraday_call
+    return result
 
 
 def evaluate_category(raw, category_key, threshold_scale=1.0):

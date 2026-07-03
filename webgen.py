@@ -72,9 +72,35 @@ def _factor_rows(items, tag):
     return "\n".join(rows)
 
 
+def _actual_mark(r, key):
+    """回測已填實際結果時，附在預測旁邊的小字（如「實際 開高 +0.8% ✓」）。"""
+    a = r.get(key)
+    return f'<span class="actualmark">實際 {html.escape(str(a))}</span>' if a else ""
+
+
+def _headline_html(r):
+    """卡片頭：大盤（有 open_call）拆成開盤方向＋盤中展望兩行；類別維持單一方向。
+    開盤方向是強訊號（603 天回測同向率 94%）、盤中展望是弱訊號（71%）——
+    分開表態，並附小字說明兩者的歷史可靠度差異。"""
+    oc = r.get("open_call")
+    if not oc:
+        return f'<div class="direction">{html.escape(r["direction"])}</div>'
+    ic = r.get("intraday_call", {})
+    return (
+        f'<div class="predlabel">開盤方向</div>'
+        f'<div class="direction">{html.escape(oc["direction"])}'
+        f'{_actual_mark(r, "open_actual")}</div>'
+        f'<div class="intraday">盤中展望：'
+        f'<span class="{ic.get("cls","flat")}">{html.escape(ic.get("direction",""))}</span>'
+        f'{_actual_mark(r, "intraday_actual")}</div>'
+        f'<div class="callnote">開盤預測歷史同向率約 9 成、盤中約 7 成'
+        f'（2024–2026 回測），盤中展望僅供參考</div>')
+
+
 def _full_card(title, r, events=None):
     """完整卡片渲染：大盤與各類別分頁共用同一大小/結構，只差標題與資料來源。"""
-    cls = _dir_class(r["direction"])
+    cls = (r["open_call"]["cls"] if r.get("open_call")
+           else _dir_class(r["direction"]))
     conf = r.get("confidence", {})
     attr = r.get("attribution", {})
     ev_html = "".join(
@@ -100,7 +126,7 @@ def _full_card(title, r, events=None):
     return f'''
   <div class="card today {cls}">
     <div class="date">{html.escape(title)}</div>
-    <div class="direction">{html.escape(r["direction"])}</div>
+    {_headline_html(r)}
     <div class="conf">信心 <span class="dots">{conf.get("dots","")}</span> {html.escape(conf.get("label",""))}</div>
     {ev_html}
     <p class="summary">{html.escape(r.get("plain_summary",""))}</p>
@@ -322,6 +348,11 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"P
 .direction{font-size:34px;font-weight:800;margin:4px 0}
 .today.bull .direction{color:var(--bull)} .today.bear .direction{color:var(--bear)} .today.flat .direction{color:var(--flat)}
 .conf{font-size:16px;color:#555;margin-bottom:8px}.dots{letter-spacing:2px}
+.predlabel{color:var(--sub);font-size:13px;margin-top:4px}
+.intraday{font-size:18px;font-weight:700;margin:2px 0 4px}
+.intraday .bull{color:var(--bull)}.intraday .bear{color:var(--bear)}.intraday .flat{color:var(--flat)}
+.callnote{color:var(--sub);font-size:12px;margin-bottom:6px}
+.actualmark{font-size:13px;font-weight:400;color:#555;background:#f2f3f5;border-radius:6px;padding:2px 8px;margin-left:8px;white-space:nowrap}
 .event{background:#fff4e5;border-left:4px solid var(--flat);padding:8px 10px;border-radius:6px;margin:8px 0;font-size:14px}
 .summary{background:#f0f4ff;padding:12px;border-radius:8px;font-size:15px}
 h3{font-size:15px;margin:16px 0 8px} h3.up{color:var(--bull)} h3.down{color:var(--bear)}

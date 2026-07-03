@@ -14,6 +14,11 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"P
 .direction{font-size:34px;font-weight:800;margin:4px 0}
 .today.bull .direction{color:var(--bull)} .today.bear .direction{color:var(--bear)} .today.flat .direction{color:var(--flat)}
 .conf{font-size:16px;color:#555;margin-bottom:8px}.dots{letter-spacing:2px}
+.predlabel{color:var(--sub);font-size:13px;margin-top:4px}
+.intraday{font-size:18px;font-weight:700;margin:2px 0 4px}
+.intraday .bull{color:var(--bull)}.intraday .bear{color:var(--bear)}.intraday .flat{color:var(--flat)}
+.callnote{color:var(--sub);font-size:12px;margin-bottom:6px}
+.actualmark{font-size:13px;font-weight:400;color:#555;background:#f2f3f5;border-radius:6px;padding:2px 8px;margin-left:8px;white-space:nowrap}
 .event{background:#fff4e5;border-left:4px solid var(--flat);padding:8px 10px;border-radius:6px;margin:8px 0;font-size:14px}
 .summary{background:#f0f4ff;padding:12px;border-radius:8px;font-size:15px}
 h3{font-size:15px;margin:16px 0 8px} h3.up{color:var(--bull)} h3.down{color:var(--bear)}
@@ -87,7 +92,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-03.html">2026-07-03</a></td><td class="bear">偏空 📉</td><td>-11.85</td><td>—</td><td><a class="view" href="2026-07-03.html">查看 →</a></td></tr><tr><td><a href="2026-07-02.html">2026-07-02</a></td><td class="bear">偏空 📉</td><td>-6.62</td><td>跌 -0.58% ✓</td><td><a class="view" href="2026-07-02.html">查看 →</a></td></tr><tr><td><a href="2026-07-01.html">2026-07-01</a></td><td class="bull">偏多 📈</td><td>+7.03</td><td>漲 +1.94% ✓</td><td><a class="view" href="2026-07-01.html">查看 →</a></td></tr><tr><td><a href="2026-06-30.html">2026-06-30</a></td><td class="bull">偏多 📈</td><td>+8.05</td><td>漲 +2.50% ✓</td><td><a class="view" href="2026-06-30.html">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-03.html">2026-07-03</a></td><td class="bear">偏空 📉</td><td>-11.85</td><td>平 +0.08% ✗</td><td><a class="view" href="2026-07-03.html">查看 →</a></td></tr><tr><td><a href="2026-07-02.html">2026-07-02</a></td><td class="bear">偏空 📉</td><td>-6.62</td><td>跌 -0.58% ✓</td><td><a class="view" href="2026-07-02.html">查看 →</a></td></tr><tr><td><a href="2026-07-01.html">2026-07-01</a></td><td class="bull">偏多 📈</td><td>+7.03</td><td>漲 +1.94% ✓</td><td><a class="view" href="2026-07-01.html">查看 →</a></td></tr><tr><td><a href="2026-06-30.html">2026-06-30</a></td><td class="bull">偏多 📈</td><td>+8.05</td><td>漲 +2.50% ✓</td><td><a class="view" href="2026-06-30.html">查看 →</a></td></tr>
     </table></div></div><div class="tab-panel" id="tab-tech">
   <div class="card today bear">
     <div class="date">科技股/半導體</div>
@@ -115,7 +120,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-03.html#tech">2026-07-03</a></td><td class="bear">偏空 📉</td><td>-9.50</td><td>—</td><td><a class="view" href="2026-07-03.html#tech">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#tech">2026-07-02</a></td><td class="bear">偏空 📉</td><td>-9.29</td><td>—</td><td><a class="view" href="2026-07-02.html#tech">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-03.html#tech">2026-07-03</a></td><td class="bear">偏空 📉</td><td>-9.50</td><td>跌 -0.86% ✓</td><td><a class="view" href="2026-07-03.html#tech">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#tech">2026-07-02</a></td><td class="bear">偏空 📉</td><td>-9.29</td><td>跌 -0.79% ✓</td><td><a class="view" href="2026-07-02.html#tech">查看 →</a></td></tr>
     </table></div></div><div class="tab-panel" id="tab-financial">
   <div class="card today flat">
     <div class="date">金融股</div>
@@ -141,7 +146,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-03.html#financial">2026-07-03</a></td><td class="flat">震盪 ➡️</td><td>+2.09</td><td>—</td><td><a class="view" href="2026-07-03.html#financial">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#financial">2026-07-02</a></td><td class="bull">偏多 📈</td><td>+3.57</td><td>—</td><td><a class="view" href="2026-07-02.html#financial">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-03.html#financial">2026-07-03</a></td><td class="flat">震盪 ➡️</td><td>+2.09</td><td>漲 +0.87% ✗</td><td><a class="view" href="2026-07-03.html#financial">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#financial">2026-07-02</a></td><td class="bull">偏多 📈</td><td>+3.57</td><td>跌 -1.08% ✗</td><td><a class="view" href="2026-07-02.html#financial">查看 →</a></td></tr>
     </table></div></div><div class="tab-panel" id="tab-traditional">
   <div class="card today bull">
     <div class="date">傳產/原物料/航運</div>
@@ -167,7 +172,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-03.html#traditional">2026-07-03</a></td><td class="bull">偏多 📈</td><td>+2.66</td><td>—</td><td><a class="view" href="2026-07-03.html#traditional">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#traditional">2026-07-02</a></td><td class="flat">震盪 ➡️</td><td>+0.74</td><td>漲 +3.23% ✗</td><td><a class="view" href="2026-07-02.html#traditional">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-03.html#traditional">2026-07-03</a></td><td class="bull">偏多 📈</td><td>+2.66</td><td>漲 +3.67% ✓</td><td><a class="view" href="2026-07-03.html#traditional">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#traditional">2026-07-02</a></td><td class="flat">震盪 ➡️</td><td>+0.74</td><td>漲 +3.23% ✗</td><td><a class="view" href="2026-07-02.html#traditional">查看 →</a></td></tr>
     </table></div></div><div class="tab-panel" id="tab-etf"><div class="subtabs"><button class="subtab-btn active" data-subtab="dividend">股息型</button><button class="subtab-btn" data-subtab="growth">成長型</button><button class="subtab-btn" data-subtab="bond">債券型</button></div><div class="subtab-panel active" id="subtab-dividend">
   <div class="card today flat">
     <div class="date">股息型</div>
@@ -194,7 +199,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-03.html#etf-dividend">2026-07-03</a></td><td class="flat">震盪 ➡️</td><td>+0.58</td><td>—</td><td><a class="view" href="2026-07-03.html#etf-dividend">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#etf-dividend">2026-07-02</a></td><td class="flat">震盪 ➡️</td><td>+1.67</td><td>—</td><td><a class="view" href="2026-07-02.html#etf-dividend">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-03.html#etf-dividend">2026-07-03</a></td><td class="flat">震盪 ➡️</td><td>+0.58</td><td>漲 +0.48% ✗</td><td><a class="view" href="2026-07-03.html#etf-dividend">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#etf-dividend">2026-07-02</a></td><td class="flat">震盪 ➡️</td><td>+1.67</td><td>平 +0.06% ✓</td><td><a class="view" href="2026-07-02.html#etf-dividend">查看 →</a></td></tr>
     </table></div></div><div class="subtab-panel" id="subtab-growth"><p class="alias-note">＊本分頁與「科技股/半導體」分頁共用同一份預測結果</p>
   <div class="card today bear">
     <div class="date">成長型</div>
@@ -222,7 +227,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-03.html#etf-growth">2026-07-03</a></td><td class="bear">偏空 📉</td><td>-9.50</td><td>—</td><td><a class="view" href="2026-07-03.html#etf-growth">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#etf-growth">2026-07-02</a></td><td class="bear">偏空 📉</td><td>-9.29</td><td>—</td><td><a class="view" href="2026-07-02.html#etf-growth">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-03.html#etf-growth">2026-07-03</a></td><td class="bear">偏空 📉</td><td>-9.50</td><td>跌 -0.86% ✓</td><td><a class="view" href="2026-07-03.html#etf-growth">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#etf-growth">2026-07-02</a></td><td class="bear">偏空 📉</td><td>-9.29</td><td>跌 -0.79% ✓</td><td><a class="view" href="2026-07-02.html#etf-growth">查看 →</a></td></tr>
     </table></div></div><div class="subtab-panel" id="subtab-bond">
   <div class="card today flat">
     <div class="date">債券型</div>
@@ -246,9 +251,9 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
     </details>
   </div><div class="card"><h2>歷史紀錄</h2><table class="hist">
       <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
-      <tr><td><a href="2026-07-03.html#etf-bond">2026-07-03</a></td><td class="flat">震盪 ➡️</td><td>-1.12</td><td>—</td><td><a class="view" href="2026-07-03.html#etf-bond">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#etf-bond">2026-07-02</a></td><td class="flat">震盪 ➡️</td><td>-0.92</td><td>平 -0.33% ✓</td><td><a class="view" href="2026-07-02.html#etf-bond">查看 →</a></td></tr>
+      <tr><td><a href="2026-07-03.html#etf-bond">2026-07-03</a></td><td class="flat">震盪 ➡️</td><td>-1.12</td><td>平 +0.37% ✓</td><td><a class="view" href="2026-07-03.html#etf-bond">查看 →</a></td></tr><tr><td><a href="2026-07-02.html#etf-bond">2026-07-02</a></td><td class="flat">震盪 ➡️</td><td>-0.92</td><td>平 -0.33% ✓</td><td><a class="view" href="2026-07-02.html#etf-bond">查看 →</a></td></tr>
     </table></div></div></div>
-  <div class="disclaimer">更新時間 2026-07-03 10:47　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
+  <div class="disclaimer">更新時間 2026-07-03 21:02　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
 </div>
 <script>
 document.querySelectorAll('.tab-btn').forEach(function(btn) {

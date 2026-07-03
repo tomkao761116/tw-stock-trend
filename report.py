@@ -34,9 +34,13 @@ def print_report(result):
     print(f"  台股盤前趨勢預估　{today}")
     print("═" * W)
 
-    # 【今天的預估】白話優先
+    # 【今天的預估】白話優先；大盤拆成開盤方向＋盤中展望兩段（見 rules._two_part_call）
     print("\n【今天的預估】")
-    print(f"  方向：{result['direction']}")
+    if result.get("open_call"):
+        print(f"  開盤方向：{result['open_call']['direction']}")
+        print(f"  盤中展望：{result['intraday_call']['direction']}")
+    else:
+        print(f"  方向：{result['direction']}")
     conf = result.get("confidence", {})
     note = f"（{conf['note']}）" if conf.get("note") else ""
     print(f"  信心程度：{conf.get('dots', '')} {conf.get('label', '')}{note}")
@@ -118,8 +122,13 @@ def save_report(result):
     bull, bear = result.get("thresholds", (4.0, -4.0))
 
     L = [f"# 台股盤前趨勢預估　{today}", ""]
+    if result.get("open_call"):
+        headline = (f"### 開盤方向：{result['open_call']['direction']}　｜　"
+                    f"盤中展望：{result['intraday_call']['direction']}")
+    else:
+        headline = f"### {result['direction']}"
     L += ["## 今天的預估", "",
-          f"### {result['direction']}", "",
+          headline, "",
           f"**信心程度：{conf.get('dots','')} {conf.get('label','')}**"
           + (f"（{conf['note']}）" if conf.get("note") else ""), ""]
     for ev in result.get("events", []):
@@ -210,7 +219,9 @@ def save_data(result, date_str=None):
         with open(path, encoding="utf-8") as fp:
             old = json.load(fp)
         if old.get("direction") == payload.get("direction"):
-            for k in ("actual", "actual_pct", "hit"):
+            for k in ("actual", "actual_pct", "hit",
+                      "open_actual", "open_hit",
+                      "intraday_actual", "intraday_hit"):
                 if old.get(k) is not None:
                     payload[k] = old[k]
         # 各類別（科技股/金融股/傳產/股息型/債券型）也要同步保留已回測的實際結果
