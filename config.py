@@ -21,16 +21,20 @@ TICKERS = {
 
 # ── 因子權重（數字越大影響越大；可自由調整）────────────────────
 # 每個因子先算出 [-1, +1] 的標準化方向分數，再乘以此權重。
+# 2026-07-03 校準：依 603 天歷史回填（backfill.py + analyze.py，2024-01→2026-07）
+# 的因子 IC 與 train/validation 驗證調整——夜盤 IC +0.66 全場最強故加重；
+# 外資買賣超/台幣/融資 IC ≈ 0（T-1 資訊已被市場消化）降為象徵性權重。
+# 調整後 validation：3分類命中 54%→63%、喊方向覆蓋 63%→75%、純度持平 83%。
 WEIGHTS = {
-    "night_futures": 2.5,  # 台指期夜盤：隔夜訊號最直接的反映（需 FinMind token）
-    "sox": 2.5,        # 費半，連動最強（與夜盤部分重疊，故由 3.0 降至 2.5）
-    "tsm_adr": 2.5,    # 台積電 ADR（同上，由 3.0 降至 2.5）
-    "nasdaq": 2.0,     # 那斯達克
-    "foreign_buy": 2.0,  # 外資前一日買賣超（需 FinMind token）
-    "foreign_futures": 2.0,  # 外資期貨未平倉淨額（需 FinMind token）
-    "usdtwd": 1.0,     # 台幣匯率
-    "vix": 2.0,        # 恐慌指數（只會貢獻負分）
-    "margin": 1.0,     # 融資餘額變化（反向：散戶情緒指標）
+    "night_futures": 3.5,  # 台指期夜盤：IC +0.66，最強因子（需 FinMind token）
+    "sox": 2.5,        # 費半（IC +0.47）
+    "tsm_adr": 2.5,    # 台積電 ADR（IC +0.44）
+    "nasdaq": 2.0,     # 那斯達克（IC +0.48）
+    "foreign_buy": 0.5,  # 外資前一日買賣超：IC -0.01，已被市場定價（2.0→0.5）
+    "foreign_futures": 1.5,  # 外資期貨未平倉淨額：IC +0.10 偏弱（2.0→1.5）
+    "usdtwd": 0.5,     # 台幣匯率：IC +0.02（1.0→0.5）
+    "vix": 2.0,        # 恐慌指數（只會貢獻負分；IC +0.11，條件性因子保留）
+    "margin": 0.5,     # 融資餘額變化：IC +0.02（1.0→0.5）
 }
 
 # ── 標準化參數：多少幅度算「滿分 ±1」───────────────────────────
@@ -58,8 +62,10 @@ NORMALIZERS = {
 }
 
 # ── 分類門檻 ──────────────────────────────────────────────────
-THRESHOLD_BULLISH = 4.0   # 總分 ≥ 此值 → 偏多
-THRESHOLD_BEARISH = -4.0  # 總分 ≤ 此值 → 偏空
+# 2026-07-03 校準：權重總和由 16.0 降為 13.5，門檻等比例下修並經 train 掃描
+# （T=3.0 為新權重組的 train 最佳，validation 同步改善）。
+THRESHOLD_BULLISH = 3.0   # 總分 ≥ 此值 → 偏多
+THRESHOLD_BEARISH = -3.0  # 總分 ≤ 此值 → 偏空
 # 介於兩者之間 → 震盪
 
 # 重大事件日（見 events.py）門檻放大倍數：>1 = 更保守、更傾向「震盪」
@@ -81,18 +87,22 @@ CATEGORIES = {
         "threshold_bullish": 4.0, "threshold_bearish": -4.0,
         "backtest_ticker": "0052.TW",  # 富邦科技
     },
+    # 金融/傳產/股息/債券的權重與門檻於 2026-07-03 依 603 天回填校準
+    # （各因子 IC 見 analyze.py 輸出；驗證結果記錄於 decisions.md）。
     "financial": {
         "label": "金融股",
         "factors": ["xlf", "tnx", "usdtwd", "foreign_buy"],
-        "weights": {"xlf": 2.5, "tnx": 1.5, "usdtwd": 1.0, "foreign_buy": 1.5},
-        "threshold_bullish": 2.2, "threshold_bearish": -2.2,
+        # xlf 是唯一有預測力的因子（IC +0.30），其餘 IC≈0 降為象徵性權重
+        "weights": {"xlf": 2.5, "tnx": 0.5, "usdtwd": 0.5, "foreign_buy": 0.5},
+        "threshold_bullish": 1.8, "threshold_bearish": -1.8,
         "backtest_ticker": "0055.TW",  # 元大MSCI金融
     },
     "traditional": {
         "label": "傳產/原物料/航運",
         "factors": ["oil", "copper", "dxy", "bdry"],
-        "weights": {"oil": 2.0, "copper": 1.5, "dxy": 1.5, "bdry": 2.0},
-        "threshold_bullish": 2.3, "threshold_bearish": -2.3,
+        # 銅 IC +0.20 最強、美元 +0.13；油/航運偏弱（+0.08/+0.05）
+        "weights": {"oil": 1.0, "copper": 2.0, "dxy": 1.5, "bdry": 1.0},
+        "threshold_bullish": 0.8, "threshold_bearish": -0.8,
         # 涵蓋多個異質產業，沒有乾淨的單一 ETF；改用長榮(航運)/中鋼(鋼鐵)/台塑(塑化)
         # 三檔個股等權重組合當回測基準（backtest.py 會自動平均這三檔的漲跌幅）。
         "backtest_ticker": ["2603.TW", "2002.TW", "1301.TW"],
@@ -102,15 +112,19 @@ CATEGORIES = {
     "dividend": {
         "label": "股息型",
         "factors": ["tnx_inv", "xlf", "xlu", "foreign_buy", "usdtwd"],
-        "weights": {"tnx_inv": 2.0, "xlf": 2.0, "xlu": 2.0, "foreign_buy": 1.5, "usdtwd": 1.0},
-        "threshold_bullish": 2.6, "threshold_bearish": -2.6,
+        # 意外發現：xlf IC +0.24 是最強因子（0056 與金融氣氛連動），
+        # 原本押注的 tnx_inv/xlu 反而近零（+0.01/+0.06）
+        "weights": {"tnx_inv": 0.5, "xlf": 2.0, "xlu": 1.0, "foreign_buy": 0.5, "usdtwd": 0.5},
+        "threshold_bullish": 1.8, "threshold_bearish": -1.8,
         "backtest_ticker": "0056.TW",  # 元大高股息
     },
     "bond": {
         "label": "債券型",
         "factors": ["tlt", "tnx_inv", "vix_bond", "move"],
-        "weights": {"tlt": 3.0, "tnx_inv": 2.0, "vix_bond": 1.5, "move": 1.5},
-        "threshold_bullish": 2.8, "threshold_bearish": -2.8,
+        # tlt/tnx_inv 是全系統最強的類別因子（IC +0.66/+0.58）；
+        # vix_bond 實測為反向訊號（-0.10，避險買債假說不成立）、move 近零，皆大幅降權
+        "weights": {"tlt": 3.0, "tnx_inv": 2.0, "vix_bond": 0.5, "move": 0.5},
+        "threshold_bullish": 1.8, "threshold_bearish": -1.8,
         "backtest_ticker": "00679B.TWO",  # 元大美債20年（上櫃）
     },
 }

@@ -331,7 +331,10 @@
         "note": ""
       },
       "plain_summary": "昨晚美國半導體股、台指期夜盤表現疲弱，可能拖累今天台股偏向下跌。",
-      "label": "科技股/半導體"
+      "label": "科技股/半導體",
+      "actual": "跌 -0.86% ✓",
+      "actual_pct": -0.86,
+      "hit": true
     },
     "financial": {
       "direction": "震盪 ➡️",
@@ -439,7 +442,10 @@
         "note": "多空力道相當，建議觀望"
       },
       "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
-      "label": "金融股"
+      "label": "金融股",
+      "actual": "漲 +0.87% ✗",
+      "actual_pct": 0.87,
+      "hit": false
     },
     "traditional": {
       "direction": "偏多 📈",
@@ -547,7 +553,10 @@
         "note": ""
       },
       "plain_summary": "昨晚航運指數(BDI代理)、美元指數表現強勢，通常會帶動今天台股偏向上漲。雖然WTI原油帶來一些反向壓力，但力道不足以扭轉方向。",
-      "label": "傳產/原物料/航運"
+      "label": "傳產/原物料/航運",
+      "actual": "漲 +3.67% ✓",
+      "actual_pct": 3.67,
+      "hit": true
     },
     "dividend": {
       "direction": "震盪 ➡️",
@@ -675,7 +684,10 @@
         "note": "多空力道相當，建議觀望"
       },
       "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
-      "label": "股息型"
+      "label": "股息型",
+      "actual": "漲 +0.48% ✗",
+      "actual_pct": 0.48,
+      "hit": false
     },
     "bond": {
       "direction": "震盪 ➡️",
@@ -784,10 +796,15 @@
         "note": "多空力道相當，建議觀望"
       },
       "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
-      "label": "債券型"
+      "label": "債券型",
+      "actual": "平 +0.37% ✓",
+      "actual_pct": 0.37,
+      "hit": true
     }
   },
   "date": "2026-07-03",
   "generated_at": "2026-07-03 08:49",
-  "actual": null
+  "actual": "平 +0.08% ✗",
+  "actual_pct": 0.08,
+  "hit": false
 }
