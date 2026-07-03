@@ -32,7 +32,17 @@ def _eligible(date_str):
 
 def _ticker_change(ticker, date_str):
     """回傳該日某標的相對前一交易日的漲跌幅(%)；取不到回 None。
-    market(大盤)用 ^TWII，各類別用各自的 backtest_ticker（見 config.CATEGORIES）。"""
+    market(大盤)用 ^TWII，各類別用各自的 backtest_ticker（見 config.CATEGORIES）。
+    ticker 可以是單一字串，或字串 list——list 時做等權重平均，用於沒有乾淨單一 ETF
+    的類別（如傳產：長榮/中鋼/台塑等權重組合代理這個異質產業籃子）。"""
+    if isinstance(ticker, (list, tuple)):
+        changes = [c for c in (_single_ticker_change(t, date_str) for t in ticker)
+                  if c is not None]
+        return sum(changes) / len(changes) if changes else None
+    return _single_ticker_change(ticker, date_str)
+
+
+def _single_ticker_change(ticker, date_str):
     import yfinance as yf
 
     d = dt.date.fromisoformat(date_str)

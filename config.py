@@ -93,7 +93,9 @@ CATEGORIES = {
         "factors": ["oil", "copper", "dxy", "bdry"],
         "weights": {"oil": 2.0, "copper": 1.5, "dxy": 1.5, "bdry": 2.0},
         "threshold_bullish": 2.3, "threshold_bearish": -2.3,
-        "backtest_ticker": None,  # 涵蓋多個異質產業，無乾淨的單一回測標的
+        # 涵蓋多個異質產業，沒有乾淨的單一 ETF；改用長榮(航運)/中鋼(鋼鐵)/台塑(塑化)
+        # 三檔個股等權重組合當回測基準（backtest.py 會自動平均這三檔的漲跌幅）。
+        "backtest_ticker": ["2603.TW", "2002.TW", "1301.TW"],
     },
     # 以下兩個是 ETF 分頁底下的子類別（見 webgen.py 的 _ETF_SUBTABS）。
     # 「成長型」子分頁不在這裡：它是既有 tech 類別的別名，直接借用結果、不重新運算。
