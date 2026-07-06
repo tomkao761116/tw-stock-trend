@@ -207,14 +207,14 @@ def _evaluate_core(raw, factor_keys, weights, threshold_bullish, threshold_beari
             "confidence": confidence, "plain_summary": plain_summary}
 
 
-def _two_part_call(total, threshold_scale):
-    """大盤限定的兩段式預測：開盤方向（強訊號）＋盤中展望（弱訊號，門檻較高）。
+def _two_part_call(total, open_th, intra_th, threshold_scale):
+    """兩段式預測：開盤方向（強訊號，門檻 open_th）＋盤中展望（弱訊號，門檻 intra_th）。
 
-    依 603 天回測：因子對開盤跳空的同向率 94%，對盤中走勢僅 71%——
-    分開表態比混在一起喊「今天漲跌」誠實。門檻見 config.THRESHOLD_INTRADAY。
+    因子是隔夜訊號，對「開盤跳空」預測力遠強於「開盤後盤中走勢」，故盤中門檻較高、
+    訊號不夠強時誠實顯示「方向不明」。大盤與各類別共用，只是餵各自的門檻。
     """
-    open_th = config.THRESHOLD_BULLISH * threshold_scale
-    intra_th = config.THRESHOLD_INTRADAY * threshold_scale
+    open_th *= threshold_scale
+    intra_th *= threshold_scale
     if total >= open_th:
         open_call = {"direction": "開高 📈", "cls": "bull"}
     elif total <= -open_th:
@@ -239,20 +239,31 @@ def evaluate(raw, threshold_scale=1.0):
     result = _evaluate_core(raw, list(config.WEIGHTS.keys()), config.WEIGHTS,
                             config.THRESHOLD_BULLISH, config.THRESHOLD_BEARISH,
                             threshold_scale)
-    open_call, intraday_call = _two_part_call(result["total_score"],
-                                              threshold_scale)
+    open_call, intraday_call = _two_part_call(
+        result["total_score"], config.THRESHOLD_BULLISH,
+        config.THRESHOLD_INTRADAY, threshold_scale)
     result["open_call"] = open_call
     result["intraday_call"] = intraday_call
     return result
 
 
 def evaluate_category(raw, category_key, threshold_scale=1.0):
-    """科技股/金融股/傳產等細分類別預測，見 config.CATEGORIES。"""
+    """科技股/金融股/傳產等細分類別預測，見 config.CATEGORIES。
+
+    同樣輸出兩段式（開盤方向＋盤中展望）。各類別的盤中門檻 threshold_intraday
+    依 604 天回測校準：類別因子對開盤跳空預測力強，但對盤中多為弱訊號，
+    故科技/股息等驗證不過關的類別門檻設高、多顯示「方向不明」（見 decisions.md）。
+    """
     cat = config.CATEGORIES[category_key]
     result = _evaluate_core(raw, cat["factors"], cat["weights"],
                             cat["threshold_bullish"], cat["threshold_bearish"],
                             threshold_scale)
     result["label"] = cat["label"]
+    open_call, intraday_call = _two_part_call(
+        result["total_score"], cat["threshold_bullish"],
+        cat["threshold_intraday"], threshold_scale)
+    result["open_call"] = open_call
+    result["intraday_call"] = intraday_call
     return result
 
 

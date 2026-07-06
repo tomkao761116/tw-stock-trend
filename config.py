@@ -91,6 +91,9 @@ CATEGORIES = {
         "factors": ["night_futures", "sox", "tsm_adr", "nasdaq", "nvda"],
         "weights": {"night_futures": 2.5, "sox": 3.0, "tsm_adr": 2.5, "nasdaq": 1.5, "nvda": 2.0},
         "threshold_bullish": 4.0, "threshold_bearish": -4.0,
+        # 盤中門檻於 2026-07-06 依 604 天回測校準（各類別 gap vs intraday 純度掃描）。
+        # 科技盤中訊號驗證不過（train 58%→val 39%，過擬合）→ 設高、多顯示「方向不明」
+        "threshold_intraday": 8.0,
         "backtest_ticker": "0052.TW",  # 富邦科技
     },
     # 金融/傳產/股息/債券的權重與門檻於 2026-07-03 依 603 天回填校準
@@ -101,6 +104,7 @@ CATEGORIES = {
         # xlf 是唯一有預測力的因子（IC +0.30），其餘 IC≈0 降為象徵性權重
         "weights": {"xlf": 2.5, "tnx": 0.5, "usdtwd": 0.5, "foreign_buy": 0.5},
         "threshold_bullish": 1.8, "threshold_bearish": -1.8,
+        "threshold_intraday": 1.8,  # 盤中純度 train 71%/val 67%（≈開盤門檻處最佳）
         "backtest_ticker": "0055.TW",  # 元大MSCI金融
     },
     "traditional": {
@@ -109,6 +113,7 @@ CATEGORIES = {
         # 銅 IC +0.20 最強、美元 +0.13；油/航運偏弱（+0.08/+0.05）
         "weights": {"oil": 1.0, "copper": 2.0, "dxy": 1.5, "bdry": 1.0},
         "threshold_bullish": 0.8, "threshold_bearish": -0.8,
+        "threshold_intraday": 2.4,  # 盤中純度 train 60%/val 62%（門檻 2.4 處）
         # 涵蓋多個異質產業，沒有乾淨的單一 ETF；改用長榮(航運)/中鋼(鋼鐵)/台塑(塑化)
         # 三檔個股等權重組合當回測基準（backtest.py 會自動平均這三檔的漲跌幅）。
         "backtest_ticker": ["2603.TW", "2002.TW", "1301.TW"],
@@ -122,6 +127,7 @@ CATEGORIES = {
         # 原本押注的 tnx_inv/xlu 反而近零（+0.01/+0.06）
         "weights": {"tnx_inv": 0.5, "xlf": 2.0, "xlu": 1.0, "foreign_buy": 0.5, "usdtwd": 0.5},
         "threshold_bullish": 1.8, "threshold_bearish": -1.8,
+        "threshold_intraday": 5.4,  # 盤中無有效訊號，設高門檻多顯示「方向不明」
         "backtest_ticker": "0056.TW",  # 元大高股息
     },
     "bond": {
@@ -131,6 +137,7 @@ CATEGORIES = {
         # vix_bond 實測為反向訊號（-0.10，避險買債假說不成立）、move 近零，皆大幅降權
         "weights": {"tlt": 3.0, "tnx_inv": 2.0, "vix_bond": 0.5, "move": 0.5},
         "threshold_bullish": 1.8, "threshold_bearish": -1.8,
+        "threshold_intraday": 2.7,  # 盤中純度隨門檻升高（2.7 處全樣本 73%）
         "backtest_ticker": "00679B.TWO",  # 元大美債20年（上櫃）
     },
 }

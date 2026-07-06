@@ -82,7 +82,12 @@ def print_report(result):
         print("\n" + "─" * W)
         print(f'【{r.get("label", key)}】')
         conf = r.get("confidence", {})
-        print(f'  方向：{r["direction"]}　信心：{conf.get("dots","")} {conf.get("label","")}')
+        if r.get("open_call"):
+            print(f'  開盤：{r["open_call"]["direction"]}　'
+                  f'盤中：{r["intraday_call"]["direction"]}　'
+                  f'信心：{conf.get("dots","")} {conf.get("label","")}')
+        else:
+            print(f'  方向：{r["direction"]}　信心：{conf.get("dots","")} {conf.get("label","")}')
         print(f'  {r.get("plain_summary","")}')
         attr = r.get("attribution", {})
         if attr.get("push"):
@@ -164,9 +169,15 @@ def save_report(result):
     for key, r in result.get("categories", {}).items():
         r_attr = r.get("attribution", {})
         r_conf = r.get("confidence", {})
-        L += [f"## {r.get('label', key)}", "",
-              f"**{r['direction']}**（總分 {r['total_score']:+.2f}，"
-              f"信心 {r_conf.get('dots','')} {r_conf.get('label','')}）", "",
+        if r.get("open_call"):
+            headline = (f"**開盤：{r['open_call']['direction']}　｜　"
+                        f"盤中：{r['intraday_call']['direction']}**"
+                        f"（總分 {r['total_score']:+.2f}，"
+                        f"信心 {r_conf.get('dots','')} {r_conf.get('label','')}）")
+        else:
+            headline = (f"**{r['direction']}**（總分 {r['total_score']:+.2f}，"
+                        f"信心 {r_conf.get('dots','')} {r_conf.get('label','')}）")
+        L += [f"## {r.get('label', key)}", "", headline, "",
               f"> {r.get('plain_summary','')}", ""]
         if r_attr.get("push"):
             L += ["**▲ 偏多**", ""] + [_md_factor(f, "利多") for f in r_attr["push"]] + [""]
@@ -230,7 +241,9 @@ def save_data(result, date_str=None):
             old_cr = old_cats.get(ck, {})
             if old_cr.get("direction") != cr.get("direction"):
                 continue  # 方向變了，舊結果失真，不沿用（保持 None，等 backtest 重算）
-            for k in ("actual", "actual_pct", "hit"):
+            for k in ("actual", "actual_pct", "hit",
+                      "open_actual", "open_hit",
+                      "intraday_actual", "intraday_hit"):
                 if old_cr.get(k) is not None:
                     cr[k] = old_cr[k]
     with open(path, "w", encoding="utf-8") as fp:

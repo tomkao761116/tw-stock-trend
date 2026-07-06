@@ -341,7 +341,15 @@
         "note": ""
       },
       "plain_summary": "昨晚美國半導體股、台積電美國股價表現疲弱，可能拖累今天台股偏向下跌。雖然台指期夜盤提供一些支撐，但力道不足以扭轉方向。",
-      "label": "科技股/半導體"
+      "label": "科技股/半導體",
+      "open_call": {
+        "direction": "開低 📉",
+        "cls": "bear"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
     },
     "financial": {
       "direction": "偏多 📈",
@@ -450,41 +458,49 @@
         "note": ""
       },
       "plain_summary": "昨晚美股金融類股表現強勢，通常會帶動今天台股偏向上漲。雖然外資買賣超帶來一些反向壓力，但力道不足以扭轉方向。",
-      "label": "金融股"
+      "label": "金融股",
+      "open_call": {
+        "direction": "開高 📈",
+        "cls": "bull"
+      },
+      "intraday_call": {
+        "direction": "偏多延續 📈",
+        "cls": "bull"
+      }
     },
     "traditional": {
       "direction": "偏多 📈",
-      "total_score": 1.91,
+      "total_score": 2.17,
       "factors": [
         {
           "key": "oil",
           "name": "WTI原油",
-          "value": "-0.13%",
-          "base": -0.04,
+          "value": "-0.52%",
+          "base": -0.17,
           "weight": 1.0,
-          "contribution": -0.04,
+          "contribution": -0.17,
           "note": "",
-          "analysis": "幾乎中性"
+          "analysis": "力道輕微，油價走跌，原物料與塑化類股營收展望轉弱"
         },
         {
           "key": "copper",
           "name": "銅期貨",
-          "value": "+1.87%",
-          "base": 0.75,
+          "value": "+2.17%",
+          "base": 0.87,
           "weight": 2.0,
-          "contribution": 1.5,
+          "contribution": 1.74,
           "note": "",
-          "analysis": "力道明顯，銅價走升，顯示全球工業需求偏強，激勵傳產類股"
+          "analysis": "力道非常強，銅價走升，顯示全球工業需求偏強，激勵傳產類股"
         },
         {
           "key": "dxy",
           "name": "美元指數",
-          "value": "+0.06%",
-          "base": -0.1,
+          "value": "+0.00%",
+          "base": -0.0,
           "weight": 1.5,
-          "contribution": -0.15,
+          "contribution": -0.0,
           "note": "",
-          "analysis": "力道輕微，美元走弱，原物料價格獲得支撐，對傳產類股偏多"
+          "analysis": "幾乎中性"
         },
         {
           "key": "bdry",
@@ -503,18 +519,18 @@
         -0.8
       ],
       "attribution": {
-        "bull_force": 2.1,
-        "bear_force": -0.15,
+        "bull_force": 2.34,
+        "bear_force": -0.17,
         "push": [
           {
             "key": "copper",
             "name": "銅期貨",
-            "value": "+1.87%",
-            "base": 0.75,
+            "value": "+2.17%",
+            "base": 0.87,
             "weight": 2.0,
-            "contribution": 1.5,
+            "contribution": 1.74,
             "note": "",
-            "analysis": "力道明顯，銅價走升，顯示全球工業需求偏強，激勵傳產類股"
+            "analysis": "力道非常強，銅價走升，顯示全球工業需求偏強，激勵傳產類股"
           },
           {
             "key": "bdry",
@@ -529,37 +545,45 @@
         ],
         "drag": [
           {
-            "key": "dxy",
-            "name": "美元指數",
-            "value": "+0.06%",
-            "base": -0.1,
-            "weight": 1.5,
-            "contribution": -0.15,
+            "key": "oil",
+            "name": "WTI原油",
+            "value": "-0.52%",
+            "base": -0.17,
+            "weight": 1.0,
+            "contribution": -0.17,
             "note": "",
-            "analysis": "力道輕微，美元走弱，原物料價格獲得支撐，對傳產類股偏多"
+            "analysis": "力道輕微，油價走跌，原物料與塑化類股營收展望轉弱"
           }
         ],
         "neutral": [
           {
-            "key": "oil",
-            "name": "WTI原油",
-            "value": "-0.13%",
-            "base": -0.04,
-            "weight": 1.0,
-            "contribution": -0.04,
+            "key": "dxy",
+            "name": "美元指數",
+            "value": "+0.00%",
+            "base": -0.0,
+            "weight": 1.5,
+            "contribution": -0.0,
             "note": "",
             "analysis": "幾乎中性"
           }
         ]
       },
-      "reasoning": "主由「銅期貨、航運指數(BDI代理)」推升（合計 +2.1）；「美元指數」形成拖累（-0.1），但不足以扭轉方向。",
+      "reasoning": "主由「銅期貨、航運指數(BDI代理)」推升（合計 +2.3）；「WTI原油」形成拖累（-0.2），但不足以扭轉方向。",
       "confidence": {
         "label": "很高",
         "dots": "●●●●●",
         "note": ""
       },
-      "plain_summary": "昨晚銅期貨、航運指數(BDI代理)表現強勢，通常會帶動今天台股偏向上漲。雖然美元指數帶來一些反向壓力，但力道不足以扭轉方向。",
-      "label": "傳產/原物料/航運"
+      "plain_summary": "昨晚銅期貨、航運指數(BDI代理)表現強勢，通常會帶動今天台股偏向上漲。雖然WTI原油帶來一些反向壓力，但力道不足以扭轉方向。",
+      "label": "傳產/原物料/航運",
+      "open_call": {
+        "direction": "開高 📈",
+        "cls": "bull"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
     },
     "dividend": {
       "direction": "偏多 📈",
@@ -688,7 +712,15 @@
         "note": ""
       },
       "plain_summary": "昨晚美股金融類股、美股公用事業ETF表現強勢，通常會帶動今天台股偏向上漲。雖然外資買賣超帶來一些反向壓力，但力道不足以扭轉方向。",
-      "label": "股息型"
+      "label": "股息型",
+      "open_call": {
+        "direction": "開高 📈",
+        "cls": "bull"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
     },
     "bond": {
       "direction": "震盪 ➡️",
@@ -797,10 +829,18 @@
         "note": "多空力道相當，建議觀望"
       },
       "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
-      "label": "債券型"
+      "label": "債券型",
+      "open_call": {
+        "direction": "平開/觀望 ➡️",
+        "cls": "flat"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
     }
   },
   "date": "2026-07-06",
-  "generated_at": "2026-07-06 08:20",
+  "generated_at": "2026-07-06 08:50",
   "actual": null
 }

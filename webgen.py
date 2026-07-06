@@ -79,9 +79,9 @@ def _actual_mark(r, key):
 
 
 def _headline_html(r):
-    """卡片頭：大盤（有 open_call）拆成開盤方向＋盤中展望兩行；類別維持單一方向。
-    開盤方向是強訊號（603 天回測同向率 94%）、盤中展望是弱訊號（71%）——
-    分開表態，並附小字說明兩者的歷史可靠度差異。"""
+    """卡片頭：有 open_call（大盤與各類別）拆成開盤方向＋盤中展望兩行；
+    舊資料無 open_call 時回退單一方向。開盤方向是強訊號、盤中展望是弱訊號，
+    附小字提醒可靠度差異（大盤盤中約 7 成、類別多更弱，故用定性描述不寫死數字）。"""
     oc = r.get("open_call")
     if not oc:
         return f'<div class="direction">{html.escape(r["direction"])}</div>'
@@ -93,8 +93,8 @@ def _headline_html(r):
         f'<div class="intraday">盤中展望：'
         f'<span class="{ic.get("cls","flat")}">{html.escape(ic.get("direction",""))}</span>'
         f'{_actual_mark(r, "intraday_actual")}</div>'
-        f'<div class="callnote">開盤預測歷史同向率約 9 成、盤中約 7 成'
-        f'（2024–2026 回測），盤中展望僅供參考</div>')
+        f'<div class="callnote">開盤方向為主要依據（歷史較可靠）；'
+        f'盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>')
 
 
 def _full_card(title, r, events=None):

@@ -216,18 +216,31 @@ def _targets_for(src, date_iso):
 
 
 def _category_target(src, key, date_iso):
+    """回傳該類別當日實際 {close_pct, gap_pct, intraday_pct}（多標的取等權平均）；
+    無資料回 None。gap/intraday 僅在該標的當日有 open 價時計入。"""
     series_list = src["targets"].get(key)
     if series_list is None:
         return None
-    pcts = []
+    closes, gaps, intras = [], [], []
     for series in series_list:
         if date_iso not in series:
             continue
         two = _last_two_closes_before(series, date_iso)
         if two is None:
             continue
-        pcts.append((series[date_iso]["close"] / two[1] - 1) * 100)
-    return round(sum(pcts) / len(pcts), 3) if pcts else None
+        prev_close = two[1]
+        bar = series[date_iso]
+        closes.append((bar["close"] / prev_close - 1) * 100)
+        if bar["open"]:
+            gaps.append((bar["open"] / prev_close - 1) * 100)
+            intras.append((bar["close"] / bar["open"] - 1) * 100)
+    if not closes:
+        return None
+    out = {"close_pct": round(sum(closes) / len(closes), 3)}
+    if gaps:
+        out["gap_pct"] = round(sum(gaps) / len(gaps), 3)
+        out["intraday_pct"] = round(sum(intras) / len(intras), 3)
+    return out
 
 
 # ── 每因子原始值（供後續 rolling z-score 等分析用）──────────────
@@ -273,9 +286,13 @@ def run(start, end):
         cats = {}
         for key in config.CATEGORIES:
             cr = rules.evaluate_category(raw, key, threshold_scale=scale)
+            ct = _category_target(src, key, date_iso)
             cats[key] = {"score": cr["total_score"],
                          "dir": cr["direction"][:2],
-                         "target_pct": _category_target(src, key, date_iso)}
+                         # target_pct 保留收收，向後相容既有 analyze.py；
+                         # target 內含 gap/intraday 拆解，供盤中門檻校準
+                         "target_pct": ct["close_pct"] if ct else None,
+                         "target": ct}
 
         days.append({
             "date": date_iso,

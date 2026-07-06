@@ -44,8 +44,10 @@ data_fetch.py → rules.py → report.py → data/*.json → webgen.py → docs/
 
 - **config.py 是唯一調參面**：權重、標準化常數、門檻、類別定義全在這裡，改參數不動邏輯。
 - **rules.py 是純函數層**：`_evaluate_core` 為大盤與五個類別（tech/financial/traditional/
-  dividend/bond）共用；回傳 dict 結構固定，未來換 ML 只需替換此層。大盤額外有兩段式預測
-  `open_call`（門檻 ±3）/`intraday_call`（門檻 ±5，見下）。
+  dividend/bond）共用；回傳 dict 結構固定，未來換 ML 只需替換此層。大盤與各類別都有
+  兩段式預測 `open_call`/`intraday_call`（見下），由 `_two_part_call` 帶各自門檻算出：
+  大盤用 `config.THRESHOLD_BULLISH`/`THRESHOLD_INTRADAY`，類別用各自的
+  `threshold_bullish`/`threshold_intraday`。
 - **data/*.json 被 backtest/calibrate/webgen glob 掃描**——不要放其他 JSON 進 data/；
   回填產物固定放 `backfill/`。webgen 不會刪孤兒頁面，刪 data 檔後要順手刪對應的 docs/*.html。
 - **webgen 向後相容**：舊資料無 `open_call` 欄位時自動回退單一方向渲染，改卡片結構時必須保留這條路徑。
@@ -57,8 +59,10 @@ data_fetch.py → rules.py → report.py → data/*.json → webgen.py → docs/
 2026-07-03 已用 603 天回填完成一輪校準，已驗證並**否決**的假設（不要重提，除非有新證據）：
 滾動 z-score 標準化、美股因子對夜盤殘差化、前日動能因子。
 
-模型本質是**隔夜訊號 → 開盤預測器**：對開盤跳空同向率 ~94%、對盤中走勢僅 ~71%，
-這是兩段式呈現的由來。盤中展望門檻（`THRESHOLD_INTRADAY`）刻意高於開盤門檻。
+模型本質是**隔夜訊號 → 開盤預測器**：大盤對開盤跳空同向率 ~94%、對盤中僅 ~71%；
+各類別開盤 84–97%、盤中多為 ~50%（科技/股息盤中訊號驗證不過）。這是兩段式呈現的由來，
+盤中門檻一律刻意高於開盤門檻，訊號弱時顯示「方向不明」而非硬喊。校準用 backfill 的
+`categories[k].target`（含 gap/intraday 拆解）——調類別盤中門檻時重跑該分析，勿憑感覺。
 
 ## 已知陷阱
 

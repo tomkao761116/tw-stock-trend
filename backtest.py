@@ -66,14 +66,14 @@ def _single_ticker_change(ticker, date_str):
     return (cur / prev - 1) * 100
 
 
-def _twii_gap_intraday(date_str):
-    """回傳該日大盤 (跳空%, 盤中%)；取不到回 None。
+def _single_gap_intraday(ticker, date_str):
+    """單一標的當日 (跳空%, 盤中%)；取不到回 None。
     跳空 = 開盤 vs 前一日收盤、盤中 = 收盤 vs 開盤。"""
     import yfinance as yf
 
     d = dt.date.fromisoformat(date_str)
-    hist = yf.Ticker(TWII).history(start=(d - dt.timedelta(days=7)).isoformat(),
-                                   end=(d + dt.timedelta(days=1)).isoformat())
+    hist = yf.Ticker(ticker).history(start=(d - dt.timedelta(days=7)).isoformat(),
+                                     end=(d + dt.timedelta(days=1)).isoformat())
     if hist.empty:
         return None
     hist.index = [t.date().isoformat() for t in hist.index]
@@ -90,31 +90,47 @@ def _twii_gap_intraday(date_str):
     return (o / prev_close - 1) * 100, (c / o - 1) * 100
 
 
-def _backtest_two_part(r, date, force):
-    """開盤方向/盤中展望的實際結果回填（僅大盤、僅含 open_call 的新格式資料）。
-    回傳是否有變動。判定：開盤 vs 跳空（±GAP_FLAT_BAND 平開帶）、
-    盤中展望 vs 開→收（±FLAT_BAND 平盤帶）。"""
-    if not r.get("open_call") or not _eligible(date):
-        return False
-    if not force and r.get("open_actual") is not None:
-        return False
-    gi = _twii_gap_intraday(date)
-    if gi is None:
-        return False
-    gap, intra = gi
-    open_pred = ("漲" if "開高" in r["open_call"]["direction"]
-                 else "跌" if "開低" in r["open_call"]["direction"] else "平")
-    intra_pred = ("漲" if "偏多" in r["intraday_call"]["direction"]
-                  else "跌" if "偏空" in r["intraday_call"]["direction"] else "平")
+def _gap_intraday(ticker, date_str):
+    """該日 (跳空%, 盤中%)；ticker 可為單一字串或字串 list（籃子取等權平均）。
+    與 _ticker_change 一致，用於傳產這種以個股組合代理的類別。"""
+    if isinstance(ticker, (list, tuple)):
+        pairs = [gi for gi in (_single_gap_intraday(t, date_str) for t in ticker)
+                 if gi is not None]
+        if not pairs:
+            return None
+        return (sum(g for g, _ in pairs) / len(pairs),
+                sum(i for _, i in pairs) / len(pairs))
+    return _single_gap_intraday(ticker, date_str)
+
+
+def _fill_two_part(rec, gap, intra):
+    """把 (跳空, 盤中) 實際值寫進含 open_call/intraday_call 的 dict（大盤或類別共用）。
+    開盤 vs 跳空（±GAP_FLAT_BAND 平開帶）、盤中展望 vs 開→收（±FLAT_BAND 平盤帶）。"""
+    open_pred = ("漲" if "開高" in rec["open_call"]["direction"]
+                 else "跌" if "開低" in rec["open_call"]["direction"] else "平")
+    intra_pred = ("漲" if "偏多" in rec["intraday_call"]["direction"]
+                  else "跌" if "偏空" in rec["intraday_call"]["direction"] else "平")
     open_act = ("開高" if gap > GAP_FLAT_BAND
                 else "開低" if gap < -GAP_FLAT_BAND else "平開")
     intra_act = _actual_dir(intra)
     open_hit = ({"開高": "漲", "開低": "跌", "平開": "平"}[open_act] == open_pred)
     intra_hit = (intra_act == intra_pred)
-    r["open_actual"] = f"{open_act} {gap:+.2f}% {'✓' if open_hit else '✗'}"
-    r["open_hit"] = open_hit
-    r["intraday_actual"] = f"{intra_act} {intra:+.2f}% {'✓' if intra_hit else '✗'}"
-    r["intraday_hit"] = intra_hit
+    rec["open_actual"] = f"{open_act} {gap:+.2f}% {'✓' if open_hit else '✗'}"
+    rec["open_hit"] = open_hit
+    rec["intraday_actual"] = f"{intra_act} {intra:+.2f}% {'✓' if intra_hit else '✗'}"
+    rec["intraday_hit"] = intra_hit
+
+
+def _backtest_two_part(r, date, force):
+    """大盤開盤方向/盤中展望的實際結果回填（僅含 open_call 的新格式資料）。回傳是否有變動。"""
+    if not r.get("open_call") or not _eligible(date):
+        return False
+    if not force and r.get("open_actual") is not None:
+        return False
+    gi = _gap_intraday(TWII, date)
+    if gi is None:
+        return False
+    _fill_two_part(r, *gi)
     return True
 
 
@@ -251,6 +267,12 @@ def _backtest_categories(r, date, force):
         cr["actual_pct"] = round(pct, 2)
         cr["hit"] = hit
         changed = True
+
+        # 兩段式（開盤/盤中）實際結果——類別與大盤共用同一套判定
+        if cr.get("open_call") and (force or cr.get("open_actual") is None):
+            gi = _gap_intraday(ticker, date)
+            if gi is not None:
+                _fill_two_part(cr, *gi)
     return changed
 
 
