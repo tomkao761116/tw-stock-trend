@@ -583,7 +583,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "跌 -0.74% ✗",
+      "actual_pct": -0.74,
+      "hit": false,
+      "open_actual": "開高 +0.93% ✓",
+      "open_hit": true,
+      "intraday_actual": "跌 -1.64% ✗",
+      "intraday_hit": false
     },
     "dividend": {
       "direction": "偏多 📈",
@@ -837,7 +844,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "平 +0.37% ✓",
+      "actual_pct": 0.37,
+      "hit": true,
+      "open_actual": "平開 +0.04% ✓",
+      "open_hit": true,
+      "intraday_actual": "平 +0.33% ✓",
+      "intraday_hit": true
     }
   },
   "date": "2026-07-06",
