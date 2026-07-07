@@ -44,35 +44,53 @@ def _ticker_change(ticker, date_str):
     return _single_ticker_change(ticker, date_str)
 
 
-def _single_ticker_change(ticker, date_str):
-    import yfinance as yf
+def _finmind_code(ticker):
+    """yfinance 代號 → FinMind data_id：^TWII=加權指數，其餘去掉 .TW/.TWO 後綴。"""
+    if ticker == TWII:
+        return "TAIEX"
+    return ticker.replace(".TWO", "").replace(".TW", "")
 
-    d = dt.date.fromisoformat(date_str)
-    start = (d - dt.timedelta(days=7)).isoformat()
-    end = (d + dt.timedelta(days=1)).isoformat()
-    hist = yf.Ticker(ticker).history(start=start, end=end)
-    if hist.empty:
+
+def _finmind_bars(ticker, date_str):
+    """從 FinMind 取該日 {prev_close, open, close}；取不到回 None。
+    FinMind 是台股在地源、收盤後即時更新，避開 Yahoo 對台股指數/ETF 約一天的延遲
+    （隔日回填抓不到昨日收盤的主因，見 _fetch_bars）。"""
+    import requests
+    from data_fetch import _finmind_token
+
+    token = _finmind_token()
+    if not token:
         return None
-    hist.index = [t.date().isoformat() for t in hist.index]
-    if date_str not in hist.index:
-        return None  # 該日非交易日或資料未到
-    closes = hist["Close"]
-    pos = list(hist.index).index(date_str)
+    d = dt.date.fromisoformat(date_str)
+    try:
+        r = requests.get("https://api.finmindtrade.com/api/v4/data", params={
+            "dataset": "TaiwanStockPrice", "data_id": _finmind_code(ticker),
+            "start_date": (d - dt.timedelta(days=12)).isoformat(),
+            "end_date": date_str, "token": token}, timeout=30)
+        r.raise_for_status()
+        rows = r.json().get("data", [])
+    except Exception:
+        return None
+    rows = [x for x in rows if x.get("close")]  # 濾掉收盤缺值
+    dates = sorted(x["date"] for x in rows)
+    if date_str not in dates:
+        return None  # 該日非交易日或 FinMind 尚未更新
+    pos = dates.index(date_str)
     if pos == 0:
-        return None  # 沒有前一日可比
-    prev, cur = float(closes.iloc[pos - 1]), float(closes.iloc[pos])
-    if math.isnan(prev) or math.isnan(cur):
-        return None  # 資料源當天收盤價尚未同步完整（偶見於成交量較低的ETF），視為尚無資料
-    return (cur / prev - 1) * 100
+        return None  # 沒有前一交易日可比
+    by_date = {x["date"]: x for x in rows}
+    cur, prev = by_date[date_str], by_date[dates[pos - 1]]
+    return {"prev_close": float(prev["close"]),
+            "open": float(cur["open"]) if cur.get("open") else None,
+            "close": float(cur["close"])}
 
 
-def _single_gap_intraday(ticker, date_str):
-    """單一標的當日 (跳空%, 盤中%)；取不到回 None。
-    跳空 = 開盤 vs 前一日收盤、盤中 = 收盤 vs 開盤。"""
+def _yahoo_bars(ticker, date_str):
+    """從 Yahoo 取該日 {prev_close, open, close}；取不到回 None。FinMind 失敗時的備援。"""
     import yfinance as yf
 
     d = dt.date.fromisoformat(date_str)
-    hist = yf.Ticker(ticker).history(start=(d - dt.timedelta(days=7)).isoformat(),
+    hist = yf.Ticker(ticker).history(start=(d - dt.timedelta(days=12)).isoformat(),
                                      end=(d + dt.timedelta(days=1)).isoformat())
     if hist.empty:
         return None
@@ -82,12 +100,35 @@ def _single_gap_intraday(ticker, date_str):
     pos = list(hist.index).index(date_str)
     if pos == 0:
         return None
-    prev_close = float(hist["Close"].iloc[pos - 1])
+    prev = float(hist["Close"].iloc[pos - 1])
     o = float(hist["Open"].iloc[pos])
     c = float(hist["Close"].iloc[pos])
-    if any(math.isnan(x) for x in (prev_close, o, c)):
+    if math.isnan(prev) or math.isnan(c):
+        return None  # 收盤缺值（Yahoo 對成交量低的台股 ETF 偶見），視為尚無資料
+    return {"prev_close": prev, "open": (None if math.isnan(o) else o), "close": c}
+
+
+def _fetch_bars(ticker, date_str):
+    """該日 {prev_close, open, close}：FinMind 優先（台股在地源、即時），Yahoo 備援。
+    設計原因：Yahoo 對台股指數(^TWII)與 ETF 日線有約一天延遲，隔日早上回測抓不到
+    昨日收盤——換 FinMind 為主源即可當日回填，Yahoo 僅在 FinMind 無 token/故障時墊底。"""
+    return _finmind_bars(ticker, date_str) or _yahoo_bars(ticker, date_str)
+
+
+def _single_ticker_change(ticker, date_str):
+    b = _fetch_bars(ticker, date_str)
+    if b is None:
         return None
-    return (o / prev_close - 1) * 100, (c / o - 1) * 100
+    return (b["close"] / b["prev_close"] - 1) * 100
+
+
+def _single_gap_intraday(ticker, date_str):
+    """單一標的當日 (跳空%, 盤中%)；取不到（含當日無開盤價）回 None。
+    跳空 = 開盤 vs 前一日收盤、盤中 = 收盤 vs 開盤。來源同 _fetch_bars（FinMind 優先）。"""
+    b = _fetch_bars(ticker, date_str)
+    if b is None or b["open"] is None:
+        return None
+    return (b["open"] / b["prev_close"] - 1) * 100, (b["close"] / b["open"] - 1) * 100
 
 
 def _gap_intraday(ticker, date_str):
@@ -164,6 +205,7 @@ def run(force=False):
 
     total = hits = filled = 0
     by_pred = {}  # 預測方向 → [命中數, 總數]
+    stale = []    # 已收盤但仍抓不到收盤資料的日期（資料源異常的警訊）
     print(f"{'日期':<12}{'預估':<8}{'實際':<10}{'結果'}")
     print("-" * 44)
 
@@ -196,6 +238,7 @@ def run(force=False):
         else:
             pct = _ticker_change(TWII, date)
             if pct is None:
+                stale.append(date)
                 print(f"{date:<12}{r['direction'][:2]:<8}{'(尚無收盤資料)'}")
                 if r.get("actual_pct") is not None:  # 清掉可能殘留的 NaN 垃圾資料
                     r["actual"], r["actual_pct"], r["hit"] = None, None, None
@@ -234,6 +277,13 @@ def run(force=False):
     _print_two_part_summary(files)
     print(f"\n本次新填入 {filled} 筆（其餘沿用既有結果）。"
           "重跑 webgen.py 可讓網頁歷史顯示實際結果。")
+
+    if stale:
+        # 已收盤卻抓不到收盤價：兩個資料源(FinMind→Yahoo)都失敗，屬異常需人工留意。
+        # 下次執行會自動再試（自我修復），但連續多天出現代表資料源或 token 有問題。
+        print(f"\n⚠️  警告：{len(stale)} 個已收盤日期仍抓不到收盤資料："
+              f"{'、'.join(stale)}")
+        print("    FinMind + Yahoo 皆失敗——請檢查 .finmind_token 是否有效、網路或 API 狀態。")
 
     _print_category_summary(files)
 

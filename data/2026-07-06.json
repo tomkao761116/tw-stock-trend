@@ -349,7 +349,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "平 +0.00% ✗",
+      "actual_pct": 0.0,
+      "hit": false,
+      "open_actual": "開高 +0.63% ✗",
+      "open_hit": false,
+      "intraday_actual": "跌 -0.63% ✗",
+      "intraday_hit": false
     },
     "financial": {
       "direction": "偏多 📈",
@@ -466,7 +473,14 @@
       "intraday_call": {
         "direction": "偏多延續 📈",
         "cls": "bull"
-      }
+      },
+      "actual": "漲 +1.32% ✓",
+      "actual_pct": 1.32,
+      "hit": true,
+      "open_actual": "平開 +0.00% ✗",
+      "open_hit": false,
+      "intraday_actual": "漲 +1.32% ✓",
+      "intraday_hit": true
     },
     "traditional": {
       "direction": "偏多 📈",
@@ -727,7 +741,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "漲 +0.76% ✓",
+      "actual_pct": 0.76,
+      "hit": true,
+      "open_actual": "開高 +1.04% ✓",
+      "open_hit": true,
+      "intraday_actual": "平 -0.28% ✓",
+      "intraday_hit": true
     },
     "bond": {
       "direction": "震盪 ➡️",
@@ -856,5 +877,11 @@
   },
   "date": "2026-07-06",
   "generated_at": "2026-07-06 08:50",
-  "actual": null
+  "actual": "跌 -0.48% ✓",
+  "actual_pct": -0.48,
+  "hit": true,
+  "open_actual": "開高 +0.25% ✗",
+  "open_hit": false,
+  "intraday_actual": "跌 -0.73% ✓",
+  "intraday_hit": true
 }

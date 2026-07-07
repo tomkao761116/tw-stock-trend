@@ -66,6 +66,11 @@ data_fetch.py → rules.py → report.py → data/*.json → webgen.py → docs/
 
 ## 已知陷阱
 
+- **回測收盤來源必須 FinMind 優先、Yahoo 備援**（`backtest._fetch_bars`）：Yahoo 對台股
+  指數(^TWII)與 ETF 日線有約一天延遲——隔日早上 8:30 回測抓不到「昨日收盤」，是這個系統
+  反覆出現的故障。FinMind 是台股在地源、收盤後即時更新，且對指數(`data_id=TAIEX`)、
+  ETF、上櫃、個股都有 OHLC。**不要改回純 yfinance**。若已收盤仍抓不到，`run()` 結尾會印
+  ⚠️ 警告（兩源皆失敗才會出現，通常是 token 失效）。
 - **FinMind 夜盤日期語意**：`TaiwanFuturesDaily` 的 `after_market` 日期 = 夜盤「結束」的
   交易日（D-1 15:00 開始的夜盤標記為 D）。backfill 的 as-of 過濾對夜盤用 `<= D`、
   其他資料源用 `< D`——改動時別「統一」它們，那是修過的 bug。
