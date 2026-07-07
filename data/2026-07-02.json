@@ -333,8 +333,8 @@
       },
       "plain_summary": "昨晚美國半導體股、台指期夜盤表現疲弱，可能拖累今天台股偏向下跌。",
       "label": "科技股/半導體",
-      "actual": "跌 -0.79% ✓",
-      "actual_pct": -0.79,
+      "actual": "跌 -0.47% ✓",
+      "actual_pct": -0.47,
       "hit": true
     },
     "financial": {
@@ -444,8 +444,8 @@
       },
       "plain_summary": "昨晚美股金融類股、外資買賣超表現強勢，通常會帶動今天台股偏向上漲。雖然美債10年殖利率、台幣匯率帶來一些反向壓力，但力道不足以扭轉方向。",
       "label": "金融股",
-      "actual": "跌 -1.08% ✗",
-      "actual_pct": -1.08,
+      "actual": "跌 -1.22% ✗",
+      "actual_pct": -1.22,
       "hit": false
     },
     "traditional": {
@@ -686,8 +686,8 @@
       },
       "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
       "label": "股息型",
-      "actual": "平 +0.06% ✓",
-      "actual_pct": 0.06,
+      "actual": "平 -0.28% ✓",
+      "actual_pct": -0.28,
       "hit": true
     },
     "bond": {
