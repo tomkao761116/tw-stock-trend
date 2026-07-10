@@ -107,6 +107,16 @@ def _full_card(title, r, events=None):
         f'<div class="event">⚠️ 今天是{html.escape(e["type"])}：'
         f'{html.escape(e["note"])}（預估趨保守）</div>' for e in (events or []))
 
+    # 缺重要因子（權重 ≥ 2）時顯眼警告——缺失會系統性低估總分強度，
+    # 使用者需知道當日預估可信度打折（2026-07-10 缺 SOX 的教訓）
+    missing_big = [f for f in r["factors"]
+                   if f.get("note") and f.get("weight", 0) >= 2.0]
+    if missing_big:
+        names = "、".join(html.escape(_info(f["key"], "nick") or f["name"])
+                         for f in missing_big)
+        ev_html += (f'<div class="event">⚠️ 本日「{names}」資料缺漏未計入，'
+                    f'總分被低估、預估可信度打折</div>')
+
     push = attr.get("push", [])
     drag = attr.get("drag", [])
     neutral = attr.get("neutral", [])

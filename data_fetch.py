@@ -3,22 +3,32 @@
 每個函式回傳簡單 dict，取不到時回傳 None 並印出原因，讓上層優雅降級。
 """
 import os
+import time
 import datetime as dt
 
 import config
 
+_YF_RETRIES = 2         # Yahoo 偶發性單 ticker 失敗（回 "possibly delisted"）的重試次數
+_YF_RETRY_WAIT = 4      # 重試間隔秒數。2026-07-10 ^SOX 瞬時失敗導致當日缺最重要因子之一，
+                        # 總分被低估 ~2.5 分——重試比缺因子便宜得多
+
 
 def _last_two_closes(ticker):
-    """取最近兩個交易日收盤價，回傳 (前值, 最新值, 漲跌幅%)。"""
+    """取最近兩個交易日收盤價，回傳 (前值, 最新值, 漲跌幅%)。失敗自動重試。"""
     import yfinance as yf
 
-    hist = yf.Ticker(ticker).history(period="5d")
-    if hist.empty or len(hist) < 2:
-        return None
-    closes = hist["Close"].dropna()
-    prev, last = float(closes.iloc[-2]), float(closes.iloc[-1])
-    pct = (last / prev - 1) * 100
-    return prev, last, pct
+    for attempt in range(_YF_RETRIES + 1):
+        hist = yf.Ticker(ticker).history(period="5d")
+        if not hist.empty and len(hist) >= 2:
+            closes = hist["Close"].dropna()
+            if len(closes) >= 2:
+                prev, last = float(closes.iloc[-2]), float(closes.iloc[-1])
+                return prev, last, (last / prev - 1) * 100
+        if attempt < _YF_RETRIES:
+            print(f"  … {ticker} 回應異常，{_YF_RETRY_WAIT}s 後重試"
+                  f"（{attempt + 1}/{_YF_RETRIES}）")
+            time.sleep(_YF_RETRY_WAIT)
+    return None
 
 
 def fetch_market_quote(name):
