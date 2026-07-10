@@ -1,6 +1,6 @@
 {
   "direction": "偏多 📈",
-  "total_score": 4.08,
+  "total_score": 6.58,
   "factors": [
     {
       "key": "night_futures",
@@ -15,11 +15,12 @@
     {
       "key": "sox",
       "name": "費半 SOX",
-      "value": "N/A",
-      "base": null,
+      "value": "+3.06%",
+      "base": 1.0,
       "weight": 2.5,
-      "contribution": 0.0,
-      "note": "資料缺漏，未計入"
+      "contribution": 2.5,
+      "note": "",
+      "analysis": "力道非常強，半導體類股資金動能強，激勵台股科技權值股表現"
     },
     {
       "key": "tsm_adr",
@@ -98,7 +99,7 @@
     -3.0
   ],
   "attribution": {
-    "bull_force": 4.91,
+    "bull_force": 7.41,
     "bear_force": -0.82,
     "push": [
       {
@@ -110,6 +111,16 @@
         "contribution": 3.08,
         "note": "",
         "analysis": "力道非常強，夜盤買盤積極，市場資金已提前反映樂觀氣氛，通常延續到今天開盤"
+      },
+      {
+        "key": "sox",
+        "name": "費半 SOX",
+        "value": "+3.06%",
+        "base": 1.0,
+        "weight": 2.5,
+        "contribution": 2.5,
+        "note": "",
+        "analysis": "力道非常強，半導體類股資金動能強，激勵台股科技權值股表現"
       },
       {
         "key": "nasdaq",
@@ -187,26 +198,26 @@
       }
     ]
   },
-  "reasoning": "主由「台指期夜盤、那斯達克、外資期貨」推升（合計 +4.9）；「外資買賣超、融資餘額(反向)」形成拖累（-0.8），但不足以扭轉方向。",
+  "reasoning": "主由「台指期夜盤、費半 SOX、那斯達克」推升（合計 +7.4）；「外資買賣超、融資餘額(反向)」形成拖累（-0.8），但不足以扭轉方向。",
   "confidence": {
-    "label": "中等",
-    "dots": "●●●○○",
+    "label": "很高",
+    "dots": "●●●●●",
     "note": ""
   },
-  "plain_summary": "昨晚台指期夜盤、美國那斯達克表現強勢，通常會帶動今天台股偏向上漲。雖然外資買賣超、散戶融資帶來一些反向壓力，但力道不足以扭轉方向。",
+  "plain_summary": "昨晚台指期夜盤、美國半導體股表現強勢，通常會帶動今天台股偏向上漲。雖然外資買賣超、散戶融資帶來一些反向壓力，但力道不足以扭轉方向。",
   "open_call": {
     "direction": "開高 📈",
     "cls": "bull"
   },
   "intraday_call": {
-    "direction": "方向不明 ➡️",
-    "cls": "flat"
+    "direction": "偏多延續 📈",
+    "cls": "bull"
   },
   "events": [],
   "categories": {
     "tech": {
-      "direction": "震盪 ➡️",
-      "total_score": 3.17,
+      "direction": "偏多 📈",
+      "total_score": 6.17,
       "factors": [
         {
           "key": "night_futures",
@@ -221,11 +232,12 @@
         {
           "key": "sox",
           "name": "費半 SOX",
-          "value": "N/A",
-          "base": null,
+          "value": "+3.06%",
+          "base": 1.0,
           "weight": 3.0,
-          "contribution": 0.0,
-          "note": "資料缺漏，未計入"
+          "contribution": 3.0,
+          "note": "",
+          "analysis": "力道非常強，半導體類股資金動能強，激勵台股科技權值股表現"
         },
         {
           "key": "tsm_adr",
@@ -264,9 +276,19 @@
         -4.0
       ],
       "attribution": {
-        "bull_force": 3.5,
+        "bull_force": 6.5,
         "bear_force": -0.33,
         "push": [
+          {
+            "key": "sox",
+            "name": "費半 SOX",
+            "value": "+3.06%",
+            "base": 1.0,
+            "weight": 3.0,
+            "contribution": 3.0,
+            "note": "",
+            "analysis": "力道非常強，半導體類股資金動能強，激勵台股科技權值股表現"
+          },
           {
             "key": "night_futures",
             "name": "台指期夜盤",
@@ -313,17 +335,17 @@
           }
         ]
       },
-      "reasoning": "多空力道接近（推升 +3.5、拖累 -0.3）；「台指期夜盤」偏多與「輝達(NVDA)」偏空相互抵銷，方向不明。",
+      "reasoning": "主由「費半 SOX、台指期夜盤、那斯達克」推升（合計 +6.5）；「輝達(NVDA)」形成拖累（-0.3），但不足以扭轉方向。",
       "confidence": {
-        "label": "方向不明",
-        "dots": "○○○○○",
-        "note": "多空力道相當，建議觀望"
+        "label": "高",
+        "dots": "●●●●○",
+        "note": ""
       },
-      "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
+      "plain_summary": "昨晚美國半導體股、台指期夜盤表現強勢，通常會帶動今天台股偏向上漲。雖然輝達(NVDA)帶來一些反向壓力，但力道不足以扭轉方向。",
       "label": "科技股/半導體",
       "open_call": {
-        "direction": "平開/觀望 ➡️",
-        "cls": "flat"
+        "direction": "開高 📈",
+        "cls": "bull"
       },
       "intraday_call": {
         "direction": "方向不明 ➡️",
@@ -449,22 +471,22 @@
     },
     "traditional": {
       "direction": "偏多 📈",
-      "total_score": 1.86,
+      "total_score": 2.25,
       "factors": [
         {
           "key": "oil",
           "name": "WTI原油",
-          "value": "-2.22%",
-          "base": -0.74,
+          "value": "-2.03%",
+          "base": -0.68,
           "weight": 1.0,
-          "contribution": -0.74,
+          "contribution": -0.68,
           "note": "",
           "analysis": "力道明顯，油價走跌，原物料與塑化類股營收展望轉弱"
         },
         {
           "key": "copper",
           "name": "銅期貨",
-          "value": "+3.12%",
+          "value": "+3.49%",
           "base": 1.0,
           "weight": 2.0,
           "contribution": 2.0,
@@ -474,12 +496,12 @@
         {
           "key": "dxy",
           "name": "美元指數",
-          "value": "-0.12%",
-          "base": 0.2,
+          "value": "-0.25%",
+          "base": 0.42,
           "weight": 1.5,
-          "contribution": 0.3,
+          "contribution": 0.62,
           "note": "",
-          "analysis": "力道輕微，美元走強，原物料價格面臨壓力，對傳產類股偏空"
+          "analysis": "力道溫和，美元走強，原物料價格面臨壓力，對傳產類股偏空"
         },
         {
           "key": "bdry",
@@ -498,13 +520,13 @@
         -0.8
       ],
       "attribution": {
-        "bull_force": 2.6,
-        "bear_force": -0.74,
+        "bull_force": 2.92,
+        "bear_force": -0.68,
         "push": [
           {
             "key": "copper",
             "name": "銅期貨",
-            "value": "+3.12%",
+            "value": "+3.49%",
             "base": 1.0,
             "weight": 2.0,
             "contribution": 2.0,
@@ -514,12 +536,12 @@
           {
             "key": "dxy",
             "name": "美元指數",
-            "value": "-0.12%",
-            "base": 0.2,
+            "value": "-0.25%",
+            "base": 0.42,
             "weight": 1.5,
-            "contribution": 0.3,
+            "contribution": 0.62,
             "note": "",
-            "analysis": "力道輕微，美元走強，原物料價格面臨壓力，對傳產類股偏空"
+            "analysis": "力道溫和，美元走強，原物料價格面臨壓力，對傳產類股偏空"
           },
           {
             "key": "bdry",
@@ -536,17 +558,17 @@
           {
             "key": "oil",
             "name": "WTI原油",
-            "value": "-2.22%",
-            "base": -0.74,
+            "value": "-2.03%",
+            "base": -0.68,
             "weight": 1.0,
-            "contribution": -0.74,
+            "contribution": -0.68,
             "note": "",
             "analysis": "力道明顯，油價走跌，原物料與塑化類股營收展望轉弱"
           }
         ],
         "neutral": []
       },
-      "reasoning": "主由「銅期貨、美元指數、航運指數(BDI代理)」推升（合計 +2.6）；「WTI原油」形成拖累（-0.7），但不足以扭轉方向。",
+      "reasoning": "主由「銅期貨、美元指數、航運指數(BDI代理)」推升（合計 +2.9）；「WTI原油」形成拖累（-0.7），但不足以扭轉方向。",
       "confidence": {
         "label": "很高",
         "dots": "●●●●●",
@@ -819,6 +841,7 @@
     }
   },
   "date": "2026-07-10",
-  "generated_at": "2026-07-10 08:45",
-  "actual": null
+  "generated_at": "2026-07-10 09:23",
+  "actual": null,
+  "note": "08:45 版因 Yahoo 瞬時故障缺 SOX 因子；09:25 以同時點(美東07-09收盤)資料修補重算"
 }
