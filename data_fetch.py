@@ -31,19 +31,62 @@ def _last_two_closes(ticker):
     return None
 
 
+# FinMind USStockPrice 有覆蓋的代號（直接用 Yahoo 式 symbol 查詢，2026-07-10 實測）。
+# 未覆蓋且無備援：^TNX、CL=F、HG=F、DX-Y.NYB、^MOVE（期貨/殖利率指數，僅類別因子使用，
+# 靠 _last_two_closes 的重試機制；再失敗則當日缺該因子並於網頁警告）。
+_FINMIND_US_TICKERS = {"^SOX", "^IXIC", "TSM", "^VIX", "XLF",
+                       "BDRY", "TLT", "NVDA", "XLU"}
+
+
+def _finmind_fallback_last_two(name, ticker):
+    """Yahoo 失敗時的 FinMind 備援：美股走 USStockPrice、台幣走台銀牌價。
+    回傳 (前值, 最新值, 漲跌幅%) 或 None。"""
+    import requests
+
+    token = _finmind_token()
+    if not token:
+        return None
+    end = dt.date.today()
+    start = end - dt.timedelta(days=12)
+    try:
+        if ticker in _FINMIND_US_TICKERS:
+            dataset, data_id, close_key = "USStockPrice", ticker, "Close"
+        else:
+            # usdtwd 刻意無備援：台銀牌價與 Yahoo 即時匯率時間基準不同，
+            # 實測漲跌幅差異大甚至反向（-0.10% vs +0.47%）——語意不一致的
+            # 備援比缺值更糟；該因子權重僅 0.5，缺一天影響可忽略
+            return None
+        r = requests.get("https://api.finmindtrade.com/api/v4/data", params={
+            "dataset": dataset, "data_id": data_id, "start_date": start.isoformat(),
+            "end_date": end.isoformat(), "token": token}, timeout=20)
+        r.raise_for_status()
+        rows = sorted((x for x in r.json().get("data", []) if x.get(close_key)),
+                      key=lambda x: x["date"])
+        if len(rows) < 2:
+            return None
+        prev, last = float(rows[-2][close_key]), float(rows[-1][close_key])
+        return prev, last, (last / prev - 1) * 100
+    except Exception:
+        return None
+
+
 def fetch_market_quote(name):
-    """通用：回傳 {name, last, pct} 或 None。"""
+    """通用：回傳 {name, last, pct} 或 None。Yahoo 主源（含重試）→ FinMind 備援。"""
     ticker = config.TICKERS[name]
     try:
         res = _last_two_closes(ticker)
-        if res is None:
-            print(f"  ⚠ {name} ({ticker}) 無足夠資料")
-            return None
-        _, last, pct = res
-        return {"name": name, "last": round(last, 2), "pct": round(pct, 2)}
     except Exception as e:
         print(f"  ⚠ {name} ({ticker}) 擷取失敗：{e}")
+        res = None
+    if res is None:
+        res = _finmind_fallback_last_two(name, ticker)
+        if res is not None:
+            print(f"  ↻ {name} ({ticker}) Yahoo 失敗，改用 FinMind 備援")
+    if res is None:
+        print(f"  ⚠ {name} ({ticker}) 無足夠資料（主源+備援皆失敗）")
         return None
+    _, last, pct = res
+    return {"name": name, "last": round(last, 2), "pct": round(pct, 2)}
 
 
 def fetch_us_overnight():
