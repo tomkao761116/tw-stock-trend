@@ -175,6 +175,47 @@ def _backtest_two_part(r, date, force):
     return True
 
 
+def _is_market_holiday(date_str):
+    """該日是否為臨時休市日（颱風假等）：FinMind 加權指數在「更晚的日期」已有資料、
+    但該日沒有 → 該日確定不是交易日（而非資料還沒到）。只在抓不到收盤時才呼叫。
+    2026-07-10 颱風巴威休市即此情況——cron 照常發了預估，但當日永遠不會有收盤。"""
+    import requests
+    from data_fetch import _finmind_token
+
+    token = _finmind_token()
+    if not token:
+        return False
+    d = dt.date.fromisoformat(date_str)
+    try:
+        r = requests.get("https://api.finmindtrade.com/api/v4/data", params={
+            "dataset": "TaiwanStockPrice", "data_id": "TAIEX",
+            "start_date": date_str,
+            "end_date": (d + dt.timedelta(days=10)).isoformat(),
+            "token": token}, timeout=30)
+        r.raise_for_status()
+        dates = {x["date"] for x in r.json().get("data", [])}
+    except Exception:
+        return False
+    return date_str not in dates and any(x > date_str for x in dates)
+
+
+def _mark_no_trading(r):
+    """把整筆記錄（大盤＋各類別，含兩段式欄位）標為休市：
+    不列入命中統計、不再重複查詢，並清掉可能已被幽靈資料誤填的值
+    （Yahoo 對台股 ETF 在颱風休市日會吐出價格不變的假 bar）。"""
+    r["no_trading"] = True
+    two_part = ("open_actual", "open_hit", "intraday_actual", "intraday_hit")
+    r["actual"] = "休市"
+    r["actual_pct"], r["hit"] = None, None
+    for k in two_part:
+        r[k] = None
+    for cr in r.get("categories", {}).values():
+        cr["actual"] = "休市"
+        cr["actual_pct"], cr["hit"] = None, None
+        for k in two_part:
+            cr[k] = None
+
+
 def _is_filled(pct):
     """判斷 actual_pct 是否為「已有效填入」。NaN 視為未填入（自我修復：
     萬一資料源曾回傳 NaN 被存下來，下次執行會當作缺資料重新查詢，而不是永遠卡住）。"""
@@ -215,6 +256,10 @@ def run(force=False):
         date = r["date"]
         changed = False
 
+        if r.get("no_trading"):
+            print(f"{date:<12}{r['direction'][:2]:<8}{'休市（不計入）'}")
+            continue
+
         if not _eligible(date):
             if _is_filled(r.get("actual_pct")):
                 # 曾被誤填入盤中即時價（舊版 bug），清除避免顯示錯誤的命中結果
@@ -238,12 +283,20 @@ def run(force=False):
         else:
             pct = _ticker_change(TWII, date)
             if pct is None:
+                if _is_market_holiday(date):
+                    _mark_no_trading(r)
+                    print(f"{date:<12}{r['direction'][:2]:<8}{'休市（標記，不計入）'}")
+                    with open(path, "w", encoding="utf-8") as fp:
+                        json.dump(r, fp, ensure_ascii=False, indent=2)
+                    continue
                 stale.append(date)
                 print(f"{date:<12}{r['direction'][:2]:<8}{'(尚無收盤資料)'}")
                 if r.get("actual_pct") is not None:  # 清掉可能殘留的 NaN 垃圾資料
                     r["actual"], r["actual_pct"], r["hit"] = None, None, None
                     changed = True
-                changed = _backtest_categories(r, date, force) or changed
+                # 大盤收盤都抓不到時不回填類別：可能是資料未到（類別同樣未到）
+                # 或臨時休市（Yahoo 會給類別 ETF 幽靈 bar，填了就是錯的）。
+                # 等大盤收盤出現的那一次執行再一起補。
                 if changed:
                     with open(path, "w", encoding="utf-8") as fp:
                         json.dump(r, fp, ensure_ascii=False, indent=2)

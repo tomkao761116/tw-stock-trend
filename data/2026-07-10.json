@@ -351,13 +351,13 @@
         "direction": "方向不明 ➡️",
         "cls": "flat"
       },
-      "actual": "平 +0.00% ✗",
-      "actual_pct": 0.0,
-      "hit": false,
-      "open_actual": "平開 +0.00% ✗",
-      "open_hit": false,
-      "intraday_actual": "平 +0.00% ✓",
-      "intraday_hit": true
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     },
     "financial": {
       "direction": "震盪 ➡️",
@@ -475,13 +475,13 @@
         "direction": "方向不明 ➡️",
         "cls": "flat"
       },
-      "actual": "平 +0.00% ✓",
-      "actual_pct": 0.0,
-      "hit": true,
-      "open_actual": "平開 +0.00% ✓",
-      "open_hit": true,
-      "intraday_actual": "平 +0.00% ✓",
-      "intraday_hit": true
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     },
     "traditional": {
       "direction": "偏多 📈",
@@ -598,13 +598,13 @@
         "direction": "方向不明 ➡️",
         "cls": "flat"
       },
-      "actual": "平 +0.00% ✗",
-      "actual_pct": 0.0,
-      "hit": false,
-      "open_actual": "平開 +0.00% ✗",
-      "open_hit": false,
-      "intraday_actual": "平 +0.00% ✓",
-      "intraday_hit": true
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     },
     "dividend": {
       "direction": "震盪 ➡️",
@@ -742,13 +742,13 @@
         "direction": "方向不明 ➡️",
         "cls": "flat"
       },
-      "actual": "平 +0.00% ✓",
-      "actual_pct": 0.0,
-      "hit": true,
-      "open_actual": "平開 +0.00% ✓",
-      "open_hit": true,
-      "intraday_actual": "平 +0.00% ✓",
-      "intraday_hit": true
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     },
     "bond": {
       "direction": "震盪 ➡️",
@@ -866,17 +866,24 @@
         "direction": "方向不明 ➡️",
         "cls": "flat"
       },
-      "actual": "平 +0.00% ✓",
-      "actual_pct": 0.0,
-      "hit": true,
-      "open_actual": "平開 +0.00% ✓",
-      "open_hit": true,
-      "intraday_actual": "平 +0.00% ✓",
-      "intraday_hit": true
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     }
   },
   "date": "2026-07-10",
   "generated_at": "2026-07-10 09:23",
-  "actual": null,
-  "note": "08:45 版因 Yahoo 瞬時故障缺 SOX 因子；09:25 以同時點(美東07-09收盤)資料修補重算"
+  "actual": "休市",
+  "note": "08:45 版因 Yahoo 瞬時故障缺 SOX 因子；09:25 以同時點(美東07-09收盤)資料修補重算",
+  "no_trading": true,
+  "actual_pct": null,
+  "hit": null,
+  "open_actual": null,
+  "open_hit": null,
+  "intraday_actual": null,
+  "intraday_hit": null
 }
