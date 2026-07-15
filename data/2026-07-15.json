@@ -1,0 +1,850 @@
+{
+  "direction": "震盪 ➡️",
+  "total_score": 4.03,
+  "factors": [
+    {
+      "key": "night_futures",
+      "name": "台指期夜盤",
+      "value": "+0.45% (夜盤45015)",
+      "base": 0.3,
+      "weight": 3.5,
+      "contribution": 1.05,
+      "note": "",
+      "analysis": "力道溫和，夜盤買盤積極，市場資金已提前反映樂觀氣氛，通常延續到今天開盤"
+    },
+    {
+      "key": "sox",
+      "name": "費半 SOX",
+      "value": "+2.54%",
+      "base": 1.0,
+      "weight": 2.5,
+      "contribution": 2.5,
+      "note": "",
+      "analysis": "力道非常強，半導體類股資金動能強，激勵台股科技權值股表現"
+    },
+    {
+      "key": "tsm_adr",
+      "name": "台積電 ADR",
+      "value": "-0.28%",
+      "base": -0.14,
+      "weight": 2.5,
+      "contribution": -0.35,
+      "note": "",
+      "analysis": "力道輕微，台積電美股走弱，開盤承壓機率高"
+    },
+    {
+      "key": "nasdaq",
+      "name": "那斯達克",
+      "value": "+0.90%",
+      "base": 0.6,
+      "weight": 2.0,
+      "contribution": 1.2,
+      "note": "",
+      "analysis": "力道明顯，美國科技股氣氛偏多，有助台股類股連動走升"
+    },
+    {
+      "key": "foreign_buy",
+      "name": "外資買賣超",
+      "value": "-518.9 億",
+      "base": -1.0,
+      "weight": 0.5,
+      "contribution": -0.5,
+      "note": "",
+      "analysis": "力道非常強，外資賣超，籌碼面轉為保守"
+    },
+    {
+      "key": "foreign_futures",
+      "name": "外資期貨",
+      "value": "淨-83390 口 (Δ-2324)",
+      "base": -0.29,
+      "weight": 1.5,
+      "contribution": -0.44,
+      "note": "",
+      "analysis": "力道溫和，外資期貨轉為加碼放空，對後市偏保守"
+    },
+    {
+      "key": "usdtwd",
+      "name": "台幣匯率",
+      "value": "-0.07%",
+      "base": 0.14,
+      "weight": 0.5,
+      "contribution": 0.07,
+      "note": "",
+      "analysis": "力道輕微，台幣升值，外資匯兌動能有利進場買股"
+    },
+    {
+      "key": "vix",
+      "name": "VIX 恐慌",
+      "value": "16.5",
+      "base": 0,
+      "weight": 2.0,
+      "contribution": 0.0,
+      "note": "",
+      "analysis": "幾乎中性"
+    },
+    {
+      "key": "margin",
+      "name": "融資餘額(反向)",
+      "value": "餘額6040億 (-2.31%)",
+      "base": 1.0,
+      "weight": 0.5,
+      "contribution": 0.5,
+      "note": "",
+      "analysis": "力道非常強，融資餘額縮減，顯示散戶追高動能降溫，籌碼相對健康"
+    }
+  ],
+  "threshold_scale": 1.5,
+  "thresholds": [
+    4.5,
+    -4.5
+  ],
+  "attribution": {
+    "bull_force": 5.32,
+    "bear_force": -1.29,
+    "push": [
+      {
+        "key": "sox",
+        "name": "費半 SOX",
+        "value": "+2.54%",
+        "base": 1.0,
+        "weight": 2.5,
+        "contribution": 2.5,
+        "note": "",
+        "analysis": "力道非常強，半導體類股資金動能強，激勵台股科技權值股表現"
+      },
+      {
+        "key": "nasdaq",
+        "name": "那斯達克",
+        "value": "+0.90%",
+        "base": 0.6,
+        "weight": 2.0,
+        "contribution": 1.2,
+        "note": "",
+        "analysis": "力道明顯，美國科技股氣氛偏多，有助台股類股連動走升"
+      },
+      {
+        "key": "night_futures",
+        "name": "台指期夜盤",
+        "value": "+0.45% (夜盤45015)",
+        "base": 0.3,
+        "weight": 3.5,
+        "contribution": 1.05,
+        "note": "",
+        "analysis": "力道溫和，夜盤買盤積極，市場資金已提前反映樂觀氣氛，通常延續到今天開盤"
+      },
+      {
+        "key": "margin",
+        "name": "融資餘額(反向)",
+        "value": "餘額6040億 (-2.31%)",
+        "base": 1.0,
+        "weight": 0.5,
+        "contribution": 0.5,
+        "note": "",
+        "analysis": "力道非常強，融資餘額縮減，顯示散戶追高動能降溫，籌碼相對健康"
+      },
+      {
+        "key": "usdtwd",
+        "name": "台幣匯率",
+        "value": "-0.07%",
+        "base": 0.14,
+        "weight": 0.5,
+        "contribution": 0.07,
+        "note": "",
+        "analysis": "力道輕微，台幣升值，外資匯兌動能有利進場買股"
+      }
+    ],
+    "drag": [
+      {
+        "key": "foreign_buy",
+        "name": "外資買賣超",
+        "value": "-518.9 億",
+        "base": -1.0,
+        "weight": 0.5,
+        "contribution": -0.5,
+        "note": "",
+        "analysis": "力道非常強，外資賣超，籌碼面轉為保守"
+      },
+      {
+        "key": "foreign_futures",
+        "name": "外資期貨",
+        "value": "淨-83390 口 (Δ-2324)",
+        "base": -0.29,
+        "weight": 1.5,
+        "contribution": -0.44,
+        "note": "",
+        "analysis": "力道溫和，外資期貨轉為加碼放空，對後市偏保守"
+      },
+      {
+        "key": "tsm_adr",
+        "name": "台積電 ADR",
+        "value": "-0.28%",
+        "base": -0.14,
+        "weight": 2.5,
+        "contribution": -0.35,
+        "note": "",
+        "analysis": "力道輕微，台積電美股走弱，開盤承壓機率高"
+      }
+    ],
+    "neutral": [
+      {
+        "key": "vix",
+        "name": "VIX 恐慌",
+        "value": "16.5",
+        "base": 0,
+        "weight": 2.0,
+        "contribution": 0.0,
+        "note": "",
+        "analysis": "幾乎中性"
+      }
+    ]
+  },
+  "reasoning": "總分 +4.0 原達偏多標準，但今日為事件日、門檻提高，轉為觀望。主要力道來自「費半 SOX、那斯達克、台指期夜盤」。",
+  "confidence": {
+    "label": "方向不明",
+    "dots": "○○○○○",
+    "note": "多空力道相當，建議觀望"
+  },
+  "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
+  "open_call": {
+    "direction": "平開/觀望 ➡️",
+    "cls": "flat"
+  },
+  "intraday_call": {
+    "direction": "方向不明 ➡️",
+    "cls": "flat"
+  },
+  "events": [
+    {
+      "date": "2026-07-15",
+      "type": "結算日",
+      "note": "台指期/選擇權結算，籌碼易異常"
+    }
+  ],
+  "categories": {
+    "tech": {
+      "direction": "偏多 📈",
+      "total_score": 6.3,
+      "factors": [
+        {
+          "key": "night_futures",
+          "name": "台指期夜盤",
+          "value": "+0.45% (夜盤45015)",
+          "base": 0.3,
+          "weight": 2.5,
+          "contribution": 0.75,
+          "note": "",
+          "analysis": "力道溫和，夜盤買盤積極，市場資金已提前反映樂觀氣氛，通常延續到今天開盤"
+        },
+        {
+          "key": "sox",
+          "name": "費半 SOX",
+          "value": "+2.54%",
+          "base": 1.0,
+          "weight": 3.0,
+          "contribution": 3.0,
+          "note": "",
+          "analysis": "力道非常強，半導體類股資金動能強，激勵台股科技權值股表現"
+        },
+        {
+          "key": "tsm_adr",
+          "name": "台積電 ADR",
+          "value": "-0.28%",
+          "base": -0.14,
+          "weight": 2.5,
+          "contribution": -0.35,
+          "note": "",
+          "analysis": "力道輕微，台積電美股走弱，開盤承壓機率高"
+        },
+        {
+          "key": "nasdaq",
+          "name": "那斯達克",
+          "value": "+0.90%",
+          "base": 0.6,
+          "weight": 1.5,
+          "contribution": 0.9,
+          "note": "",
+          "analysis": "力道明顯，美國科技股氣氛偏多，有助台股類股連動走升"
+        },
+        {
+          "key": "nvda",
+          "name": "輝達(NVDA)",
+          "value": "+4.06%",
+          "base": 1.0,
+          "weight": 2.0,
+          "contribution": 2.0,
+          "note": "",
+          "analysis": "力道非常強，輝達股價走強，反映AI需求熱度，激勵台灣科技供應鏈訂單展望"
+        }
+      ],
+      "threshold_scale": 1.5,
+      "thresholds": [
+        6.0,
+        -6.0
+      ],
+      "attribution": {
+        "bull_force": 6.65,
+        "bear_force": -0.35,
+        "push": [
+          {
+            "key": "sox",
+            "name": "費半 SOX",
+            "value": "+2.54%",
+            "base": 1.0,
+            "weight": 3.0,
+            "contribution": 3.0,
+            "note": "",
+            "analysis": "力道非常強，半導體類股資金動能強，激勵台股科技權值股表現"
+          },
+          {
+            "key": "nvda",
+            "name": "輝達(NVDA)",
+            "value": "+4.06%",
+            "base": 1.0,
+            "weight": 2.0,
+            "contribution": 2.0,
+            "note": "",
+            "analysis": "力道非常強，輝達股價走強，反映AI需求熱度，激勵台灣科技供應鏈訂單展望"
+          },
+          {
+            "key": "nasdaq",
+            "name": "那斯達克",
+            "value": "+0.90%",
+            "base": 0.6,
+            "weight": 1.5,
+            "contribution": 0.9,
+            "note": "",
+            "analysis": "力道明顯，美國科技股氣氛偏多，有助台股類股連動走升"
+          },
+          {
+            "key": "night_futures",
+            "name": "台指期夜盤",
+            "value": "+0.45% (夜盤45015)",
+            "base": 0.3,
+            "weight": 2.5,
+            "contribution": 0.75,
+            "note": "",
+            "analysis": "力道溫和，夜盤買盤積極，市場資金已提前反映樂觀氣氛，通常延續到今天開盤"
+          }
+        ],
+        "drag": [
+          {
+            "key": "tsm_adr",
+            "name": "台積電 ADR",
+            "value": "-0.28%",
+            "base": -0.14,
+            "weight": 2.5,
+            "contribution": -0.35,
+            "note": "",
+            "analysis": "力道輕微，台積電美股走弱，開盤承壓機率高"
+          }
+        ],
+        "neutral": []
+      },
+      "reasoning": "主由「費半 SOX、輝達(NVDA)、那斯達克」推升（合計 +6.7）；「台積電 ADR」形成拖累（-0.3），但不足以扭轉方向。",
+      "confidence": {
+        "label": "偏低",
+        "dots": "●●○○○",
+        "note": ""
+      },
+      "plain_summary": "昨晚美國半導體股、輝達(NVDA)表現強勢，通常會帶動今天台股偏向上漲。雖然台積電美國股價帶來一些反向壓力，但力道不足以扭轉方向。",
+      "label": "科技股/半導體",
+      "open_call": {
+        "direction": "開高 📈",
+        "cls": "bull"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
+    },
+    "financial": {
+      "direction": "震盪 ➡️",
+      "total_score": -0.18,
+      "factors": [
+        {
+          "key": "xlf",
+          "name": "美股金融類股",
+          "value": "+0.20%",
+          "base": 0.13,
+          "weight": 2.5,
+          "contribution": 0.33,
+          "note": "",
+          "analysis": "力道輕微，美股金融股走強，資金氣氛偏多，有助台股金融股表現"
+        },
+        {
+          "key": "tnx",
+          "name": "美債10年殖利率",
+          "value": "-0.52%",
+          "base": -0.17,
+          "weight": 0.5,
+          "contribution": -0.09,
+          "note": "",
+          "analysis": "力道輕微，殖利率走跌，銀行放款利差收斂，對金融股偏空"
+        },
+        {
+          "key": "usdtwd",
+          "name": "台幣匯率",
+          "value": "-0.07%",
+          "base": 0.14,
+          "weight": 0.5,
+          "contribution": 0.07,
+          "note": "",
+          "analysis": "力道輕微，台幣升值，外資匯兌動能有利進場買股"
+        },
+        {
+          "key": "foreign_buy",
+          "name": "外資買賣超",
+          "value": "-518.9 億",
+          "base": -1.0,
+          "weight": 0.5,
+          "contribution": -0.5,
+          "note": "",
+          "analysis": "力道非常強，外資賣超，籌碼面轉為保守"
+        }
+      ],
+      "threshold_scale": 1.5,
+      "thresholds": [
+        2.7,
+        -2.7
+      ],
+      "attribution": {
+        "bull_force": 0.4,
+        "bear_force": -0.59,
+        "push": [
+          {
+            "key": "xlf",
+            "name": "美股金融類股",
+            "value": "+0.20%",
+            "base": 0.13,
+            "weight": 2.5,
+            "contribution": 0.33,
+            "note": "",
+            "analysis": "力道輕微，美股金融股走強，資金氣氛偏多，有助台股金融股表現"
+          },
+          {
+            "key": "usdtwd",
+            "name": "台幣匯率",
+            "value": "-0.07%",
+            "base": 0.14,
+            "weight": 0.5,
+            "contribution": 0.07,
+            "note": "",
+            "analysis": "力道輕微，台幣升值，外資匯兌動能有利進場買股"
+          }
+        ],
+        "drag": [
+          {
+            "key": "foreign_buy",
+            "name": "外資買賣超",
+            "value": "-518.9 億",
+            "base": -1.0,
+            "weight": 0.5,
+            "contribution": -0.5,
+            "note": "",
+            "analysis": "力道非常強，外資賣超，籌碼面轉為保守"
+          },
+          {
+            "key": "tnx",
+            "name": "美債10年殖利率",
+            "value": "-0.52%",
+            "base": -0.17,
+            "weight": 0.5,
+            "contribution": -0.09,
+            "note": "",
+            "analysis": "力道輕微，殖利率走跌，銀行放款利差收斂，對金融股偏空"
+          }
+        ],
+        "neutral": []
+      },
+      "reasoning": "多空力道接近（推升 +0.4、拖累 -0.6）；「美股金融類股」偏多與「外資買賣超」偏空相互抵銷，方向不明。",
+      "confidence": {
+        "label": "方向不明",
+        "dots": "○○○○○",
+        "note": "多空力道相當，建議觀望"
+      },
+      "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
+      "label": "金融股",
+      "open_call": {
+        "direction": "平開/觀望 ➡️",
+        "cls": "flat"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
+    },
+    "traditional": {
+      "direction": "偏多 📈",
+      "total_score": 2.98,
+      "factors": [
+        {
+          "key": "oil",
+          "name": "WTI原油",
+          "value": "+2.51%",
+          "base": 0.84,
+          "weight": 1.0,
+          "contribution": 0.84,
+          "note": "",
+          "analysis": "力道非常強，油價走升，原物料與塑化類股營收展望轉佳"
+        },
+        {
+          "key": "copper",
+          "name": "銅期貨",
+          "value": "+2.15%",
+          "base": 0.86,
+          "weight": 2.0,
+          "contribution": 1.72,
+          "note": "",
+          "analysis": "力道非常強，銅價走升，顯示全球工業需求偏強，激勵傳產類股"
+        },
+        {
+          "key": "dxy",
+          "name": "美元指數",
+          "value": "-0.40%",
+          "base": 0.67,
+          "weight": 1.5,
+          "contribution": 1.0,
+          "note": "",
+          "analysis": "力道明顯，美元走強，原物料價格面臨壓力，對傳產類股偏空"
+        },
+        {
+          "key": "bdry",
+          "name": "航運指數(BDI代理)",
+          "value": "-1.73%",
+          "base": -0.58,
+          "weight": 1.0,
+          "contribution": -0.58,
+          "note": "",
+          "analysis": "力道明顯，運價走跌，航運類股獲利展望轉弱"
+        }
+      ],
+      "threshold_scale": 1.5,
+      "thresholds": [
+        1.2,
+        -1.2
+      ],
+      "attribution": {
+        "bull_force": 3.56,
+        "bear_force": -0.58,
+        "push": [
+          {
+            "key": "copper",
+            "name": "銅期貨",
+            "value": "+2.15%",
+            "base": 0.86,
+            "weight": 2.0,
+            "contribution": 1.72,
+            "note": "",
+            "analysis": "力道非常強，銅價走升，顯示全球工業需求偏強，激勵傳產類股"
+          },
+          {
+            "key": "dxy",
+            "name": "美元指數",
+            "value": "-0.40%",
+            "base": 0.67,
+            "weight": 1.5,
+            "contribution": 1.0,
+            "note": "",
+            "analysis": "力道明顯，美元走強，原物料價格面臨壓力，對傳產類股偏空"
+          },
+          {
+            "key": "oil",
+            "name": "WTI原油",
+            "value": "+2.51%",
+            "base": 0.84,
+            "weight": 1.0,
+            "contribution": 0.84,
+            "note": "",
+            "analysis": "力道非常強，油價走升，原物料與塑化類股營收展望轉佳"
+          }
+        ],
+        "drag": [
+          {
+            "key": "bdry",
+            "name": "航運指數(BDI代理)",
+            "value": "-1.73%",
+            "base": -0.58,
+            "weight": 1.0,
+            "contribution": -0.58,
+            "note": "",
+            "analysis": "力道明顯，運價走跌，航運類股獲利展望轉弱"
+          }
+        ],
+        "neutral": []
+      },
+      "reasoning": "主由「銅期貨、美元指數、WTI原油」推升（合計 +3.6）；「航運指數(BDI代理)」形成拖累（-0.6），但不足以扭轉方向。",
+      "confidence": {
+        "label": "很高",
+        "dots": "●●●●●",
+        "note": ""
+      },
+      "plain_summary": "昨晚銅期貨、美元指數表現強勢，通常會帶動今天台股偏向上漲。雖然航運指數(BDI代理)帶來一些反向壓力，但力道不足以扭轉方向。",
+      "label": "傳產/原物料/航運",
+      "open_call": {
+        "direction": "開高 📈",
+        "cls": "bull"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
+    },
+    "dividend": {
+      "direction": "震盪 ➡️",
+      "total_score": -0.13,
+      "factors": [
+        {
+          "key": "tnx_inv",
+          "name": "美債10年殖利率(債券效應)",
+          "value": "-0.52%",
+          "base": 0.17,
+          "weight": 0.5,
+          "contribution": 0.09,
+          "note": "",
+          "analysis": "力道輕微，殖利率走跌，固定收益資產相對更有吸引力，對股息股與債券偏多"
+        },
+        {
+          "key": "xlf",
+          "name": "美股金融類股",
+          "value": "+0.20%",
+          "base": 0.13,
+          "weight": 2.0,
+          "contribution": 0.27,
+          "note": "",
+          "analysis": "力道輕微，美股金融股走強，資金氣氛偏多，有助台股金融股表現"
+        },
+        {
+          "key": "xlu",
+          "name": "美股公用事業ETF",
+          "value": "-0.07%",
+          "base": -0.05,
+          "weight": 1.0,
+          "contribution": -0.05,
+          "note": "",
+          "analysis": "力道輕微，美股公用事業走弱，債券替代股氣氛保守，對台股高股息族群形成壓力"
+        },
+        {
+          "key": "foreign_buy",
+          "name": "外資買賣超",
+          "value": "-518.9 億",
+          "base": -1.0,
+          "weight": 0.5,
+          "contribution": -0.5,
+          "note": "",
+          "analysis": "力道非常強，外資賣超，籌碼面轉為保守"
+        },
+        {
+          "key": "usdtwd",
+          "name": "台幣匯率",
+          "value": "-0.07%",
+          "base": 0.14,
+          "weight": 0.5,
+          "contribution": 0.07,
+          "note": "",
+          "analysis": "力道輕微，台幣升值，外資匯兌動能有利進場買股"
+        }
+      ],
+      "threshold_scale": 1.5,
+      "thresholds": [
+        2.7,
+        -2.7
+      ],
+      "attribution": {
+        "bull_force": 0.43,
+        "bear_force": -0.5,
+        "push": [
+          {
+            "key": "xlf",
+            "name": "美股金融類股",
+            "value": "+0.20%",
+            "base": 0.13,
+            "weight": 2.0,
+            "contribution": 0.27,
+            "note": "",
+            "analysis": "力道輕微，美股金融股走強，資金氣氛偏多，有助台股金融股表現"
+          },
+          {
+            "key": "tnx_inv",
+            "name": "美債10年殖利率(債券效應)",
+            "value": "-0.52%",
+            "base": 0.17,
+            "weight": 0.5,
+            "contribution": 0.09,
+            "note": "",
+            "analysis": "力道輕微，殖利率走跌，固定收益資產相對更有吸引力，對股息股與債券偏多"
+          },
+          {
+            "key": "usdtwd",
+            "name": "台幣匯率",
+            "value": "-0.07%",
+            "base": 0.14,
+            "weight": 0.5,
+            "contribution": 0.07,
+            "note": "",
+            "analysis": "力道輕微，台幣升值，外資匯兌動能有利進場買股"
+          }
+        ],
+        "drag": [
+          {
+            "key": "foreign_buy",
+            "name": "外資買賣超",
+            "value": "-518.9 億",
+            "base": -1.0,
+            "weight": 0.5,
+            "contribution": -0.5,
+            "note": "",
+            "analysis": "力道非常強，外資賣超，籌碼面轉為保守"
+          }
+        ],
+        "neutral": [
+          {
+            "key": "xlu",
+            "name": "美股公用事業ETF",
+            "value": "-0.07%",
+            "base": -0.05,
+            "weight": 1.0,
+            "contribution": -0.05,
+            "note": "",
+            "analysis": "力道輕微，美股公用事業走弱，債券替代股氣氛保守，對台股高股息族群形成壓力"
+          }
+        ]
+      },
+      "reasoning": "多空力道接近（推升 +0.4、拖累 -0.5）；「美股金融類股」偏多與「外資買賣超」偏空相互抵銷，方向不明。",
+      "confidence": {
+        "label": "方向不明",
+        "dots": "○○○○○",
+        "note": "多空力道相當，建議觀望"
+      },
+      "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
+      "label": "股息型",
+      "open_call": {
+        "direction": "平開/觀望 ➡️",
+        "cls": "flat"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
+    },
+    "bond": {
+      "direction": "震盪 ➡️",
+      "total_score": 0.11,
+      "factors": [
+        {
+          "key": "tlt",
+          "name": "美國20年期公債ETF",
+          "value": "+0.13%",
+          "base": 0.09,
+          "weight": 3.0,
+          "contribution": 0.26,
+          "note": "",
+          "analysis": "力道輕微，美債價格走升，台灣債券型ETF開盤同向機率高"
+        },
+        {
+          "key": "tnx_inv",
+          "name": "美債10年殖利率(債券效應)",
+          "value": "-0.52%",
+          "base": 0.17,
+          "weight": 2.0,
+          "contribution": 0.35,
+          "note": "",
+          "analysis": "力道輕微，殖利率走跌，固定收益資產相對更有吸引力，對股息股與債券偏多"
+        },
+        {
+          "key": "vix_bond",
+          "name": "VIX 恐慌(避險效應)",
+          "value": "16.5",
+          "base": 0,
+          "weight": 0.5,
+          "contribution": 0.0,
+          "note": "",
+          "analysis": "幾乎中性"
+        },
+        {
+          "key": "move",
+          "name": "美債波動率指數(MOVE)",
+          "value": "+7.88% (75.0)",
+          "base": -1.0,
+          "weight": 0.5,
+          "contribution": -0.5,
+          "note": "",
+          "analysis": "力道非常強，債市波動率升溫，利率前景不確定性升高，對債券型ETF形成壓力"
+        }
+      ],
+      "threshold_scale": 1.5,
+      "thresholds": [
+        2.7,
+        -2.7
+      ],
+      "attribution": {
+        "bull_force": 0.61,
+        "bear_force": -0.5,
+        "push": [
+          {
+            "key": "tnx_inv",
+            "name": "美債10年殖利率(債券效應)",
+            "value": "-0.52%",
+            "base": 0.17,
+            "weight": 2.0,
+            "contribution": 0.35,
+            "note": "",
+            "analysis": "力道輕微，殖利率走跌，固定收益資產相對更有吸引力，對股息股與債券偏多"
+          },
+          {
+            "key": "tlt",
+            "name": "美國20年期公債ETF",
+            "value": "+0.13%",
+            "base": 0.09,
+            "weight": 3.0,
+            "contribution": 0.26,
+            "note": "",
+            "analysis": "力道輕微，美債價格走升，台灣債券型ETF開盤同向機率高"
+          }
+        ],
+        "drag": [
+          {
+            "key": "move",
+            "name": "美債波動率指數(MOVE)",
+            "value": "+7.88% (75.0)",
+            "base": -1.0,
+            "weight": 0.5,
+            "contribution": -0.5,
+            "note": "",
+            "analysis": "力道非常強，債市波動率升溫，利率前景不確定性升高，對債券型ETF形成壓力"
+          }
+        ],
+        "neutral": [
+          {
+            "key": "vix_bond",
+            "name": "VIX 恐慌(避險效應)",
+            "value": "16.5",
+            "base": 0,
+            "weight": 0.5,
+            "contribution": 0.0,
+            "note": "",
+            "analysis": "幾乎中性"
+          }
+        ]
+      },
+      "reasoning": "多空力道接近（推升 +0.6、拖累 -0.5）；「美債10年殖利率(債券效應)」偏多與「美債波動率指數(MOVE)」偏空相互抵銷，方向不明。",
+      "confidence": {
+        "label": "方向不明",
+        "dots": "○○○○○",
+        "note": "多空力道相當，建議觀望"
+      },
+      "plain_summary": "今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。",
+      "label": "債券型",
+      "open_call": {
+        "direction": "平開/觀望 ➡️",
+        "cls": "flat"
+      },
+      "intraday_call": {
+        "direction": "方向不明 ➡️",
+        "cls": "flat"
+      }
+    }
+  },
+  "date": "2026-07-15",
+  "generated_at": "2026-07-15 08:20",
+  "actual": null
+}
