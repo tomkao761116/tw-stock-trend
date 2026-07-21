@@ -231,6 +231,25 @@ def _two_part_call(total, open_th, intra_th, threshold_scale):
     return open_call, intraday_call
 
 
+def _signals_conflict(raw):
+    """夜盤與美股三因子（SOX/ADR/NASDAQ）方向是否分歧。
+    分歧日（歷史約 18%）可交易純度明顯較低（50-61% vs 同向 82-85%，train/val 一致），
+    但樣本小（喊方向的分歧日 n=8-18）——僅當「軟提示」定性顯示，不調整方向或給精確機率。"""
+    def _sign(x, eps=0.05):
+        return 1 if x > eps else (-1 if x < -eps else 0)
+
+    night = raw.get("night_futures")
+    if night is None:
+        return False
+    us_pcts = [raw[k]["pct"] for k in ("sox", "tsm_adr", "nasdaq")
+               if raw.get(k) is not None]
+    if not us_pcts:
+        return False
+    ns = _sign(night["change_pct"])
+    us = _sign(sum(us_pcts) / len(us_pcts))
+    return ns != 0 and us != 0 and ns != us
+
+
 def evaluate(raw, threshold_scale=1.0):
     """大盤預測：吃 data_fetch.fetch_all() 的結果，回傳預測 dict。
 
@@ -244,6 +263,7 @@ def evaluate(raw, threshold_scale=1.0):
         config.THRESHOLD_INTRADAY, threshold_scale)
     result["open_call"] = open_call
     result["intraday_call"] = intraday_call
+    result["signals_conflict"] = _signals_conflict(raw)
     return result
 
 

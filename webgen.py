@@ -117,6 +117,12 @@ def _full_card(title, r, events=None):
         ev_html += (f'<div class="event">⚠️ 本日「{names}」資料缺漏未計入，'
                     f'總分被低估、預估可信度打折</div>')
 
+    # 訊號分歧軟提示（僅大盤有 signals_conflict）：夜盤與美股方向相反，
+    # 歷史上這類日子命中率明顯較低——定性提醒，不改變方向判斷
+    if r.get("signals_conflict"):
+        ev_html += ('<div class="event">⚠️ 台指期夜盤與美股方向分歧，'
+                    '此類日子歷史命中率較低，當日預估可信度打折</div>')
+
     push = attr.get("push", [])
     drag = attr.get("drag", [])
     neutral = attr.get("neutral", [])

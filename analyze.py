@@ -21,7 +21,15 @@ import statistics
 import config
 
 BF_PATH = os.path.join(os.path.dirname(__file__), "backfill", "backfill.json")
-FLAT_BAND = 0.4          # 與 backtest.py 一致
+FLAT_BAND = 0.4          # 收收/盤中平盤帶，與 backtest.py 一致
+GAP_FLAT_BAND = 0.2      # 開盤跳空平盤帶（跳空幅度天生較小），與 backtest.py 一致
+
+
+def _band(target_key):
+    """各目標的平盤帶：開盤跳空用 0.2、其餘用 0.4。務必與 backtest.py 一致——
+    2026-07-21 前 3 分類命中對所有目標誤用 0.4，且「方向純度」只看正負號（忽略平盤帶），
+    使開盤方向被高報成 89-94%（實際可交易命中約 70%）。"""
+    return GAP_FLAT_BAND if target_key == "gap_pct" else FLAT_BAND
 OVERNIGHT = ["night_futures", "sox", "tsm_adr", "nasdaq"]
 ZSCORE_WINDOW = 60       # 滾動標準差視窗（交易日）
 ZSCORE_FULL_SIGMA = 2.0  # z-score 標準化：幾個 σ = 滿分
@@ -62,8 +70,10 @@ def _pred3(score, bull, bear):
 
 
 def _hit_stats(days, score_key, bull, bear, target_key):
-    """回傳 (3分類命中率, 方向純度, 喊方向覆蓋率, n)。
-    方向純度 = 喊多/空的日子中，目標同號的比例（不管平盤帶）。"""
+    """回傳 (可交易命中率, 方向純度[僅正負號], 喊方向覆蓋率, n)。
+    可交易命中率 = 3 分類判定用該目標對應的平盤帶（開盤 0.2、其餘 0.4），與實盤計分一致。
+    方向純度[僅正負號] = 喊多/空的日子中目標同號的比例（不套平盤帶，數字偏高、非可交易指標）。"""
+    band = _band(target_key)
     total = hits = 0
     dir_total = dir_hits = 0
     for d in days:
@@ -73,7 +83,7 @@ def _hit_stats(days, score_key, bull, bear, target_key):
         score = d[score_key] if isinstance(score_key, str) else score_key(d)
         p = _pred3(score, bull * d["scale"], bear * d["scale"])
         total += 1
-        hits += (p == _dir3(t, FLAT_BAND))
+        hits += (p == _dir3(t, band))
         if p != "平":
             dir_total += 1
             dir_hits += ((p == "漲") == (t > 0))
@@ -93,16 +103,16 @@ def report_current(days):
     print("=" * 62)
     print("【1+2】現行設定命中率 × 預測目標拆解")
     print("=" * 62)
-    print(f"{'目標':<14}{'3分類命中':>10}{'方向純度':>10}{'喊方向覆蓋':>11}")
+    print(f"{'目標':<14}{'可交易命中':>10}{'純度(僅sign)':>13}{'喊方向覆蓋':>11}")
     for label, tk in (("收盤vs前收", "twii_pct"), ("開盤跳空", "gap_pct"),
                       ("盤中(開→收)", "intraday_pct")):
         h, p, c, n = _hit_stats(days, "score",
                                 config.THRESHOLD_BULLISH,
                                 config.THRESHOLD_BEARISH, tk)
-        print(f"{label:<14}{_fmt_pct(h):>10}{_fmt_pct(p):>10}{_fmt_pct(c):>11}"
+        print(f"{label:<14}{_fmt_pct(h):>10}{_fmt_pct(p):>13}{_fmt_pct(c):>11}"
               f"  (n={n})")
-    print("→ 方向純度 = 喊多/空時目標同號的比例；跳空 vs 盤中的差距"
-          "顯示因子真正擅長的預測段。")
+    print("→ 可交易命中 = 含平盤帶、與實盤計分一致（該信這個）；")
+    print("  純度(僅sign) = 只看正負號、忽略平盤帶，數字偏高、非可交易指標（別拿來對外宣稱）。")
 
 
 # ── 3. 因子 IC ─────────────────────────────────────────────────
