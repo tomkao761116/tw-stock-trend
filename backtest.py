@@ -339,6 +339,34 @@ def run(force=False):
         print("    FinMind + Yahoo 皆失敗——請檢查 .finmind_token 是否有效、網路或 API 狀態。")
 
     _print_category_summary(files)
+    _print_recalibration_alert(files)
+
+
+# D1：近期命中率跌破回測基準時，提醒維運者考慮重新校準。
+RECAL_WINDOW = 20        # 觀察視窗（近 N 個已回測日）
+RECAL_FLOOR = 0.55       # 收盤命中率跌破此值 → 示警（回測 validation 基準約 62%）
+
+
+def _print_recalibration_alert(files):
+    """統計近 RECAL_WINDOW 個已回測日的大盤收盤命中率，跌破基準時提醒重新校準。
+    這把「持續低迷才是重新校準訊號、單週壞運不是」自動化——單次執行不動作，
+    只在夠長的視窗確實低於基準時示警。"""
+    recs = []
+    for path in sorted(files, reverse=True):
+        with open(path, encoding="utf-8") as fp:
+            r = json.load(fp)
+        if r.get("no_trading") or r.get("hit") is None:
+            continue
+        recs.append(bool(r["hit"]))
+        if len(recs) >= RECAL_WINDOW:
+            break
+    if len(recs) < RECAL_WINDOW:
+        return  # 樣本不足，不驟下結論
+    rate = sum(recs) / len(recs)
+    if rate < RECAL_FLOOR:
+        print(f"\n🔍 維運提醒：近 {len(recs)} 日收盤命中率 {rate*100:.0f}%"
+              f"（低於基準 {RECAL_FLOOR*100:.0f}%）。若非集中在已知事件/極端震盪期，"
+              "考慮重跑 backfill.py + analyze.py 檢視是否需重新校準。")
 
 
 def _backtest_categories(r, date, force):

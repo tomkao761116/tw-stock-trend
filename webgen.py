@@ -35,6 +35,67 @@ def _dir_class(direction):
     return "flat"
 
 
+RECENT_WINDOW = 30       # 命中率統計視窗（交易日）
+REGIME_ALERT_HITS = 0.45  # 近期命中率低於此 → 顯示劇烈震盪脈絡提示
+# 613 天回測「可交易命中」基準（含平盤帶，見 analyze.py／decisions.md 2026-07-21）。
+# 近期小樣本（尤其開盤在小跳空盤）常大幅偏離此值，故摘要並列基準供對照、防誤讀。
+BASELINE_OPEN = 0.70
+BASELINE_CLOSE = 0.66
+
+
+def _perf_stats(records, window=RECENT_WINDOW):
+    """統計近 window 個已回測日的命中率。records 為已抽出的每日結果 dict list
+    （大盤傳 items，類別傳各自的 cr），依日期新→舊。回傳 {close, open, intraday}，
+    各為 (命中數, 總數)；休市/未回測日自動排除。"""
+    out = {"close": [0, 0], "open": [0, 0], "intraday": [0, 0]}
+    seen = 0
+    for r in records:
+        if r is None or r.get("no_trading"):
+            continue
+        if r.get("hit") is None and r.get("open_hit") is None:
+            continue  # 尚未回測（如今日）
+        seen += 1
+        if seen > window:
+            break
+        for key, hk in (("close", "hit"), ("open", "open_hit"),
+                        ("intraday", "intraday_hit")):
+            if r.get(hk) is not None:
+                out[key][0] += bool(r[hk])
+                out[key][1] += 1
+    return out
+
+
+def _rate(pair):
+    h, n = pair
+    return h / n if n else None
+
+
+def _perf_summary_html(records, window=RECENT_WINDOW, is_market=False):
+    """績效摘要區塊（A2+A3）：開盤方向與收盤各自的近期命中率＋誠實註記。
+    無足夠回測資料時回空字串。is_market：只有大盤附具體 613 天基準數字
+    （BASELINE_* 是大盤值，類別各自不同，故類別只給通用防誤讀說明）。"""
+    s = _perf_stats(records, window)
+    op, cl = s["open"], s["close"]
+    if op[1] == 0 and cl[1] == 0:
+        return ""
+    parts = []
+    if op[1]:
+        parts.append(f'開盤方向 <b>{op[0]}/{op[1]}</b>（{_rate(op)*100:.0f}%）')
+    if cl[1]:
+        parts.append(f'收盤方向 <b>{cl[0]}/{cl[1]}</b>（{_rate(cl)*100:.0f}%）')
+    n = max(op[1], cl[1])
+    if is_market:
+        note = (f'613 天歷史基準：開盤約 {BASELINE_OPEN*100:.0f}%、'
+                f'收盤約 {BASELINE_CLOSE*100:.0f}%。近期若明顯偏低，多為極端震盪或'
+                f'「平開後盤中大動」的小跳空盤所致，屬短期現象。')
+    else:
+        note = '近期為小樣本、波動大，僅供參考；此類別長期基準見大盤分頁說明。'
+    return (f'<div class="perf"><div class="perf-nums">近{n}個交易日：'
+            f'{"　｜　".join(parts)}</div>'
+            f'<div class="perf-note">{note}方向性預估、非穩賺，'
+            f'歷史命中僅供信任校準、不代表未來。</div></div>')
+
+
 def _info(key, field):
     return config.FACTOR_INFO.get(key, {}).get(field, "")
 
@@ -97,8 +158,9 @@ def _headline_html(r):
         f'盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>')
 
 
-def _full_card(title, r, events=None):
-    """完整卡片渲染：大盤與各類別分頁共用同一大小/結構，只差標題與資料來源。"""
+def _full_card(title, r, events=None, regime_note=""):
+    """完整卡片渲染：大盤與各類別分頁共用同一大小/結構，只差標題與資料來源。
+    regime_note：近期命中率偏低時的脈絡提示（C2），只在首頁最新大盤卡片傳入。"""
     cls = (r["open_call"]["cls"] if r.get("open_call")
            else _dir_class(r["direction"]))
     conf = r.get("confidence", {})
@@ -106,6 +168,8 @@ def _full_card(title, r, events=None):
     ev_html = "".join(
         f'<div class="event">⚠️ 今天是{html.escape(e["type"])}：'
         f'{html.escape(e["note"])}（預估趨保守）</div>' for e in (events or []))
+    if regime_note:
+        ev_html += regime_note
 
     # 缺重要因子（權重 ≥ 2）時顯眼警告——缺失會系統性低估總分強度，
     # 使用者需知道當日預估可信度打折（2026-07-10 缺 SOX 的教訓）
@@ -167,9 +231,20 @@ def _full_card(title, r, events=None):
 _CATEGORY_ORDER = ["tech", "financial", "traditional"]
 
 
+def _hist_cell(actual):
+    """歷史表實際欄：把 'X +0.00% ✓/✗' 上色（休市/未回測顯示 —）。"""
+    if not actual:
+        return '<td>—</td>'
+    txt = html.escape(str(actual))
+    cls = "bull" if "✓" in txt else ("bear" if "✗" in txt else "")
+    return f'<td class="{cls}">{txt}</td>'
+
+
 def _history_table_html(items, extractor, tab_id):
     """通用歷史表：extractor(r) 回傳該日「這個分頁」的結果 dict（無資料回 None，跳過該列）。
-    tab_id：連結要帶去的分頁錨點，讓點「查看」直接開到同一個分頁（大盤不需要錨點）。"""
+    tab_id：連結要帶去的分頁錨點，讓點「查看」直接開到同一個分頁（大盤不需要錨點）。
+    B1：實際欄改顯示「開盤」與「收盤」兩段結果，對齊卡片的兩段式預測；
+    B2：移除「總分」欄（內部分數，對使用者無意義，移到單日進階明細）。"""
     anchor = "" if tab_id == "market" else f"#{tab_id}"
     rows = []
     for r in items:
@@ -177,20 +252,18 @@ def _history_table_html(items, extractor, tab_id):
         if cr is None:
             continue
         cls = _dir_class(cr["direction"])
-        actual = cr.get("actual")
-        actual_txt = html.escape(str(actual)) if actual else "—"
         date = html.escape(r["date"])
         href = f"{date}.html{anchor}"
         rows.append(
             f'<tr><td><a href="{href}">{date}</a></td>'
             f'<td class="{cls}">{html.escape(cr["direction"])}</td>'
-            f'<td>{cr.get("total_score",0):+.2f}</td>'
-            f'<td>{actual_txt}</td>'
+            f'{_hist_cell(cr.get("open_actual"))}'
+            f'{_hist_cell(cr.get("actual"))}'
             f'<td><a class="view" href="{href}">查看 →</a></td></tr>')
     if not rows:
         return ""
     return f'''<table class="hist">
-      <tr><th>日期</th><th>預估</th><th>總分</th><th>實際</th><th></th></tr>
+      <tr><th>日期</th><th>預估</th><th>開盤</th><th>收盤</th><th></th></tr>
       {"".join(rows)}
     </table>'''
 
@@ -246,7 +319,10 @@ def _category_panel(tab_id, label, cat_key, latest, items=None, note=""):
         return card_html
     extractor = lambda r, k=cat_key: r.get("categories", {}).get(k)
     history_html = _history_table_html(items, extractor, tab_id)
-    hist_block = f'<div class="card"><h2>歷史紀錄</h2>{history_html}</div>' if history_html else ""
+    if not history_html:
+        return card_html
+    perf = _perf_summary_html([extractor(r) for r in items])
+    hist_block = f'<div class="card"><h2>歷史紀錄</h2>{perf}{history_html}</div>'
     return card_html + hist_block
 
 
@@ -275,9 +351,22 @@ def _build_etf_day_subtabs(r):
     return f'<div class="subtabs">{"".join(buttons)}</div>{"".join(panels)}'
 
 
+def _regime_note(items):
+    """C2：近期命中率偏低時的脈絡提示——管理連錯期間的信任，說明短期低迷屬正常。
+    以最近 10 個已回測日的收盤命中率為準；樣本不足或命中正常則不顯示。"""
+    stats = _perf_stats(items, window=10)
+    close = stats["close"]
+    if close[1] >= 6 and _rate(close) < REGIME_ALERT_HITS:
+        return ('<div class="event">⚠️ 近期市場波動劇烈，短期命中率偏低——'
+                '極端震盪期隔夜訊號本就較難反映當日走勢，屬正常現象，'
+                '模型通常於震盪回穩後回歸。此期間預估請保守看待。</div>')
+    return ""
+
+
 def _build_tabs(items):
     """首頁分頁：大盤 + 各類別 + ETF(內有子分頁)，各自完整卡片 + 各自歷史表。"""
     latest = items[0]
+    regime = _regime_note(items)
     buttons, panels = [], []
     for i, (tab_id, label, cat_key) in enumerate(_TAB_DEFS):
         active = (i == 0)
@@ -287,11 +376,13 @@ def _build_tabs(items):
             inner = _build_etf_subtabs(items)
         elif cat_key is None:
             card_html = _full_card(f'{latest["date"]} 盤前預估{_gen_at(latest)}',
-                                   latest, events=latest.get("events", []))
+                                   latest, events=latest.get("events", []),
+                                   regime_note=regime)
             extractor = lambda r: r
             history_html = (_history_table_html(items, extractor, tab_id)
                             if len(items) > 1 else "")
-            inner = card_html + (f'<div class="card"><h2>歷史紀錄</h2>{history_html}</div>'
+            perf = _perf_summary_html(items, is_market=True) if history_html else ""
+            inner = card_html + (f'<div class="card"><h2>歷史紀錄</h2>{perf}{history_html}</div>'
                                  if history_html else "")
         else:
             inner = _category_panel(tab_id, label, cat_key, latest, items)
@@ -407,6 +498,17 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .subtab-panel{display:none}
 .subtab-panel.active{display:block}
 .alias-note{font-size:12px;color:var(--sub);font-style:italic;margin:0 0 8px}
+.perf{background:#f0f4ff;border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.perf-nums{font-size:15px;color:#333}.perf-nums b{color:#185fa5}
+.perf-note{font-size:12px;color:var(--sub);margin-top:4px}
+.legend{font-size:12px;color:var(--sub);text-align:center;padding:4px 0;line-height:1.8}
+.legend b{color:#555}
+.ctrlbar{display:flex;justify-content:flex-end;margin:-4px 0 10px}
+.toggle-analysis{background:#e7e8ec;border:none;border-radius:7px;padding:5px 12px;
+  font-size:13px;color:#555;cursor:pointer;font-family:inherit}
+body.compact .analysis{display:none}
+.toggle-analysis::before{content:"＋ 顯示逐項解讀"}
+body:not(.compact) .toggle-analysis::before{content:"－ 收合逐項解讀"}
 """
 
 
@@ -422,10 +524,16 @@ def _page(title, body, script=""):
 <title>{html.escape(title)}</title>
 <style>{CSS}</style>
 </head>
-<body>
+<body class="compact">
 <div class="wrap">
   <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
+  <div class="ctrlbar"><button class="toggle-analysis" onclick="document.body.classList.toggle('compact')"></button></div>
 {body}
+  <div class="legend">
+    <b>★</b> 影響強度（★★★ 強 / ★★☆ 中 / ★☆☆ 弱）
+    <b>●</b> 信心程度（●●●●● 很高 → ●●○○○ 偏低）<br>
+    紅＝偏多/上漲、綠＝偏空/下跌（台股慣例）
+  </div>
   <div class="disclaimer">更新時間 {updated}　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
 </div>
 {script_html}
