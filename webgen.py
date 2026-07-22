@@ -232,11 +232,20 @@ _CATEGORY_ORDER = ["tech", "financial", "traditional"]
 
 
 def _hist_cell(actual):
-    """歷史表實際欄：把 'X +0.00% ✓/✗' 上色（休市/未回測顯示 —）。"""
+    """歷史表實際欄：依「方向」上色，與「預估」欄同一標準（紅=漲/開高、綠=跌/開低、
+    黃=平盤，台股慣例）。命中與否由文字裡的 ✓/✗ 表示，不影響顏色——顏色一律代表方向。
+    休市/未回測顯示 —。"""
     if not actual:
         return '<td>—</td>'
     txt = html.escape(str(actual))
-    cls = "bull" if "✓" in txt else ("bear" if "✗" in txt else "")
+    if "開高" in txt or "漲" in txt:
+        cls = "bull"
+    elif "開低" in txt or "跌" in txt:
+        cls = "bear"
+    elif "平" in txt:      # 平開 / 平
+        cls = "flat"
+    else:                  # 休市等
+        cls = ""
     return f'<td class="{cls}">{txt}</td>'
 
 
