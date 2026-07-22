@@ -57,16 +57,28 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .subtab-panel{display:none}
 .subtab-panel.active{display:block}
 .alias-note{font-size:12px;color:var(--sub);font-style:italic;margin:0 0 8px}
+.perf{background:#f0f4ff;border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.perf-nums{font-size:15px;color:#333}.perf-nums b{color:#185fa5}
+.perf-note{font-size:12px;color:var(--sub);margin-top:4px}
+.legend{font-size:12px;color:var(--sub);text-align:center;padding:4px 0;line-height:1.8}
+.legend b{color:#555}
+.ctrlbar{display:flex;justify-content:flex-end;margin:-4px 0 10px}
+.toggle-analysis{background:#e7e8ec;border:none;border-radius:7px;padding:5px 12px;
+  font-size:13px;color:#555;cursor:pointer;font-family:inherit}
+body.compact .analysis{display:none}
+.toggle-analysis::before{content:"＋ 顯示逐項解讀"}
+body:not(.compact) .toggle-analysis::before{content:"－ 收合逐項解讀"}
 </style>
 </head>
-<body>
+<body class="compact">
 <div class="wrap">
   <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
+  <div class="ctrlbar"><button class="toggle-analysis" onclick="document.body.classList.toggle('compact')"></button></div>
   <a class="backlink" href="index.html">← 回首頁</a>
 <div class="tabs"><button class="tab-btn active" data-tab="market">大盤</button><button class="tab-btn" data-tab="tech">科技股/半導體</button><button class="tab-btn" data-tab="financial">金融股</button><button class="tab-btn" data-tab="traditional">傳產/原物料/航運</button><button class="tab-btn" data-tab="etf">ETF</button></div><div class="tab-panel active" id="tab-market">
   <div class="card today bull">
     <div class="date">2026-07-21 盤前預估　·　更新 2026-07-21 08:20</div>
-    <div class="predlabel">開盤方向</div><div class="direction">開高 📈</div><div class="intraday">盤中展望：<span class="bull">偏多延續 📈</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
+    <div class="predlabel">開盤方向</div><div class="direction">開高 📈<span class="actualmark">實際 開高 +0.28% ✓</span></div><div class="intraday">盤中展望：<span class="bull">偏多延續 📈</span><span class="actualmark">實際 漲 +3.91% ✓</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
     <div class="conf">信心 <span class="dots">●●●●○</span> 高</div>
     
     <p class="summary">昨晚台指期夜盤、外資期貨部位表現強勢，通常會帶動今天台股偏向上漲。雖然外資買賣超、美國那斯達克帶來一些反向壓力，但力道不足以扭轉方向。</p>
@@ -93,7 +105,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
   </div></div><div class="tab-panel" id="tab-tech">
   <div class="card today flat">
     <div class="date">科技股/半導體</div>
-    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️</div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
+    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️<span class="actualmark">實際 開高 +1.22% ✗</span></div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span><span class="actualmark">實際 漲 +3.43% ✗</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
     <div class="conf">信心 <span class="dots">○○○○○</span> 方向不明</div>
     
     <p class="summary">今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。</p>
@@ -117,7 +129,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
   </div></div><div class="tab-panel" id="tab-financial">
   <div class="card today flat">
     <div class="date">金融股</div>
-    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️</div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
+    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️<span class="actualmark">實際 平開 +0.00% ✓</span></div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span><span class="actualmark">實際 漲 +1.28% ✗</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
     <div class="conf">信心 <span class="dots">○○○○○</span> 方向不明</div>
     
     <p class="summary">今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。</p>
@@ -140,7 +152,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
   </div></div><div class="tab-panel" id="tab-traditional">
   <div class="card today flat">
     <div class="date">傳產/原物料/航運</div>
-    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️</div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
+    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️<span class="actualmark">實際 開高 +0.82% ✗</span></div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span><span class="actualmark">實際 漲 +2.12% ✗</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
     <div class="conf">信心 <span class="dots">○○○○○</span> 方向不明</div>
     
     <p class="summary">今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。</p>
@@ -163,7 +175,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
   </div></div><div class="tab-panel" id="tab-etf"><div class="subtabs"><button class="subtab-btn active" data-subtab="dividend">股息型</button><button class="subtab-btn" data-subtab="growth">成長型</button><button class="subtab-btn" data-subtab="bond">債券型</button></div><div class="subtab-panel active" id="subtab-dividend">
   <div class="card today flat">
     <div class="date">股息型</div>
-    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️</div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
+    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️<span class="actualmark">實際 開低 -1.08% ✗</span></div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span><span class="actualmark">實際 平 +0.28% ✓</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
     <div class="conf">信心 <span class="dots">○○○○○</span> 方向不明</div>
     
     <p class="summary">今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。</p>
@@ -187,7 +199,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
   </div></div><div class="subtab-panel" id="subtab-growth"><p class="alias-note">＊本分頁與「科技股/半導體」分頁共用同一份預測結果</p>
   <div class="card today flat">
     <div class="date">成長型</div>
-    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️</div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
+    <div class="predlabel">開盤方向</div><div class="direction">平開/觀望 ➡️<span class="actualmark">實際 開高 +1.22% ✗</span></div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span><span class="actualmark">實際 漲 +3.43% ✗</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
     <div class="conf">信心 <span class="dots">○○○○○</span> 方向不明</div>
     
     <p class="summary">今天偏多與偏空的力道差不多，方向不明確，建議先觀望，不宜追高或殺低。</p>
@@ -211,7 +223,7 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
   </div></div><div class="subtab-panel" id="subtab-bond">
   <div class="card today bear">
     <div class="date">債券型</div>
-    <div class="predlabel">開盤方向</div><div class="direction">開低 📉</div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
+    <div class="predlabel">開盤方向</div><div class="direction">開低 📉<span class="actualmark">實際 開低 -0.63% ✓</span></div><div class="intraday">盤中展望：<span class="flat">方向不明 ➡️</span><span class="actualmark">實際 平 +0.04% ✓</span></div><div class="callnote">開盤方向為主要依據（歷史較可靠）；盤中展望為較弱訊號、僅供參考，訊號不足時顯示「方向不明」</div>
     <div class="conf">信心 <span class="dots">●●●○○</span> 中等</div>
     
     <p class="summary">昨晚美國20年期公債ETF、美債10年殖利率(債券效應)表現疲弱，可能拖累今天台股偏向下跌。</p>
@@ -232,7 +244,12 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
       <p class="tech">主由「美國20年期公債ETF、美債10年殖利率(債券效應)、美債波動率指數(MOVE)」壓低（合計 -2.6），且無明顯支撐因子。</p>
     </details>
   </div></div></div>
-  <div class="disclaimer">更新時間 2026-07-21 10:26　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
+  <div class="legend">
+    <b>★</b> 影響強度（★★★ 強 / ★★☆ 中 / ★☆☆ 弱）
+    <b>●</b> 信心程度（●●●●● 很高 → ●●○○○ 偏低）<br>
+    紅＝偏多/上漲、綠＝偏空/下跌（台股慣例）
+  </div>
+  <div class="disclaimer">更新時間 2026-07-22 08:20　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
 </div>
 <script>
 document.querySelectorAll('.tab-btn').forEach(function(btn) {

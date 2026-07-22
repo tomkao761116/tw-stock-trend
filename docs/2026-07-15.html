@@ -57,11 +57,23 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .subtab-panel{display:none}
 .subtab-panel.active{display:block}
 .alias-note{font-size:12px;color:var(--sub);font-style:italic;margin:0 0 8px}
+.perf{background:#f0f4ff;border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.perf-nums{font-size:15px;color:#333}.perf-nums b{color:#185fa5}
+.perf-note{font-size:12px;color:var(--sub);margin-top:4px}
+.legend{font-size:12px;color:var(--sub);text-align:center;padding:4px 0;line-height:1.8}
+.legend b{color:#555}
+.ctrlbar{display:flex;justify-content:flex-end;margin:-4px 0 10px}
+.toggle-analysis{background:#e7e8ec;border:none;border-radius:7px;padding:5px 12px;
+  font-size:13px;color:#555;cursor:pointer;font-family:inherit}
+body.compact .analysis{display:none}
+.toggle-analysis::before{content:"＋ 顯示逐項解讀"}
+body:not(.compact) .toggle-analysis::before{content:"－ 收合逐項解讀"}
 </style>
 </head>
-<body>
+<body class="compact">
 <div class="wrap">
   <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
+  <div class="ctrlbar"><button class="toggle-analysis" onclick="document.body.classList.toggle('compact')"></button></div>
   <a class="backlink" href="index.html">← 回首頁</a>
 <div class="tabs"><button class="tab-btn active" data-tab="market">大盤</button><button class="tab-btn" data-tab="tech">科技股/半導體</button><button class="tab-btn" data-tab="financial">金融股</button><button class="tab-btn" data-tab="traditional">傳產/原物料/航運</button><button class="tab-btn" data-tab="etf">ETF</button></div><div class="tab-panel active" id="tab-market">
   <div class="card today flat">
@@ -230,7 +242,12 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
       <p class="tech">多空力道接近（推升 +0.6、拖累 -0.5）；「美債10年殖利率(債券效應)」偏多與「美債波動率指數(MOVE)」偏空相互抵銷，方向不明。</p>
     </details>
   </div></div></div>
-  <div class="disclaimer">更新時間 2026-07-21 10:26　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
+  <div class="legend">
+    <b>★</b> 影響強度（★★★ 強 / ★★☆ 中 / ★☆☆ 弱）
+    <b>●</b> 信心程度（●●●●● 很高 → ●●○○○ 偏低）<br>
+    紅＝偏多/上漲、綠＝偏空/下跌（台股慣例）
+  </div>
+  <div class="disclaimer">更新時間 2026-07-22 08:20　｜　本頁為機率性方向預估，僅供參考，非投資建議</div>
 </div>
 <script>
 document.querySelectorAll('.tab-btn').forEach(function(btn) {
