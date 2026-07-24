@@ -35,6 +35,7 @@ def _dir_class(direction):
     return "flat"
 
 
+HIST_PAGE_SIZE = 20     # 歷史表每頁列數（超過才出現分頁控制）
 RECENT_WINDOW = 30       # 命中率統計視窗（交易日）
 REGIME_ALERT_HITS = 0.45  # 近期命中率低於此 → 顯示劇烈震盪脈絡提示
 # 613 天回測「可交易命中」基準（含平盤帶，見 analyze.py／decisions.md 2026-07-21）。
@@ -139,6 +140,37 @@ def _actual_mark(r, key):
     return f'<span class="actualmark">實際 {html.escape(str(a))}</span>' if a else ""
 
 
+_CHART_NOISE = 0.005  # 貢獻絕對值低於此不畫（畫出來也是看不見的一條線）
+
+
+def _diverging_chart_html(factors):
+    """因子影響力發散長條圖：長度＝|貢獻|、右紅=推升、左綠=拖累，依強度降冪排序。
+
+    取代星等作為主視覺——星等只分三級（★★★ 涵蓋貢獻 2 以上），同級內的強度差
+    完全看不出來；長條圖能一眼分辨誰主導。純 CSS 寬度百分比，零外部相依；
+    方向由左右位置編碼（不只靠顏色），符合無障礙要求。"""
+    scored = [f for f in factors if f.get("base") is not None
+              and abs(f.get("contribution", 0)) > _CHART_NOISE]
+    if not scored:
+        return ""
+    scored.sort(key=lambda f: -abs(f["contribution"]))
+    mx = max(abs(f["contribution"]) for f in scored)
+    rows = []
+    for f in scored:
+        c = f["contribution"]
+        nick = html.escape(_info(f["key"], "nick") or f["name"])
+        side = "pos" if c > 0 else "neg"
+        bar = f'<i class="db {side}" style="width:{abs(c) / mx * 100:.1f}%"></i>'
+        rows.append(
+            f'<div class="drow"><span class="dn">{nick}</span>'
+            f'<span class="dt"><span class="dh l">{bar if c < 0 else ""}</span>'
+            f'<span class="dx"></span>'
+            f'<span class="dh r">{bar if c > 0 else ""}</span></span>'
+            f'<span class="dv {side}">{c:+.2f}</span></div>')
+    return (f'<div class="dchart">{"".join(rows)}</div>'
+            f'<p class="dleg">← 偏空　偏多 →　長度＝影響力大小，依強度排序</p>')
+
+
 def _headline_html(r):
     """卡片頭：有 open_call（大盤與各類別）拆成開盤方向＋盤中展望兩行；
     舊資料無 open_call 時回退單一方向。開盤方向是強訊號、盤中展望是弱訊號，
@@ -211,11 +243,19 @@ def _full_card(title, r, events=None, regime_note=""):
     {ev_html}
     <p class="summary">{html.escape(r.get("plain_summary",""))}</p>
 
-    <h3 class="up">▲ 偏向上漲的因素</h3>
-    {_factor_rows(push, "利多") or '<p class="none">（無）</p>'}
-    <h3 class="down">▼ 偏向下跌的因素</h3>
-    {_factor_rows(drag, "利空") or '<p class="none">（無）</p>'}
-    {neutral_html}
+    {_diverging_chart_html(r["factors"])}
+    <button class="det-btn" onclick="var d=this.nextElementSibling;
+      var open=d.hasAttribute('hidden');
+      if(open){{d.removeAttribute('hidden');this.textContent='－ 收合因子細節';}}
+      else{{d.setAttribute('hidden','');this.textContent='＋ 顯示因子細節';}}"
+    >＋ 顯示因子細節</button>
+    <div class="fdetail" hidden>
+      <h3 class="up">▲ 偏向上漲的因素</h3>
+      {_factor_rows(push, "利多") or '<p class="none">（無）</p>'}
+      <h3 class="down">▼ 偏向下跌的因素</h3>
+      {_factor_rows(drag, "利空") or '<p class="none">（無）</p>'}
+      {neutral_html}
+    </div>
 
     <details>
       <summary>數據明細（進階）</summary>
@@ -256,25 +296,33 @@ def _history_table_html(items, extractor, tab_id):
     B2：移除「總分」欄（內部分數，對使用者無意義，移到單日進階明細）。"""
     anchor = "" if tab_id == "market" else f"#{tab_id}"
     rows = []
-    for r in items:
+    for i, r in enumerate(items):
         cr = extractor(r)
         if cr is None:
             continue
         cls = _dir_class(cr["direction"])
         date = html.escape(r["date"])
         href = f"{date}.html{anchor}"
+        # data-i：這一列是第幾筆（跳過無資料的日期後重新編號），供分頁 JS 使用
         rows.append(
-            f'<tr><td><a href="{href}">{date}</a></td>'
+            f'<tr data-i="{len(rows)}"><td><a href="{href}">{date}</a></td>'
             f'<td class="{cls}">{html.escape(cr["direction"])}</td>'
             f'{_hist_cell(cr.get("open_actual"))}'
             f'{_hist_cell(cr.get("actual"))}'
             f'<td><a class="view" href="{href}">查看 →</a></td></tr>')
     if not rows:
         return ""
-    return f'''<table class="hist">
+    pager = ""
+    if len(rows) > HIST_PAGE_SIZE:
+        # 分頁在 client 端切換（靜態站無後端）；只是隱藏列、不減少下載量，
+        # 但捲動長度才是實際痛點，且 gzip 後重量多年內都可接受。
+        pager = ('<div class="pgbar"><button class="pg-prev" disabled>← 上一頁</button>'
+                 '<span class="pg-label"></span>'
+                 '<button class="pg-next">下一頁 →</button></div>')
+    return f'''<table class="hist" data-paged="{HIST_PAGE_SIZE}">
       <tr><th>日期</th><th>預估</th><th>開盤</th><th>收盤</th><th></th></tr>
       {"".join(rows)}
-    </table>'''
+    </table>{pager}'''
 
 
 # 頂層分頁定義：(分頁id, 標籤, 類別key)。cat_key="__etf__" 是特殊標記，
@@ -438,6 +486,31 @@ document.querySelectorAll('.subtab-btn').forEach(function(btn) {
     document.getElementById('subtab-' + btn.dataset.subtab).classList.add('active');
   });
 });
+// 歷史表分頁：每個分頁的表格各自獨立分頁（首頁有 7 張表）
+document.querySelectorAll('table.hist[data-paged]').forEach(function(tbl) {
+  var size = parseInt(tbl.dataset.paged, 10);
+  var rows = tbl.querySelectorAll('tr[data-i]');
+  var pages = Math.ceil(rows.length / size);
+  if (pages < 2) return;
+  var bar = tbl.nextElementSibling;
+  if (!bar || !bar.classList.contains('pgbar')) return;
+  var prev = bar.querySelector('.pg-prev');
+  var next = bar.querySelector('.pg-next');
+  var label = bar.querySelector('.pg-label');
+  var page = 1;
+  function render() {
+    rows.forEach(function(tr) {
+      var i = parseInt(tr.dataset.i, 10);
+      tr.hidden = !(i >= (page - 1) * size && i < page * size);
+    });
+    label.textContent = '第 ' + page + ' / ' + pages + ' 頁';
+    prev.disabled = (page === 1);
+    next.disabled = (page === pages);
+  }
+  prev.addEventListener('click', function() { if (page > 1) { page--; render(); } });
+  next.addEventListener('click', function() { if (page < pages) { page++; render(); } });
+  render();
+});
 (function() {
   var hash = location.hash.replace('#', '');
   if (!hash) return;
@@ -512,12 +585,29 @@ table .bull{color:var(--bull)} table .bear{color:var(--bear)} table .flat{color:
 .perf-note{font-size:12px;color:var(--sub);margin-top:4px}
 .legend{font-size:12px;color:var(--sub);text-align:center;padding:4px 0;line-height:1.8}
 .legend b{color:#555}
-.ctrlbar{display:flex;justify-content:flex-end;margin:-4px 0 10px}
-.toggle-analysis{background:#e7e8ec;border:none;border-radius:7px;padding:5px 12px;
-  font-size:13px;color:#555;cursor:pointer;font-family:inherit}
-body.compact .analysis{display:none}
-.toggle-analysis::before{content:"＋ 顯示逐項解讀"}
-body:not(.compact) .toggle-analysis::before{content:"－ 收合逐項解讀"}
+/* 因子影響力發散長條圖（主視覺，取代星等的粗略分級）*/
+.dchart{margin:14px 0 4px}
+.drow{display:flex;align-items:center;gap:8px;margin:4px 0}
+.dn{flex:0 0 92px;font-size:13px;text-align:right;color:#333;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dt{flex:1;display:flex;align-items:center;height:16px}
+.dh{flex:1;display:flex;height:100%}
+.dh.l{justify-content:flex-end}.dh.r{justify-content:flex-start}
+.dx{width:1px;flex:0 0 1px;background:#ccc;height:100%}
+.db{display:block;height:11px;border-radius:2px;align-self:center}
+.db.pos{background:var(--bull)}.db.neg{background:var(--bear)}
+.dv{flex:0 0 48px;font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.dv.pos{color:var(--bull)}.dv.neg{color:var(--bear)}
+.dleg{font-size:11.5px;color:var(--sub);text-align:center;margin:6px 0 0}
+.det-btn{margin:10px 0 2px;min-height:44px;background:#e7e8ec;border:none;
+  border-radius:8px;padding:8px 16px;font-size:13px;color:#555;cursor:pointer;
+  font-family:inherit}
+/* 歷史分頁 */
+.pgbar{display:flex;gap:10px;align-items:center;justify-content:center;
+  margin-top:12px;font-size:13px;color:var(--sub)}
+.pgbar button{min-height:44px;min-width:64px;border:1px solid #dfe3ea;background:#fff;
+  border-radius:8px;color:#185fa5;cursor:pointer;font-family:inherit;font-size:13px}
+.pgbar button:disabled{color:#bbb;cursor:default}
 """
 
 
@@ -533,10 +623,9 @@ def _page(title, body, script=""):
 <title>{html.escape(title)}</title>
 <style>{CSS}</style>
 </head>
-<body class="compact">
+<body>
 <div class="wrap">
   <h1 style="font-size:20px;margin:8px 0">📊 台股盤前趨勢預估</h1>
-  <div class="ctrlbar"><button class="toggle-analysis" onclick="document.body.classList.toggle('compact')"></button></div>
 {body}
   <div class="legend">
     <b>★</b> 影響強度（★★★ 強 / ★★☆ 中 / ★☆☆ 弱）
