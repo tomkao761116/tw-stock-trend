@@ -349,7 +349,14 @@
       "intraday_call": {
         "direction": "偏空延續 📉",
         "cls": "bear"
-      }
+      },
+      "actual": "漲 +0.74% ✗",
+      "actual_pct": 0.74,
+      "hit": false,
+      "open_actual": "開低 -0.91% ✓",
+      "open_hit": true,
+      "intraday_actual": "漲 +1.67% ✗",
+      "intraday_hit": false
     },
     "financial": {
       "direction": "震盪 ➡️",
@@ -466,7 +473,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "漲 +1.95% ✗",
+      "actual_pct": 1.95,
+      "hit": false,
+      "open_actual": "開低 -0.50% ✗",
+      "open_hit": false,
+      "intraday_actual": "漲 +2.46% ✗",
+      "intraday_hit": false
     },
     "traditional": {
       "direction": "偏空 📉",
@@ -582,7 +596,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "平 -0.39% ✗",
+      "actual_pct": -0.39,
+      "hit": false,
+      "open_actual": "平開 -0.02% ✗",
+      "open_hit": false,
+      "intraday_actual": "平 -0.36% ✓",
+      "intraday_hit": true
     },
     "dividend": {
       "direction": "偏多 📈",
@@ -719,7 +740,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "漲 +0.48% ✓",
+      "actual_pct": 0.48,
+      "hit": true,
+      "open_actual": "開低 -0.57% ✗",
+      "open_hit": false,
+      "intraday_actual": "漲 +1.06% ✗",
+      "intraday_hit": false
     },
     "bond": {
       "direction": "震盪 ➡️",
@@ -836,10 +864,23 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "平 +0.23% ✓",
+      "actual_pct": 0.23,
+      "hit": true,
+      "open_actual": "平開 +0.19% ✓",
+      "open_hit": true,
+      "intraday_actual": "平 +0.04% ✓",
+      "intraday_hit": true
     }
   },
   "date": "2026-08-25",
   "generated_at": "2026-08-25 08:20",
-  "actual": null
+  "actual": "漲 +0.91% ✗",
+  "actual_pct": 0.91,
+  "hit": false,
+  "open_actual": "平開 -0.08% ✗",
+  "open_hit": false,
+  "intraday_actual": "漲 +0.99% ✗",
+  "intraday_hit": false
 }
