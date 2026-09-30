@@ -349,7 +349,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     },
     "financial": {
       "direction": "震盪 ➡️",
@@ -465,7 +472,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     },
     "traditional": {
       "direction": "偏多 📈",
@@ -581,7 +595,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     },
     "dividend": {
       "direction": "偏空 📉",
@@ -716,7 +737,14 @@
       "intraday_call": {
         "direction": "方向不明 ➡️",
         "cls": "flat"
-      }
+      },
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     },
     "bond": {
       "direction": "偏空 📉",
@@ -832,10 +860,24 @@
       "intraday_call": {
         "direction": "偏空延續 📉",
         "cls": "bear"
-      }
+      },
+      "actual": "休市",
+      "actual_pct": null,
+      "hit": null,
+      "open_actual": null,
+      "open_hit": null,
+      "intraday_actual": null,
+      "intraday_hit": null
     }
   },
   "date": "2026-09-25",
   "generated_at": "2026-09-25 08:20",
-  "actual": null
+  "actual": "休市",
+  "no_trading": true,
+  "actual_pct": null,
+  "hit": null,
+  "open_actual": null,
+  "open_hit": null,
+  "intraday_actual": null,
+  "intraday_hit": null
 }
