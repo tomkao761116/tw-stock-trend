@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## 專案是什麼
 
 台股盤前趨勢預估：每日盤前以「隔夜美股＋台股籌碼」規則引擎產生方向預估（開盤方向＋盤中展望），
